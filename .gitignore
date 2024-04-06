@@ -2,5 +2,6 @@
 **/plug.vim.old
 
 tmux/resurrect/*.txt
+tmux/resurrect/last
 tmux-*.log
 
