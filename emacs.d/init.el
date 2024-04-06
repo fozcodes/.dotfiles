@@ -62,10 +62,15 @@
 
     (define-key evil-insert-state-map (kbd "j") 'my-jk)))
 
-(use-package evil-easymotion 
+(use-package evil-easymotion
   :ensure t
   :init
   (evilem-default-keybindings "SPC"))
+
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
 
 (use-package linum-relative
   :ensure t
