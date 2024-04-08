@@ -42,6 +42,7 @@ alias rcup="env RCRC=~/.dotfiles/.rcrc rcup"
 alias rst="touch tmp/restart.txt"
 alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias tl="tmux ls"
+alias nvimk='NVIM_APPNAME="nvim-kickstart" nvim'
 
 # Snowflake cli
 fish_add_path /Applications/SnowSQL.app/Contents/MacOS/
