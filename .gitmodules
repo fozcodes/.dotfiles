@@ -10,3 +10,6 @@
 [submodule "tmux/plugins/tmux-battery"]
 	path = tmux/plugins/tmux-battery
 	url = git@github.com:tmux-plugins/tmux-battery.git
+[submodule "tmux/plugins/tmux-continuum"]
+	path = tmux/plugins/tmux-continuum
+	url = git@github.com:tmux-plugins/tmux-continuum.git
