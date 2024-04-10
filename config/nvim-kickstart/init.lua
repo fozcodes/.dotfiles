@@ -426,7 +426,10 @@ require("lazy").setup({
       end, { desc = "[S]earch [N]eovim files" })
     end,
   },
-
+  {
+    "nvim-tree/nvim-tree.lua",
+    opts = {},
+  },
   { -- LSP Configuration & Plugins
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -884,24 +887,6 @@ require("lazy").setup({
       --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
       --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-    end,
-  },
-  {
-    "nvim-tree/nvim-tree.lua",
-    opts = {},
-    config = function()
-      local api = require "nvim-tree.api"
-
-      local function opts(desc)
-        return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-      end
-
-      -- default mappings
-      api.config.mappings.default_on_attach(bufnr)
-
-      -- custom mappings
-      vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent, opts "Up")
-      vim.keymap.set("n", "?", api.tree.toggle_help, opts "Help")
     end,
   },
 
