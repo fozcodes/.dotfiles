@@ -9,3 +9,5 @@ Be sure to set the `RCRC` env var to point to the `.rcrc` file in this dir.
 ```
 RCRC="<HOME_DIR>/.dotfiles/.rcrc" rcup
 ```
+
+Also, make _sure_ that your subdirectories _aren't_ empty. Like for example, if you were experimenting with `git submodule` and deleted the contents. :facepalm:
