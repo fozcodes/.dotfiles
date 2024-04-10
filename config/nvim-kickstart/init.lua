@@ -249,12 +249,7 @@ require("lazy").setup({
 	-- "gc" to comment visual regions/lines
 	{ "numToStr/Comment.nvim", opts = {} },
 
-	-- { 'christoomey/vim-tmux-navigator',
-	--   lazy = false,
-	--   config = function ()
-	--     vim.cmd([[source tmux_navigator.vim])
-	--   end,
-	-- },
+	"christoomey/vim-tmux-navigator",
 
 	-- Here is a more advanced example where we pass configuration
 	-- options to `gitsigns.nvim`. This is equivalent to the following Lua:
