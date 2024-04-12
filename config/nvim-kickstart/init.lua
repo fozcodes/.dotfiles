@@ -427,8 +427,31 @@ require("lazy").setup({
     end,
   },
   {
-    "nvim-tree/nvim-tree.lua",
-    opts = {},
+    "ryanoasis/vim-devicons", -- or whatever the correct plugin name is
+    config = function()
+      vim.defer_fn(function()
+        vim.cmd [[if exists("g:loaded_webdevicons") | call webdevicons#refresh() | endif]]
+      end, 0) -- Defers the execution until Neovim is idle
+    end,
+  },
+  {
+    "preservim/nerdtree",
+    dependencies = {
+      { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+      "ryanoasis/vim-devicons",
+      "Xuyuanp/nerdtree-git-plugin",
+      "vwxyutarooo/nerdtree-devicons-syntax",
+    },
+    config = function()
+      vim.g.NERDShutUp = 1
+      vim.keymap.set("n", "<C-e>", ":NERDTreeToggle<CR>", { desc = "Toggle NERDTree" })
+      vim.NERDTreeShowBookmarks = 1
+      vim.NERDTreeIgnore = "['.py[cd]$', '~$', '.swo$', '.swp$', '^.git$', '^.hg$', '^.svn$', '.bzr$']"
+      vim.NERDTreeChDirMode = 0
+      vim.NERDTreeMouseMode = 0
+      vim.NERDTreeShowHidden = 1
+      vim.NERDTreeQuitOnOpen = 1
+    end,
   },
   { -- LSP Configuration & Plugins
     "neovim/nvim-lspconfig",
@@ -499,6 +522,11 @@ require("lazy").setup({
             local hl = "DiagnosticSign" .. type
             vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
           end
+
+          vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+            border = "rounded",
+            margin = { 10, 10, 10, 10 },
+          })
 
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
