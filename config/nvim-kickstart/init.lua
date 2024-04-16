@@ -479,8 +479,13 @@ require("lazy").setup({
       "vwxyutarooo/nerdtree-devicons-syntax",
     },
     config = function()
-      vim.g.NERDShutUp = 1
+      vim.g.NERDTreeShutUp = 1
+      vim.g.NERDTreeShowHidden = 1
+      vim.g.NERDTreeMapJumpNextSibling = ""
+      vim.g.NERDTreeMapJumpPrevSibling = ""
       vim.keymap.set("n", "<C-e>", ":NERDTreeToggle<CR>", { desc = "Toggle NERDTree" })
+      vim.keymap.set("n", "<C-j>", ":TmuxNavigateDown<cr>")
+      vim.keymap.set("n", "<C-k>", ":TmuxNavigateUp<cr>")
       vim.NERDTreeShowBookmarks = 1
       vim.NERDTreeIgnore = "['.py[cd]$', '~$', '.swo$', '.swp$', '^.git$', '^.hg$', '^.svn$', '.bzr$']"
       vim.NERDTreeChDirMode = 0
