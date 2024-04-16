@@ -1050,5 +1050,16 @@ require("lazy").setup({
   },
 })
 
+-- Autocommand that sets foldmethod and foldlevel for init.lua only
+vim.api.nvim_create_autocmd("BufReadPost", {
+  pattern = "init.lua",
+  callback = function(args)
+    -- Check if the opened init.lua is the one from your Neovim configuration directory
+    -- if args.file == vim.fn.stdpath "config" .. "/init.lua" then
+    vim.opt_local.foldmethod = "marker"
+    vim.opt_local.foldlevel = 0
+    -- end
+  end,
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
