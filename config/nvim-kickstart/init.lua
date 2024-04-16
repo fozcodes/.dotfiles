@@ -569,6 +569,21 @@ require("lazy").setup({
             margin = { 10, 10, 10, 10 },
           })
 
+          vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
+          -- Automatically update diagnostics ... from
+          -- https://github.com/folke/dot/blob/master/config/nvim/lua/config/lsp/diagnostics.lua
+          vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+            underline = true,
+            update_in_insert = false,
+            virtual_text = {
+              source = true,
+              spacing = 4,
+              -- prefix = "● "
+            },
+            float = { source = true },
+            severity_sort = true,
+          })
+
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
