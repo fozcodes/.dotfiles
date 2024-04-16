@@ -33,13 +33,12 @@
 -- print(vim.lsp.get_log_path())
 -- vim.lsp.set_log_level "debug"
 -- }}}
-
 -- Leader key {{{
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 -- }}}
-
+-- Layout, Numbers, Clipboard, Tabs, Visual stuff, etc {{{
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
 
@@ -71,14 +70,6 @@ vim.opt.breakindent = true
 -- Save undo history
 vim.opt.undofile = true
 
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.hlsearch = true
-vim.opt.incsearch = true
-
-vim.keymap.set("n", "<CR>", ":nohl<CR>")
-
 -- Keep signcolumn on by default
 vim.opt.signcolumn = "yes"
 
@@ -100,7 +91,7 @@ vim.opt.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Preview substitutions live, as you type!
-vim.opt.inccommand = "split"
+vim.opt.inccommand = "nosplit"
 
 -- Show which line your cursor is on
 vim.opt.cursorline = true
@@ -114,12 +105,83 @@ vim.opt.softtabstop = 2
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
 
+-- Wrapping lines
+vim.opt.wrap = false
+-- }}}
+-- Searching {{{
+-- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.hlsearch = true
+vim.opt.incsearch = true
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<CR>", ":nohl<CR>")
+--}}}
+-- Filetypes & Formatting {{{
+vim.filetype.add {
+  -- Detect and assign filetype based on the extension of the filename
+  extension = {
+    log = "log",
+    conf = "conf",
+  },
+  -- Detect and apply filetypes based on the entire filename
+  filename = {
+    [".envrc"] = "bash",
+    ["tsconfig.json"] = "jsonc",
+  },
+  -- Detect and apply filetypes based on certain patterns of the filenames
+  pattern = {
+    -- INFO: Match filenames like - ".env.example", ".env.local" and so on
+    ["%.env%.[%w_.-]+"] = "dotenv",
+  },
+}
+
+function StripTrailingWhitespace()
+  -- Save the current view and search pattern
+  local save = vim.fn.winsaveview()
+  local last_search = vim.fn.getreg "/"
+
+  -- Remove trailing whitespace and ^M characters
+  vim.cmd [[keeppatterns %s/\s\+$//e]]
+  vim.cmd [[keeppatterns %s/\%x0D$//e]]
+
+  -- Restore the last search pattern and view
+  vim.fn.setreg("/", last_search)
+  vim.fn.winrestview(save)
+end
+
+-- Remove trailing whitespaces and ^M chars for specified filetypes
+local filetypes =
+  "c,cpp,css,eelixir,elixir,groovy,heex,html,java,go,leex,liquid,lua,markdown,markdown.spec,php,purescript,javascript,jsx,json,pine,puppet,psl,python,rust,ruby,scss,sh,stylus,twig,xml,yml,perl,sql,md,ts,typescript,terraform,vcl,yml,yaml"
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = vim.split(filetypes, ","),
+  callback = function()
+    vim.api.nvim_buf_create_user_command(0, "StripTrailingWhitespace", StripTrailingWhitespace, {})
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = 0,
+      callback = function()
+        vim.cmd "StripTrailingWhitespace"
+      end,
+    })
+  end,
+})
+
+-- Setting expandtab, shiftwidth, and softtabstop for specific file types
+local expand_filetypes = "haskell,puppet,purs,ruby,yml,javascript,elixir"
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = vim.split(expand_filetypes, ","),
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+  end,
+})
+-- }}}
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
-vim.opt.hlsearch = true
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
