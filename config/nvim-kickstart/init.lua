@@ -661,10 +661,45 @@ require("lazy").setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      local function get_python_path(workspace)
+        local util = require "lspconfig/util"
+
+        local path = util.path
+
+        -- Use activated virtualenv.
+        if vim.env.VIRTUAL_ENV then
+          return path.join(vim.env.VIRTUAL_ENV, "bin", "python")
+        end
+
+        -- Find and use virtualenv in workspace directory.
+        for _, pattern in ipairs { "*", ".*" } do
+          local match = vim.fn.glob(path.join(workspace, pattern, "pyvenv.cfg"))
+          if match ~= "" then
+            return path.join(path.dirname(match), "bin", "python")
+          end
+        end
+
+        -- Fallback to system Python.
+        return "python"
+      end
+
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {
+
+          before_init = function(_, config)
+            config.settings.python.pythonPath = get_python_path(config.root_dir)
+          end,
+          python = {
+            analysis = {
+              autoSearchPaths = true,
+              diagnosticMode = "workspace",
+              useLibraryCodeForTypes = true,
+              typeCheckingMode = "basic",
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
