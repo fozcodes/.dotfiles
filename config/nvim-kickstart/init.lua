@@ -390,6 +390,36 @@ require("lazy").setup({
             require("telescope.themes").get_dropdown(),
           },
         },
+        defaults = {
+          file_ignore_patterns = {
+            ".git",
+            "node_modules",
+            "build",
+            "dist",
+            "yarn.lock",
+          },
+          hidden = true,
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
+            -- needed to exclude some files & dirs from general search
+            -- when not included or specified in .gitignore
+            find_command = {
+              "rg",
+              "--files",
+              "--no-ignore",
+              "--hidden",
+              "--glob=!**/.git/*",
+              "--glob=!**/.idea/*",
+              "--glob=!**/.vscode/*",
+              "--glob=!**/build/*",
+              "--glob=!**/dist/*",
+              "--glob=!**/yarn.lock",
+              "--glob=!**/package-lock.json",
+            },
+          },
+        },
       }
 
       -- Enable Telescope extensions if they are installed
