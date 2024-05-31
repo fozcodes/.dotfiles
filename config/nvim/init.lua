@@ -197,15 +197,6 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
-
 -- Folding {{{
 vim.opt.foldenable = true
 vim.opt.foldnestmax = 10
@@ -267,9 +258,16 @@ require("lazy").setup({
 
   "christoomey/vim-tmux-navigator",
   "roman/golden-ratio",
-  "mhinz/vim-startify",
+  -- "mhinz/vim-startify",
   "easymotion/vim-easymotion",
   "mechatroner/rainbow_csv",
+  "github/copilot.vim",
+  {
+    "rubiin/fortune.nvim",
+    config = function()
+      require("fortune").setup { content_type = "quotes", max_width = 1000, display_format = "mixed" }
+    end,
+  },
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -484,8 +482,6 @@ require("lazy").setup({
       vim.g.NERDTreeMapJumpNextSibling = ""
       vim.g.NERDTreeMapJumpPrevSibling = ""
       vim.keymap.set("n", "<C-e>", ":NERDTreeToggle<CR>", { desc = "Toggle NERDTree" })
-      vim.keymap.set("n", "<C-j>", ":TmuxNavigateDown<cr>")
-      vim.keymap.set("n", "<C-k>", ":TmuxNavigateUp<cr>")
       vim.NERDTreeShowBookmarks = 1
       vim.NERDTreeIgnore = "['.py[cd]$', '~$', '.swo$', '.swp$', '^.git$', '^.hg$', '^.svn$', '.bzr$']"
       vim.NERDTreeChDirMode = 0
@@ -683,9 +679,60 @@ require("lazy").setup({
         return "python"
       end
 
+      local function get_python_command_path(workspace, command)
+        local util = require "lspconfig/util"
+
+        local path = util.path
+        -- Use activated virtualenv.
+        if vim.env.VIRTUAL_ENV then
+          return path.join(vim.env.VIRTUAL_ENV, "bin", command)
+        end
+
+        -- Find and use virtualenv in workspace directory.
+        for _, pattern in ipairs { "*", ".*" } do
+          local match = vim.fn.glob(path.join(workspace, pattern, "pyvenv.cfg"))
+          if match ~= "" then
+            return path.join(path.dirname(match), "bin", command)
+          end
+        end
+
+        -- Fallback to system Python.
+        return command
+      end
+
+      local eslint_lint_command = {
+        lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
+        lintStdin = true,
+        lintIgnoreExitCode = true,
+      }
+
+      local prettier_format_command = { formatCommand = "prettierd ${INPUT}", formatStdin = true }
+
+      local efm_filetypes = {
+        "css",
+        "elixir",
+        "graphql",
+        "helm.yaml",
+        "html",
+        "javascript",
+        "javascript.jsx",
+        "json",
+        "jsx",
+        "lua",
+        "markdown",
+        "python",
+        "scss",
+        "sql",
+        "terraform",
+        "typescript",
+        "typescriptreact",
+        "yaml",
+      }
+
       local servers = {
         -- clangd = {},
         -- gopls = {},
+        -- pylsp = {},
         pyright = {
 
           before_init = function(_, config)
@@ -700,6 +747,67 @@ require("lazy").setup({
             },
           },
         },
+        efm = {
+          init_options = { documentFormatting = true, codeAction = true },
+          before_init = function(_, config)
+            config.settings.languages.python = {
+              {
+                lintCommand = get_python_command_path(config.root_dir, "flake8") .. " --config (find_up .flake8) --stdin-display-name ${INPUT} -",
+                lintStdin = true,
+                lintIgnoreExitCode = true,
+              },
+              {
+                lintCommand = get_python_command_path(config.root_dir, "mypy") .. " --help --show-column-numbers --config-file (find_up .mypy.ini) -C fos -",
+                lintStdin = true,
+                lintFormats = {
+                  "%f:%l:%c: %trror: %m",
+                  "%f:%l:%c: %tarning: %m",
+                  "%f:%l:%c: %tote: %m",
+                },
+                lintIgnoreExitCode = true,
+              },
+              {
+                formatCommand = get_python_command_path(config.root_dir, "isort") .. " --quiet -",
+                formatStdin = true,
+              },
+              {
+                formatCommand = get_python_command_path(config.root_dir, "black") .. " --quiet -",
+                formatStdin = true,
+              },
+            }
+          end,
+          filetypes = efm_filetypes,
+          settings = {
+            rootMarkers = { ".git/" },
+            lintDebounce = "0.3s",
+            languages = {
+              elixir = {
+                {
+                  lintCommand = "MIX_ENV=test mix credo suggest --format=flycheck --read-from-stdin ${INPUT}",
+                  lintStdin = true,
+                  lintIgnoreExitCode = true,
+                  lintFormats = { "%f:%l:%c: %t: %m", "%f:%l: %t: %m" },
+                  rootMarkers = { "mix.lock", "mix.exs" },
+                },
+              },
+              sql = { { formatCommand = "sql-formatter --config ~/.sql-formatter.config.json", formatStdin = true } },
+              typescript = { prettier_format_command, eslint_lint_command },
+              javascript = { prettier_format_command, eslint_lint_command },
+              ["javascript.jsx"] = { prettier_format_command, eslint_lint_command },
+              typescriptreact = { prettier_format_command, eslint_lint_command },
+              javascriptreact = { prettier_format_command, eslint_lint_command },
+              json = { prettier_format_command },
+              ["helm.yaml"] = {},
+              yaml = { prettier_format_command },
+              html = { prettier_format_command },
+              scss = { prettier_format_command },
+              css = { prettier_format_command },
+              graphql = { prettier_format_command },
+              markdown = { prettier_format_command },
+              terraform = { { formatCommand = "terraform fmt -", formatStdin = true } },
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -707,7 +815,7 @@ require("lazy").setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
+        tsserver = {},
         --
 
         lua_ls = {
@@ -723,6 +831,10 @@ require("lazy").setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
+        },
+
+        elixirls = {
+          settings = { elixirLS = { suggestSpecs = true, enableTestLenses = true } },
         },
       }
 
@@ -974,8 +1086,68 @@ require("lazy").setup({
         return "%2l:%-2v"
       end
 
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
+      -- Function to wrap lines to a specified width using recursion
+      local format_fortune = function(fortune, max_width)
+        local wrapped_lines = {}
+
+        function wrap_line(line)
+          if #line <= max_width then
+            return { line }
+          end
+
+          local sub_line = line:sub(1, max_width)
+          local space_index = sub_line:find "%s[^%s]*$" -- Find the last space in the substring
+          if space_index then
+            sub_line = sub_line:sub(1, space_index - 1)
+          end
+
+          local remaining_line = line:sub(#sub_line + 1):gsub("^%s+", "") -- Remove leading spaces from the remaining line
+          local wrapped_remaining = wrap_line(remaining_line)
+
+          return { sub_line, unpack(wrapped_remaining) }
+        end
+
+        for _, line in ipairs(fortune) do
+          line = line:gsub("^%s+", "")
+          local wrapped_line = wrap_line(line)
+          for _, l in ipairs(wrapped_line) do
+            table.insert(wrapped_lines, l)
+          end
+        end
+
+        return table.concat(wrapped_lines, "\n")
+      end
+
+      local logo = table.concat({
+        "  █████▒▒█████  ▒███████▒ ▄████▄   ▒█████  ▓█████▄ ▓█████   ██████ ",
+        "▓██   ▒▒██▒  ██▒▒ ▒ ▒ ▄▀░▒██▀ ▀█  ▒██▒  ██▒▒██▀ ██▌▓█   ▀ ▒██    ▒ ",
+        "▒████ ░▒██░  ██▒░ ▒ ▄▀▒░ ▒▓█    ▄ ▒██░  ██▒░██   █▌▒███   ░ ▓██▄   ",
+        "░▓█▒  ░▒██   ██░  ▄▀▒   ░▒▓▓▄ ▄██▒▒██   ██░░▓█▄   ▌▒▓█  ▄   ▒   ██▒",
+        "░▒█░   ░ ████▓▒░▒███████▒▒ ▓███▀ ░░ ████▓▒░░▒████▓ ░▒████▒▒██████▒▒",
+        " ▒ ░   ░ ▒░▒░▒░ ░▒▒ ▓░▒░▒░ ░▒ ▒  ░░ ▒░▒░▒░  ▒▒▓  ▒ ░░ ▒░ ░▒ ▒▓▒ ▒ ░",
+        " ░       ░ ▒ ▒░ ░░▒ ▒ ░ ▒  ░  ▒     ░ ▒ ▒░  ░ ▒  ▒  ░ ░  ░░ ░▒  ░ ░",
+        " ░ ░   ░ ░ ░ ▒  ░ ░ ░ ░ ░░        ░ ░ ░ ▒   ░ ░  ░    ░   ░  ░  ░  ",
+        "           ░ ░    ░ ░    ░ ░          ░ ░     ░       ░  ░      ░  ",
+        "                ░        ░                  ░                      ",
+      }, "\n")
+
+      require("mini.starter").setup {
+        autoopen = true,
+        evaluate_single = true,
+        header = logo,
+        items = {
+          { name = "New file", action = "enew", section = "Actions" },
+          { name = "Open file", action = "Telescope find_files", section = "Actions" },
+          { name = "Recent files", action = "Telescope oldfiles", section = "Actions" },
+        },
+        footer = function()
+          local fortune = require("fortune").get_fortune()
+          -- Split fortune into multiple lines
+          local max_width = 60
+          local wrapped_fortune = format_fortune(fortune, max_width)
+          return wrapped_fortune
+        end,
+      }
     end,
   },
   { -- Highlight, edit, and navigate code
@@ -1006,6 +1178,15 @@ require("lazy").setup({
       --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
       --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    end,
+  },
+  "triglav/vim-visual-increment",
+  "pinecoders/vim-pine-script",
+  {
+    "wesQ3/vim-windowswap",
+    config = function()
+      vim.g.windowswap_map_keys = 0
+      vim.keymap.set("n", "<leader>ew", ":call WindowSwap#EasyWindowSwap()<CR>", { desc = "Swap window" })
     end,
   },
 

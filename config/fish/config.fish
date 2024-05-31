@@ -9,6 +9,7 @@ set BREW_HOME (brew --prefix)
 
 fish_add_path $HOME/.asdf/shims
 fish_add_path $BREW_HOME/bin
+fish_add_path $BREW_HOME/opt/postgresql@16/bin
 
 # ASDF
 source $HOME/.asdf/asdf.fish
@@ -42,7 +43,7 @@ alias rcup="env RCRC=~/.dotfiles/.rcrc rcup"
 alias rst="touch tmp/restart.txt"
 alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias tl="tmux ls"
-alias nvimk='NVIM_APPNAME="nvim-kickstart" nvim'
+alias nvimold='NVIM_APPNAME="nvim-old" nvim'
 
 # Snowflake cli
 fish_add_path /Applications/SnowSQL.app/Contents/MacOS/
