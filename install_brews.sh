@@ -23,7 +23,6 @@ brew install 1password \
  atomicparsley \
  autoconf \
  automake \
- aws-elasticbeanstalk \
  aws-iam-authenticator \
  awscli \
  bash-completion \
@@ -159,6 +158,7 @@ brew install 1password \
  netpbm \
  nettle \
  nghttp2 \
+ ngrok \
  ninja \
  npth \
  oniguruma \
@@ -197,6 +197,7 @@ brew install 1password \
  shared-mime-info \
  siege \
  snappy \
+ snowflake-snowsql \
  spark \
  speex \
  sqlite \
@@ -239,6 +240,7 @@ brew install 1password \
 # Casks
 brew install abstract \
  brave-browser \
+ capcut \
  chromedriver \
  controlplane \
  dash \
@@ -250,35 +252,28 @@ brew install abstract \
  flux \
  font-hack-nerd-font \
  font-iosevka \
- front \
  google-chrome \
  google-cloud-sdk \
  google-drive-file-stream \
  graphiql \
  insomnia \
  iterm2 \
- java \
  keycastr \
  kindle \
- licecap \
  macdown \
  mic-drop \
- ngrok \
  postgres \
  postico \
  postman \
  protonvpn \
  signal \
- sketch \
  slack \
- snowflake-snowsql \
  spotify \
- sqlpro-studio \
  steam \
- sublime-text \
  tableplus \
  visual-studio-code \
  whatsapp \
+ zed \
  homebrew/cask-drivers/zsa-wally
 
 # install ctags after emacs

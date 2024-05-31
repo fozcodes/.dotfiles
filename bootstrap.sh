@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #install brew and brews
-#./install_brews.sh
+./install_brews.sh
 
 #install asdf for package management
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.10.0
