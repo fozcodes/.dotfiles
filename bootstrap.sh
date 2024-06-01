@@ -39,7 +39,7 @@ git clone git@github.com:powerline/fonts.git
 rm -rf .fonts
 
 # setup fish
-echo "/opt/homebrew/bin/fish" | sudo tee -a /etc/shells
+grep -qF "/opt/homebrew/bin/fish" /etc/shells || echo "/opt/homebrew/bin/fish" | sudo tee -a /etc/shells
 chsh -s /opt/homebrew/bin/fish
 curl -L https://get.oh-my.fish | fish
 omf install agnoster
