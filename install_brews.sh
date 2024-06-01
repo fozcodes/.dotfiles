@@ -27,15 +27,14 @@ brew install 1password \
  awscli \
  bash-completion \
  bat \
- battery \
+ homebrew/cask/battery \
  bdw-gc \
  berkeley-db \
  brotli \
  c-ares \
  cairo \
  circleci \
- cmake \
- cocoapods \
+ homebrew/cask/cmake \
  cscope \
  dav1d \
  direnv \
@@ -84,7 +83,6 @@ brew install 1password \
  ilmbase \
  imagemagick \
  imath \
- jasper \
  jemalloc \
  jpeg \
  jq \
@@ -194,7 +192,6 @@ brew install 1password \
  siege \
  snappy \
  snowflake-snowsql \
- spark \
  speex \
  sqlite \
  srt \
@@ -204,6 +201,7 @@ brew install 1password \
  tcptraceroute \
  telnet \
  tesseract \
+ thefuck \
  theora \
  tidy-html5 \
  tldr \
@@ -236,13 +234,12 @@ brew install 1password \
  capcut \
  chromedriver \
  controlplane \
- dash \
+ homebrew/cask/dash \
  discord \
- docker \
- emacs \
+ homebrew/cask/docker \
+ homebrew/cask/emacs \
  fantastical \
  firefox \
- flux \
  font-hack-nerd-font \
  font-iosevka \
  google-chrome \
