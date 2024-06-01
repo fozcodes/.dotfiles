@@ -1,5 +1,6 @@
 ###### IMPORTANT - Remember files in ./conf.d are loaded automagically #########
 function fish_right_prompt
+  set -l fish_color_autosuggestion
   set_color $fish_color_autosuggestion; or set_color 555
   date "+%H:%M:%S"
   set_color normal
@@ -9,6 +10,7 @@ set -gx PATH /opt/homebrew/bin $PATH
 
 set PATH /usr/local/opt/make/libexec/gnubin $PATH
 set PATH /usr/local/opt/findutils/libexec/gnubin $PATH
+set PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 
 set BREW_HOME (brew --prefix)
 

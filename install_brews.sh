@@ -4,11 +4,11 @@ if ! command -v brew &> /dev/null
 then
   # install Homebrew
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/foz/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 brew update
-#install cask
-brew tap homebrew/cask
 
 brew tap Goles/battery
 brew tap heroku/brew
@@ -78,8 +78,6 @@ brew install 1password \
  gts \
  guile \
  harfbuzz \
- heroku \
- heroku-node \
  htop \
  hub \
  icu4c \
@@ -169,7 +167,6 @@ brew install 1password \
  openjdk \
  openjdk@11 \
  openjpeg \
- openssl@1.1 \
  opus \
  p11-kit \
  pango \
@@ -180,8 +177,7 @@ brew install 1password \
  pinentry \
  pixman \
  pkg-config \
- postgresql \
- pyright \
+ postgresql@16 \
  rav1e \
  redo \
  rcm \
@@ -215,10 +211,8 @@ brew install 1password \
  tmux \
  tree \
  tree-sitter \
- truncate \
  unbound \
  unibilium \
- universal-ctags \
  unixodbc \
  utf8proc \
  vim \
@@ -235,10 +229,9 @@ brew install 1password \
  xz \
  yarn \
  zeromq \
- zimg
-
-# Casks
-brew install abstract \
+ zimg \
+ adobe-acrobat-reader \
+ alacritty \
  brave-browser \
  capcut \
  chromedriver \
@@ -254,7 +247,6 @@ brew install abstract \
  font-iosevka \
  google-chrome \
  google-cloud-sdk \
- google-drive-file-stream \
  graphiql \
  insomnia \
  iterm2 \
@@ -262,7 +254,10 @@ brew install abstract \
  kindle \
  macdown \
  mic-drop \
- postgres \
+ microsoft-teams \
+ ngrok \
+ paw \
+ postgres-unofficial \
  postico \
  postman \
  protonvpn \
@@ -274,8 +269,5 @@ brew install abstract \
  visual-studio-code \
  whatsapp \
  zed \
- homebrew/cask-drivers/zsa-wally
-
-# install ctags after emacs
-brew install --HEAD universal-ctags/universal-ctags/universal-ctags
-brew link --overwrite universal-ctags
+ zeplin \
+ zsa-wally
