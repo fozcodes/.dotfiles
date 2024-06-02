@@ -6,17 +6,15 @@ function fish_right_prompt
   set_color normal
 end
 
-set -gx PATH /opt/homebrew/bin $PATH
 
 set PATH /usr/local/opt/make/libexec/gnubin $PATH
 set PATH /usr/local/opt/findutils/libexec/gnubin $PATH
-set PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 
 set BREW_HOME (brew --prefix)
 
-fish_add_path $HOME/.asdf/shims
-fish_add_path $BREW_HOME/bin
-fish_add_path $BREW_HOME/opt/postgresql@16/bin
+fish_add_path -p $BREW_HOME/opt/postgresql@16/bin
+fish_add_path -p $BREW_HOME/bin
+fish_add_path -p $HOME/.asdf/shims
 
 # ASDF
 source $HOME/.asdf/asdf.fish
