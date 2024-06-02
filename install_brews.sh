@@ -141,6 +141,7 @@ brew install 1password \
  libyaml \
  libzip \
  little-cms2 \
+ livebook \
  lsd \
  luarocks \
  luv \
