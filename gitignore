@@ -2,15 +2,10 @@
 *.DS\_Store
 *~
 *tags
-.tool-versions*
 .elasticbeanstalk/
 .env.*
 !.env.*.example
 .elixir_ls/
-.flake8
-flake8.cfg
-.prettierrc.json
-pyrightconfig.json
 
 **/ignoreme/**/*
 **/ignore/**/*
