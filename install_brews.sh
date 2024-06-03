@@ -12,7 +12,6 @@ brew update
 
 brew tap Goles/battery
 brew tap heroku/brew
-brew tap homebrew/cask-fonts
 
 # install me brews -  the obscure ones are probably for asdf
 brew install 1password \
@@ -34,7 +33,6 @@ brew install 1password \
  c-ares \
  cairo \
  circleci \
- homebrew/cask/cmake \
  cscope \
  dav1d \
  direnv \
@@ -268,4 +266,6 @@ brew install 1password \
  whatsapp \
  zed \
  zeplin \
- zsa-wally
+ zsa-wally \
+ zoom \
+ microsoft-outlook
