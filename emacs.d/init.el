@@ -150,7 +150,7 @@
                                          (plain-list-item . auto))))
 (setq org-insert-heading-respect-content nil)
 
-(set-face-attribute 'default nil :height 170)
+(set-face-attribute 'default nil :height 50)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -562,6 +562,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
       (org-set-local 'header-line-format nil)))
   (redraw-display))
 
-(setq default-frame-alist '((font . "Space Mono for Powerline-32")))
+(setq default-frame-alist '((font . "Space Mono for Powerline-18")))
+
 
 (global-set-key [M-f12] 'toggle-journal-view)
