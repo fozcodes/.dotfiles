@@ -24,6 +24,7 @@ brew install 1password \
  automake \
  aws-iam-authenticator \
  awscli \
+ session-manager-plugin \
  bash-completion \
  bat \
  homebrew/cask/battery \
