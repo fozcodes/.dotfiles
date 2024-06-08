@@ -16,9 +16,12 @@ fi
 mkdir -p ~/.ssh
 mv ./config/ssh/config ~/.ssh/config
 ssh-keygen -t rsa -b 4096 -C "ian@codeguy.io"
-ssh-add -K ~/.ssh/id_rsa
+ssh-add -apple-use-keychain ~/.ssh/id_rsa
 
-echo "Now go update your Github settings with your new SSH key and then press Enter to continue..."
+ssh-keygen -t ed25519 -C "ian@codeguy.io"
+ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+
+echo "Now go update your Github settings with your new SSH key (the good one!) and then press Enter to continue..."
 read -r
 
 # install erlang
@@ -53,9 +56,9 @@ rm -rf .fonts
 # setup fish
 grep -qF "/opt/homebrew/bin/fish" /etc/shells || echo "/opt/homebrew/bin/fish" | sudo tee -a /etc/shells
 chsh -s /opt/homebrew/bin/fish
-curl -L https://get.oh-my.fish | fish
-omf install agnoster
-omf theme agnoster
+# curl -L https://get.oh-my.fish | fish
+# omf install agnoster
+# omf theme agnoster
 
 # copy rcm config
 ln -s ~/.dotfiles/.rcrc ~/.rcrc
