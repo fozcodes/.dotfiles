@@ -5,3 +5,4 @@ tmux/resurrect/*.txt
 tmux/resurrect/last
 tmux-*.log
 
+config/fish/conf.d/paramount.fish
