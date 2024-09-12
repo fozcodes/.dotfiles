@@ -4,6 +4,9 @@ scan_timeout = 10
 # Don't print a new line at the start of the prompt
 add_newline = false
 
+format = "$all"
+right_format = "$time"
+
 # Replace the "❯" symbol in the prompt with "➜"
 [character]      # The name of the module we are configuring is "character"
 success_symbol = "[λ](bold green)"     # The "symbol" segment is being set to "➜"
@@ -17,3 +20,8 @@ disabled = true
 
 [gcloud]
 disabled = true
+
+[battery]
+full_symbol = '🔋 '
+charging_symbol = '⚡️ '
+discharging_symbol = '💀 '

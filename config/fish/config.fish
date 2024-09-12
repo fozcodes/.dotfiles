@@ -95,6 +95,114 @@ function save_your_damn_notes
   git push origin master
 end
 
+function get-k8s-namespaces
+  kubectl get namespaces -o json | jq -r '.items[].metadata.name'
+end
+
+function get-k8s-secret-names
+  argparse 'n/namespace=' 's/secret=' -- $argv
+  or return
+
+  if not set -q _flag_namespace
+    echo "Namespace not specified. Use -n or --namespace to specify the namespace."
+    return 1
+  end
+
+  kubectl --namespace $_flag_namespace get pods -o json \
+      | jq -r '.items[].spec.containers[].env[]?.valueFrom.secretKeyRef.name' \
+      | grep -v null \
+      | sort \
+      | uniq
+end
+
+function get-k8s-secret-in-namespace
+  argparse 'n/namespace=' 's/secret=' -- $argv
+  or return
+
+  if not set -q _flag_namespace
+    echo "Namespace not specified. Use -n or --namespace to specify the namespace."
+    return 1
+  end
+  
+  if not set -q _flag_secret
+    echo "Secret name not specified. Use -s or --secret to specify the namespace."
+    return 1
+  end
+
+  kubectl -n "$_flag_namespace" get secret "$_flag_secret"  \
+    -o go-template='{{range $k,$v := .data}}{{"### "}}{{$k}}{{"\n"}}{{$v|base64decode}}{{"\n\n"}}{{end}}' \
+    2>/dev/null
+end
+
+function select-k8s-namespace
+    set -l available_namespaces (get-k8s-namespaces)
+    echo $available_namespaces
+    echo "Please choose a namespace:"
+    for index in (seq (count $available_namespaces))
+      echo "$index. $available_namespaces[$index]"
+    end
+    echo "Pick a number: "
+    read choice
+
+    if test "$choice" -gt 0 -a "$choice" -le (count $available_namespaces)
+      set selected_namespace $available_namespaces[$choice]
+      echo $selected_namespace
+    else
+      echo "Invalid choice. Please try again."
+    end
+end
+
+function select-k8s-secret
+  argparse 'n/namespace=' -- $argv
+  or return
+  
+  if set -q _flag_namespace
+    set ns $_flag_namespace
+    echo "Showing secrets in: $ns"
+    set -l available_secrets (get-k8s-secret-names -n $ns)
+    echo $available_secrets
+    echo "Please choose a secret:"
+
+    for index in (seq (count $available_secrets))
+      echo "$index. $available_secrets[$index]"
+    end
+    read choice
+
+    if test "$choice" -gt 0 -a "$choice" -le (count $available_secrets)
+      set selected_secret $available_secrets[$choice]
+      echo $selected_secret
+    else
+      echo "Invalid choice. Please try again."
+      return 1
+    end
+  else
+    echo "You need to pass a namespace with -n or --namespace=, please try again."
+    return 1
+  end
+end
+
+function show-k8s-secrets
+  argparse 'h/help' 'n/namespace=' -- $argv
+  or return
+  
+  if set -q _flag_help
+    echo "Usage: show-k8s-secrets [-h|--help] [-n|--namespace NAMESPACE]"
+    echo "Options:"
+    echo "  -h, --help             Show this help message and exit"
+    echo "  -n, --namespace        Specify the namespace to show secrets for"
+    return
+  end
+ 
+  if set -q _flag_namespace
+    set -l selected_namespace $_flag_namespace 
+    set -l selected_secret (select-k8s-secret -n $selected_namespace)
+  else
+    set -l selected_namespace (select-k8s-namespace)
+  end
+
+  get-k8s-secrets-in-namespace -n $_flag_namespace -s $selected_secret
+end
+
 set -x FZF_DEFAULT_OPTS "--height 50% --reverse --preview 'bat --style=numbers --color=always --line-range :500 {}'"
 set -x FZF_DEFAULT_COMMAND "rg --files"
 

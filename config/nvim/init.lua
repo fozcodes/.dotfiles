@@ -551,7 +551,7 @@ require("lazy").setup({
             Error = "✖ ",
             Warning = " ",
             Warn = " ",
-            Hint = " ",
+            Hint = " ",
             Information = " ",
           }
 
@@ -734,7 +734,6 @@ require("lazy").setup({
         -- gopls = {},
         -- pylsp = {},
         pyright = {
-
           before_init = function(_, config)
             config.settings.python.pythonPath = get_python_path(config.root_dir)
           end,
@@ -835,6 +834,16 @@ require("lazy").setup({
 
         elixirls = {
           settings = { elixirLS = { suggestSpecs = true, enableTestLenses = true } },
+        },
+        yamlls = {
+          settings = {
+            yaml = {
+              schemas = {
+                ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "**/workflow/*",
+                ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+              },
+            },
+          },
         },
       }
 
@@ -1189,6 +1198,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>ew", ":call WindowSwap#EasyWindowSwap()<CR>", { desc = "Swap window" })
     end,
   },
+  "tpope/vim-obsession",
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
