@@ -25,7 +25,6 @@
    \ \_\ \_\ \____/      \ \____/\ \_____\ \____/\ `\____\/\_\
     \/_/\/_/\/___/        \/___/  \/_____/\/___/  \/_____/\/_/
 ]]
-
 -- FIND MY LSP LOG {{{
 -- Uncomment the prints and start nvim to find the goddam LSP logfile again. Cause it ain't where you think!
 -- vim.g.lua_lsp_log_file = os.getenv "HOME" .. "/.cache/nvim/lsp.log"
@@ -38,6 +37,11 @@
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 -- }}}
+
+vim.opt.title = true
+vim.opt.titlestring = "nvim"
+vim.opt.lazyredraw = false
+
 -- Layout, Numbers, Clipboard, Tabs, Visual stuff, etc {{{
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
@@ -177,16 +181,26 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 -- }}}
-
--- [[ Basic Keymaps ]]
+-- Basic Keymaps {{{
 --  See `:help vim.keymap.set()`
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
+local function diagnostic_hover()
+  local opts = {
+    focusable = true, -- Allows you to focus and enter the window
+    style = "minimal",
+    border = "rounded",
+    source = "always",
+    header = "",
+    prefix = "",
+  }
+  vim.diagnostic.open_float(nil, opts)
+end
 
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic [E]rror messages" })
+vim.keymap.set("n", "H", diagnostic_hover, { desc = "Show diagnostic [E]rror messages" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -196,7 +210,7 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-
+-- }}}
 -- Folding {{{
 vim.opt.foldenable = true
 vim.opt.foldnestmax = 10
@@ -255,8 +269,21 @@ require("lazy").setup({
 
   -- "gc" to comment visual regions/lines
   { "numToStr/Comment.nvim", opts = {} },
+  {
+    "christoomey/vim-tmux-navigator",
+    lazy = false,
+    config = function()
+      vim.g.tmux_navigator_no_mappings = 1 -- Disable default mappings
+      -- Set the keybindings directly here to avoid lazy loading
+      vim.api.nvim_set_keymap("n", "<C-h>", ":TmuxNavigateLeft<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "<C-j>", ":TmuxNavigateDown<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "<C-k>", ":TmuxNavigateUp<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "<C-l>", ":TmuxNavigateRight<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "<C-\\>", ":TmuxNavigatePrevious<CR>", { noremap = true, silent = true })
+    end,
+  },
 
-  "christoomey/vim-tmux-navigator",
+  -- "christoomey/vim-tmux-navigator",
   "roman/golden-ratio",
   -- "mhinz/vim-startify",
   "easymotion/vim-easymotion",
@@ -620,6 +647,12 @@ require("lazy").setup({
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
           map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+
+          -- Can't do these inside LSP attach
+          -- map("[d", vim.diagnostic.goto_prev, "Go to previous [D]iagnostic message")
+          -- map("]d", vim.diagnostic.goto_nex, "Go to next [D]iagnostic message")
+          -- map("<leader>E", vim.diagnostic.open_float, "Show diagnostic [E]rror messages")
+          -- map("<leader>q", vim.diagnostic.setloclist, "Open diagnostic [Q]uickfix list")
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
