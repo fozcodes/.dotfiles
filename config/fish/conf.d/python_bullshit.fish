@@ -1,12 +1,14 @@
-####### PYTHON #######
+####### PYTHON BULLSHIT #######
 set brew_zlib (brew --prefix zlib)
 set brew_xz (brew --prefix xz)
 set brew_readline (brew --prefix readline)
 set brew_bzip2 (brew --prefix bzip2)
-set brew_openssl (brew --prefix openssl@1.1)
+# set brew_openssl (brew --prefix openssl@3)
+set brew_openssl (brew --prefix libressl)
 set brew_libffi (brew --prefix libffi)
 set brew_sqlite (brew --prefix sqlite)
 set brew_libomp (brew --prefix libomp)
+set brew_gcc (brew --prefix gcc)
 
 if set -q USE_LEGACY_BREW
   echo "Setting the LDFLAGS and CPPFLAGS using legacy brew..."
@@ -33,6 +35,7 @@ set -x LDFLAGS "-L$brew_openssl/lib $LDFLAGS"
 set -x LDFLAGS "-L$brew_libffi/lib $LDFLAGS"
 set -x LDFLAGS "-L$brew_sqlite/lib $LDFLAGS"
 set -x LDFLAGS "-L$brew_libomp/lib $LDFLAGS"
+set -x LDFLAGS "-L$OPENBLAS/lib $LDFLAGS"
 
 set -x CPPFLAGS "-I$brew_zlib/include \
 -I$brew_xz/include \
@@ -41,10 +44,23 @@ set -x CPPFLAGS "-I$brew_zlib/include \
 -I$brew_openssl/include \
 -I$brew_sqlite/include \
 -I$brew_libomp/include \
--I$brew_libffi/include"
+-I$brew_libffi/include" 
 
 set -x PKG_CONFIG_PATH "$brew_zlib/lib/pkgconfig $PKG_CONFIG_PATH"
 set -x PKG_CONFIG_PATH "$brew_sqlite/lib/pkgconfig $PKG_CONFIG_PATH"
+
+# I removed these because they were causing problems with installing DNL and node-gyp
+# set -x CC "$brew_gcc/bin/gcc-14"
+# set -x CXX "$brew_gcc/bin/g++-14"
+
+set -x CFLAGS "-falign-functions=8 $CFLAGS"
+set -x CFLAGS "-I$(brew --prefix openblas)/include -O $CFLAGS"
+
+set -x FFLAGS "-fallow-argument-mismatch"
+
+set -x NPY_LAPACK_ORDER $OPENBLAS
+set -x NPY_BLAS_ORDER $OPENBLAS
+
 
 # search for a activate.fish file UP THE DIRECTORY TREE, starting from the current folder.
 # if found, execute it.
