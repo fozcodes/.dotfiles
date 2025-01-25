@@ -10,6 +10,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 set PATH /usr/local/opt/make/libexec/gnubin $PATH
 set PATH /usr/local/opt/findutils/libexec/gnubin $PATH
+set PATH /opt/homebrew/opt/postgresql@14/bin $PATH
 
 set BREW_HOME (brew --prefix)
 
@@ -94,6 +95,7 @@ function save_your_damn_notes
   cd ~/Code/notes 
   git add .
   git commit -m "autosaving..."
+  git pull --rebase 
   git push origin master
 end
 
