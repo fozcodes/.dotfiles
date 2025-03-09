@@ -1,0 +1,6 @@
+[user]
+name = "Ian Fosbery"
+email = "ian.fosbery@paramount.com"
+
+[ui]
+editor = "nvim"
