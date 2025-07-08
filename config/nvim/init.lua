@@ -27,10 +27,12 @@
 ]]
 -- FIND MY LSP LOG {{{
 -- Uncomment the prints and start nvim to find the goddam LSP logfile again. Cause it ain't where you think!
+--
 -- vim.g.lua_lsp_log_file = os.getenv "HOME" .. "/.cache/nvim/lsp.log"
 -- print "THIS IS THE LOG PATH"
 -- print(vim.lsp.get_log_path())
 -- vim.lsp.set_log_level "debug"
+--
 -- }}}
 -- Leader key {{{
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -338,11 +340,16 @@ require("lazy").setup({
 
       -- Document existing key chains
       require("which-key").register {
-        ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-        ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-        ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-        ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-        ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
+        { "<leader>c", group = "[C]ode" },
+        { "<leader>c_", hidden = true },
+        { "<leader>d", group = "[D]ocument" },
+        { "<leader>d_", hidden = true },
+        { "<leader>r", group = "[R]ename" },
+        { "<leader>r_", hidden = true },
+        { "<leader>s", group = "[S]earch" },
+        { "<leader>s_", hidden = true },
+        { "<leader>w", group = "[W]orkspace" },
+        { "<leader>w_", hidden = true },
       }
     end,
   },
@@ -534,6 +541,41 @@ require("lazy").setup({
       { "folke/neodev.nvim", opts = {} },
     },
     config = function()
+      local lspconfig = require "lspconfig"
+
+      lspconfig.lua_ls.setup {
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+          },
+        },
+      }
+
+      local signs = { Error = "✖", Warn = "", Hint = "", Info = "" }
+      for type, icon in pairs(signs) do
+        local hl = "DiagnosticSign" .. type
+        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+      end
+
+      vim.diagnostic.config {
+        signs = true, -- enable showing signs
+      }
+
+      vim.diagnostic.config {
+        signs = {
+          text = {
+            Error = "✖ ",
+            -- Warning = " ",
+            Warn = " ",
+            Hint = " ",
+            -- Information = " ",
+            Info = " ",
+          },
+        },
+      }
+
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -574,18 +616,19 @@ require("lazy").setup({
           local map = function(keys, func, desc)
             vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
           end
-          local signs = {
-            Error = "✖ ",
-            Warning = " ",
-            Warn = " ",
-            Hint = " ",
-            Information = " ",
-          }
 
-          for type, icon in pairs(signs) do
-            local hl = "DiagnosticSign" .. type
-            vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-          end
+          -- local signs = {
+          --   Error = "✖ ",
+          --   Warning = " ",
+          --   Warn = " ",
+          --   Hint = " ",
+          --   Information = " ",
+          -- }
+          --
+          -- for type, icon in pairs(signs) do
+          --   local hl = "DiagnosticSign" .. type
+          --   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+          -- end
 
           vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
             border = "rounded",
@@ -661,6 +704,15 @@ require("lazy").setup({
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if client and client.server_capabilities.documentHighlightProvider then
+            vim.api.nvim_create_autocmd("LspDetach", {
+              callback = function(args)
+                vim.api.nvim_clear_autocmds {
+                  buffer = args.buf,
+                  event = { "CursorHold", "CursorHoldI", "CursorMoved", "CursorMovedI" },
+                }
+              end,
+            })
+
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
               buffer = event.buf,
               callback = vim.lsp.buf.document_highlight,
