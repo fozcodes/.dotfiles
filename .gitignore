@@ -6,3 +6,5 @@ tmux/resurrect/last
 tmux-*.log
 
 config/fish/conf.d/paramount.fish
+
+gitconfig.private
