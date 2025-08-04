@@ -553,29 +553,6 @@ require("lazy").setup({
         },
       }
 
-      local signs = { Error = "✖", Warn = "", Hint = "", Info = "" }
-      for type, icon in pairs(signs) do
-        local hl = "DiagnosticSign" .. type
-        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-      end
-
-      vim.diagnostic.config {
-        signs = true, -- enable showing signs
-      }
-
-      vim.diagnostic.config {
-        signs = {
-          text = {
-            Error = "✖ ",
-            -- Warning = " ",
-            Warn = " ",
-            Hint = " ",
-            -- Information = " ",
-            Info = " ",
-          },
-        },
-      }
-
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -617,18 +594,15 @@ require("lazy").setup({
             vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
           end
 
-          -- local signs = {
-          --   Error = "✖ ",
-          --   Warning = " ",
-          --   Warn = " ",
-          --   Hint = " ",
-          --   Information = " ",
-          -- }
-          --
-          -- for type, icon in pairs(signs) do
-          --   local hl = "DiagnosticSign" .. type
-          --   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-          -- end
+          local signs = { Error = "✖", Warn = "", Hint = "", Info = "" }
+          for type, icon in pairs(signs) do
+            local hl = "DiagnosticSign" .. type
+            vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+          end
+
+          vim.diagnostic.config {
+            signs = true, -- enable showing signs
+          }
 
           vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
             border = "rounded",
@@ -733,6 +707,14 @@ require("lazy").setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
+      local original_handler = vim.lsp.handlers["textDocument/publishDiagnostics"]
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+        if err then
+          vim.notify("LSP diagnostics error: " .. vim.inspect(err))
+        end
+        return original_handler(err, result, ctx, config)
+      end
+
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -770,6 +752,8 @@ require("lazy").setup({
         local path = util.path
         -- Use activated virtualenv.
         if vim.env.VIRTUAL_ENV then
+          local resolved = path.join(vim.env.VIRTUAL_ENV, "bin", command)
+          vim.lsp.log.info("Using VIRTUAL_ENV path: " .. resolved)
           return path.join(vim.env.VIRTUAL_ENV, "bin", command)
         end
 
@@ -777,6 +761,8 @@ require("lazy").setup({
         for _, pattern in ipairs { "*", ".*" } do
           local match = vim.fn.glob(path.join(workspace, pattern, "pyvenv.cfg"))
           if match ~= "" then
+            local resolved = path.join(path.dirname(match), "bin", command)
+            vim.lsp.log.info("Using workspace venv path: " .. resolved)
             return path.join(path.dirname(match), "bin", command)
           end
         end
@@ -800,7 +786,7 @@ require("lazy").setup({
         "helm.yaml",
         "html",
         "javascript",
-        "javascript.jsx",
+        "javascriptreact",
         "json",
         "jsx",
         "lua",
@@ -832,6 +818,13 @@ require("lazy").setup({
           },
         },
         efm = {
+          cmd = {
+            "efm-langserver",
+            "-logfile",
+            "/tmp/efm.log",
+            "-loglevel",
+            "10",
+          },
           init_options = { documentFormatting = true, codeAction = true },
           before_init = function(_, config)
             config.settings.languages.python = {
@@ -855,7 +848,7 @@ require("lazy").setup({
                 formatStdin = true,
               },
               {
-                formatCommand = get_python_command_path(config.root_dir, "black") .. " --quiet -",
+                formatCommand = get_python_command_path(config.root_dir, "black") .. " --quiet --stdin-filename ${INPUT} -",
                 formatStdin = true,
               },
             }
@@ -863,7 +856,7 @@ require("lazy").setup({
           filetypes = efm_filetypes,
           settings = {
             rootMarkers = { ".git/" },
-            lintDebounce = "0.3s",
+            lintDebounce = "2s",
             languages = {
               elixir = {
                 {
@@ -899,7 +892,7 @@ require("lazy").setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        tsserver = {},
+        ts_ls = {},
         --
 
         lua_ls = {
@@ -951,15 +944,22 @@ require("lazy").setup({
       require("mason-lspconfig").setup {
         handlers = {
           function(server_name)
+            if server_name == "efm" then
+              -- Skip EFM here - we'll handle it separately
+              return
+            end
+
             local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
             require("lspconfig")[server_name].setup(server)
           end,
         },
       }
+
+      -- Setup EFM manually with your full config
+      local efm_config = servers.efm or {}
+      efm_config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, efm_config.capabilities or {})
+      require("lspconfig").efm.setup(efm_config)
     end,
   },
 
@@ -991,7 +991,7 @@ require("lazy").setup({
       formatters_by_ft = {
         lua = { "stylua" },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { "isort", "black" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
