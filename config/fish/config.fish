@@ -11,6 +11,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 set PATH /usr/local/opt/make/libexec/gnubin $PATH
 set PATH /usr/local/opt/findutils/libexec/gnubin $PATH
 set PATH /opt/homebrew/opt/postgresql@14/bin $PATH
+set PATH ~/.rd/bin $PATH
 
 set BREW_HOME (brew --prefix)
 
@@ -32,7 +33,7 @@ alias c="clear"
 alias dkrmall="docker rm (docker ps -a -q)"
 alias gaac="git add .; and git commit"
 alias gitcleanbranchesmaster="git branch --merged | grep -v master | xargs git branch -D"
-alias gitcleanbranches="git branch --merged | grep -v main | xargs git branch -D"
+alias gitcleanbranches="git branch --merged | rg -v main | xargs git branch -D"
 alias gitreallycleanbranches="git branch | grep -v 'main' | xargs git branch -D"
 alias grb="git rebase -i origin/main"
 alias grbmaster="git rebase -i origin/master"
@@ -46,6 +47,8 @@ alias rst="touch tmp/restart.txt"
 alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias tl="tmux ls"
 alias nvimold='NVIM_APPNAME="nvim-old" nvim'
+
+
 function nvim
     env SHELL=/bin/bash command nvim $argv
 end
