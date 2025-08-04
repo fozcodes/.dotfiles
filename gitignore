@@ -4,6 +4,7 @@
 *tags
 .elasticbeanstalk/
 .env.*
+!.env.example
 !.env.*.example
 .elixir_ls/
 

@@ -32,4 +32,13 @@
 [init]
   defaultBranch = main
 [hub]
-	protocol = ssh
+  protocol = ssh
+[credential]
+  helper = osxkeychain
+[user]
+  name = fozcodes
+  email = ian.fosbery@paramount.com
+[include]
+    path = ~/.gitconfig.private
+[url "git@github.com:"]
+  insteadOf = https://github.com/
