@@ -100,6 +100,7 @@ function save_your_damn_notes
   git commit -m "autosaving..."
   git pull --rebase 
   git push origin master
+  git push origin main
 end
 
 function get-k8s-namespaces
