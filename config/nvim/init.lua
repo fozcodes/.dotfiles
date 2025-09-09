@@ -510,6 +510,10 @@ require("lazy").setup({
       "Xuyuanp/nerdtree-git-plugin",
       "vwxyutarooo/nerdtree-devicons-syntax",
     },
+    init = function()
+      vim.g.NERDTreeMapJumpNextSibling = ""
+      vim.g.NERDTreeMapJumpPrevSibling = ""
+    end,
     config = function()
       vim.g.NERDTreeShutUp = 1
       vim.g.NERDTreeShowHidden = 1
