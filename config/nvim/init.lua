@@ -337,20 +337,6 @@ require("lazy").setup({
     event = "VimEnter", -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
       require("which-key").setup()
-
-      -- Document existing key chains
-      require("which-key").register {
-        { "<leader>c", group = "[C]ode" },
-        { "<leader>c_", hidden = true },
-        { "<leader>d", group = "[D]ocument" },
-        { "<leader>d_", hidden = true },
-        { "<leader>r", group = "[R]ename" },
-        { "<leader>r_", hidden = true },
-        { "<leader>s", group = "[S]earch" },
-        { "<leader>s_", hidden = true },
-        { "<leader>w", group = "[W]orkspace" },
-        { "<leader>w_", hidden = true },
-      }
     end,
   },
 
@@ -598,14 +584,15 @@ require("lazy").setup({
             vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
           end
 
-          local signs = { Error = "✖", Warn = "", Hint = "", Info = "" }
-          for type, icon in pairs(signs) do
-            local hl = "DiagnosticSign" .. type
-            vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-          end
-
           vim.diagnostic.config {
-            signs = true, -- enable showing signs
+            signs = {
+              text = {
+                [vim.diagnostic.severity.ERROR] = "",
+                [vim.diagnostic.severity.WARN] = "",
+                [vim.diagnostic.severity.INFO] = "󰋼",
+                [vim.diagnostic.severity.HINT] = "󰌵",
+              },
+            },
           }
 
           vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
