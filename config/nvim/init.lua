@@ -533,9 +533,7 @@ require("lazy").setup({
       { "folke/neodev.nvim", opts = {} },
     },
     config = function()
-      local lspconfig = require "lspconfig"
-
-      lspconfig.lua_ls.setup {
+      vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
             diagnostics = {
@@ -543,7 +541,7 @@ require("lazy").setup({
             },
           },
         },
-      }
+      })
 
       -- Brief aside: **What is LSP?**
       --
@@ -952,7 +950,8 @@ require("lazy").setup({
       -- Setup EFM manually with your full config
       local efm_config = servers.efm or {}
       efm_config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, efm_config.capabilities or {})
-      require("lspconfig").efm.setup(efm_config)
+
+      vim.lsp.config("efm", efm_config)
     end,
   },
 
