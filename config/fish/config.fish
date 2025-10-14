@@ -10,6 +10,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 set PATH /usr/local/opt/make/libexec/gnubin $PATH
 set PATH /usr/local/opt/findutils/libexec/gnubin $PATH
+set PATH ~/.local/bin $PATH
 set PATH /opt/homebrew/opt/postgresql@14/bin $PATH
 set PATH ~/.rd/bin $PATH
 

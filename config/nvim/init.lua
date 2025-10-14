@@ -902,7 +902,11 @@ require("lazy").setup({
         },
 
         elixirls = {
-          settings = { elixirLS = { suggestSpecs = true, enableTestLenses = true } },
+          settings = { elixirLS = {
+            dialyzerEnabled = true,
+            suggestSpecs = true,
+            enableTestLenses = true,
+          } },
         },
         yamlls = {
           settings = {
@@ -1176,7 +1180,7 @@ require("lazy").setup({
       local format_fortune = function(fortune, max_width)
         local wrapped_lines = {}
 
-        function wrap_line(line)
+        local function wrap_line(line)
           if #line <= max_width then
             return { line }
           end
@@ -1296,6 +1300,28 @@ require("lazy").setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
+  {
+    "ravitemer/mcphub.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    build = "npm install -g mcp-hub@latest", -- Installs `mcp-hub` node binary globally
+    config = function()
+      require("mcphub").setup {
+        config = vim.fn.expand "~/.config/mcphub/servers.json",
+        auto_approve = false, -- Auto approve mcp tool calls
+        auto_toggle_mcp_servers = true,
+      }
+    end,
+  },
+  {
+    "olimorris/codecompanion.nvim",
+    opts = {},
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
