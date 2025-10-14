@@ -2,5 +2,10 @@
   "useTabs": false,
   "keywordCase": "upper",
   "linesBetweenQueries": 2,
-  "dialect": "snowflake"
+  "language": "snowflake",
+  "logicalOperatorNewline": false,
+  "expressionWidth": 120,
+  "paramTypes": {
+    "custom": [{ "regex": "@?\\{\\{[a-zA-Z0-9_]+\\}\\}" }]
+  }
 }
