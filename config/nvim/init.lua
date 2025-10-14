@@ -48,6 +48,8 @@ vim.opt.lazyredraw = false
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
 
+vim.g.gitcommit_summary_length = 80
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
