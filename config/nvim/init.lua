@@ -533,9 +533,7 @@ require("lazy").setup({
       { "folke/neodev.nvim", opts = {} },
     },
     config = function()
-      local lspconfig = require "lspconfig"
-
-      lspconfig.lua_ls.setup {
+      vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
             diagnostics = {
@@ -543,7 +541,7 @@ require("lazy").setup({
             },
           },
         },
-      }
+      })
 
       -- Brief aside: **What is LSP?**
       --
@@ -904,7 +902,11 @@ require("lazy").setup({
         },
 
         elixirls = {
-          settings = { elixirLS = { suggestSpecs = true, enableTestLenses = true } },
+          settings = { elixirLS = {
+            dialyzerEnabled = true,
+            suggestSpecs = true,
+            enableTestLenses = true,
+          } },
         },
         yamlls = {
           settings = {
@@ -952,7 +954,8 @@ require("lazy").setup({
       -- Setup EFM manually with your full config
       local efm_config = servers.efm or {}
       efm_config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, efm_config.capabilities or {})
-      require("lspconfig").efm.setup(efm_config)
+
+      vim.lsp.config("efm", efm_config)
     end,
   },
 
@@ -1177,7 +1180,7 @@ require("lazy").setup({
       local format_fortune = function(fortune, max_width)
         local wrapped_lines = {}
 
-        function wrap_line(line)
+        local function wrap_line(line)
           if #line <= max_width then
             return { line }
           end
@@ -1297,6 +1300,20 @@ require("lazy").setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
+  {
+    "ravitemer/mcphub.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    build = "npm install -g mcp-hub@latest", -- Installs `mcp-hub` node binary globally
+    config = function()
+      require("mcphub").setup {
+        config = vim.fn.expand "~/.config/mcphub/servers.json",
+        auto_approve = false, -- Auto approve mcp tool calls
+        auto_toggle_mcp_servers = true,
+      }
+    end,
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
