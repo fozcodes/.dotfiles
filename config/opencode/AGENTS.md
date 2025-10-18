@@ -6,7 +6,6 @@
 - **Composition over Configuration**: Prefer composing small, reusable functions over large, monolithic classes or configurations.
 - **Simplicity**: Strive for the simplest solution that works. Avoid over-engineering.
 - **Testing**: Write tests for all new functionality. Use mocks and fixtures to isolate external dependencies.
-- **Documentation**: Document functions, classes, and modules with clear docstrings.
 - **Functional Programming**: Favor pure functions and immutability where possible. Avoid Object-Oriented Programming unless absolutely necessary.
 
 ## Typescript-specific guidelines
