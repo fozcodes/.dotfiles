@@ -913,12 +913,13 @@ require("lazy").setup({
         },
 
         elixirls = {
-          settings = { elixirLS = {
+          elixirLS = {
             dialyzerEnabled = true,
             suggestSpecs = true,
             enableTestLenses = true,
-          } },
+          },
         },
+
         yamlls = {
           settings = {
             yaml = {
@@ -930,6 +931,7 @@ require("lazy").setup({
           },
         },
         ["copilot-language-server"] = {},
+        jsonls = {},
       }
 
       -- Ensure the servers and tools above are installed
