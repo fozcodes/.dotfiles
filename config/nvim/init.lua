@@ -930,7 +930,7 @@ require("lazy").setup({
             },
           },
         },
-        json = {},
+        jsonls = {},
       }
 
       -- Ensure the servers and tools above are installed
