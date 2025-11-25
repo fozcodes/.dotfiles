@@ -55,3 +55,12 @@ function unset-aws-creds
   set -e AWS_SECRET_ACCESS_KEY
   set -e AWS_SESSION_TOKEN 
 end
+
+function reformat-rsa-key-from-aws-command
+    jq '.SecretString | fromjson' | format-rsa-key-in-json | jq 'tojson'
+end
+
+function format-rsa-key-in-json
+  jq '.private_key |= (. | (. | [scan(".{1,64}")] | join("\n")) as $wrapped | "-----BEGIN ENCRYPTED PRIVATE KEY-----\n\($wrapped)\n-----END ENCRYPTED PRIVATE KEY-----" | gsub("\n"; "\\n"))'
+end
+
