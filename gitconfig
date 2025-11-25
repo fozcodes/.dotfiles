@@ -1,8 +1,11 @@
 [color]
   ui = true
 [user]
-  email = ian.fosbery@reaktor.com
-	name = fozcodes
+  email = ian@codeguy.io
+  name = fozcodes
+[user]
+  name = fozcodes
+  email = ian.fosbery@paramount.com
 [core]
   editor = nvim
   autocrlf = input
@@ -35,9 +38,6 @@
   protocol = ssh
 [credential]
   helper = osxkeychain
-[user]
-  name = fozcodes
-  email = ian.fosbery@paramount.com
 [include]
     path = ~/.gitconfig.private
 [url "git@github.com:"]

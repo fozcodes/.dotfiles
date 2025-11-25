@@ -131,6 +131,7 @@ vim.filetype.add {
   extension = {
     log = "log",
     conf = "conf",
+    eex = "heex",
   },
   -- Detect and apply filetypes based on the entire filename
   filename = {
@@ -160,7 +161,7 @@ end
 
 -- Remove trailing whitespaces and ^M chars for specified filetypes
 local filetypes =
-  "c,cpp,css,eelixir,elixir,groovy,heex,html,java,go,leex,liquid,lua,markdown,markdown.spec,php,purescript,javascript,jsx,json,pine,puppet,psl,python,rust,ruby,scss,sh,stylus,twig,xml,yml,perl,sql,md,ts,typescript,terraform,vcl,yml,yaml"
+  "c,cpp,css,eelixir,eex,elixir,groovy,heex,html,java,go,leex,liquid,lua,markdown,markdown.spec,php,purescript,javascript,jsx,json,pine,puppet,psl,python,rust,ruby,scss,sh,stylus,twig,xml,yml,perl,sql,md,ts,typescript,terraform,vcl,yml,yaml"
 vim.api.nvim_create_autocmd("FileType", {
   pattern = vim.split(filetypes, ","),
   callback = function()
@@ -175,13 +176,20 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- Setting expandtab, shiftwidth, and softtabstop for specific file types
-local expand_filetypes = "haskell,puppet,purs,ruby,yml,javascript,elixir"
+local expand_filetypes = "haskell,puppet,purs,ruby,yml,javascript,elixir,eex"
 vim.api.nvim_create_autocmd("FileType", {
   pattern = vim.split(expand_filetypes, ","),
   callback = function()
     vim.opt_local.expandtab = true
     vim.opt_local.shiftwidth = 2
     vim.opt_local.softtabstop = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.textwidth = 80
   end,
 })
 -- }}}
@@ -794,6 +802,7 @@ require("lazy").setup({
       }
 
       local prettier_format_command = { formatCommand = "prettierd ${INPUT}", formatStdin = true }
+      local prettier_format_command_higher_line_length = { formatCommand = "prettierd --print-width 160 ${INPUT}", formatStdin = true }
 
       local efm_filetypes = {
         "css",
@@ -895,7 +904,7 @@ require("lazy").setup({
               yaml = { prettier_format_command },
               html = { prettier_format_command },
               scss = { prettier_format_command },
-              css = { prettier_format_command },
+              css = { prettier_format_command_higher_line_length },
               graphql = { prettier_format_command },
               markdown = { prettier_format_command },
               terraform = { { formatCommand = "terraform fmt -", formatStdin = true } },
@@ -1273,7 +1282,7 @@ require("lazy").setup({
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     opts = {
-      ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
+      ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc", "eex", "heex" },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1329,20 +1338,6 @@ require("lazy").setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
-  {
-    "ravitemer/mcphub.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    build = "npm install -g mcp-hub@latest", -- Installs `mcp-hub` node binary globally
-    config = function()
-      require("mcphub").setup {
-        config = vim.fn.expand "~/.config/mcphub/servers.json",
-        auto_approve = false, -- Auto approve mcp tool calls
-        auto_toggle_mcp_servers = true,
-      }
-    end,
-  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
