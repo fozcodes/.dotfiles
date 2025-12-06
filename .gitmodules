@@ -16,3 +16,6 @@
 [submodule "tmux/plugins/extrakto"]
 	path = tmux/plugins/extrakto
 	url = https://github.com/laktak/extrakto
+[submodule "config/ghostty/shaders"]
+	path = config/ghostty/shaders
+	url = git@github.com:KroneCorylus/ghostty-shader-playground.git
