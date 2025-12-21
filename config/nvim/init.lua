@@ -954,7 +954,6 @@ require("lazy").setup({
             },
           },
         },
-        ["copilot-language-server"] = {},
         jsonls = {},
       }
 
