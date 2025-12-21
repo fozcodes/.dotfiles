@@ -480,7 +480,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>sG", function()
         builtin.live_grep {
           additional_args = function()
-            return { "--no-ignore" }
+            return { "-uuu" }
           end,
         }
       end, { desc = "[S]earch by [g]rep (no ignore)" })
