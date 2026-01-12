@@ -39,7 +39,6 @@
 vim.g.mapleader = ","
 vim.g.maplocalleader = ","
 -- }}}
-
 vim.opt.title = true
 vim.opt.titlestring = "nvim"
 vim.opt.lazyredraw = false
@@ -205,6 +204,10 @@ local function diagnostic_hover()
     source = "always",
     header = "",
     prefix = "",
+    colors = {
+      border = "Normal",
+      background = "Normal",
+    },
   }
   vim.diagnostic.open_float(nil, opts)
 end
@@ -294,13 +297,60 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("n", "<C-\\>", ":TmuxNavigatePrevious<CR>", { noremap = true, silent = true })
     end,
   },
-
-  -- "christoomey/vim-tmux-navigator",
   "roman/golden-ratio",
-  -- "mhinz/vim-startify",
   "easymotion/vim-easymotion",
   "mechatroner/rainbow_csv",
   "github/copilot.vim",
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      lsp = {
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+          ["cmp.entry.get_documentation"] = true,
+        },
+      },
+      routes = {
+        {
+          filter = {
+            event = "msg_show",
+            any = {
+              { find = "%d+L, %d+B" },
+              { find = "; after #%d+" },
+              { find = "; before #%d+" },
+            },
+          },
+          view = "mini",
+        },
+      },
+      presets = {
+        command_palette = true,
+        long_message_to_split = false,
+        lsp_doc_border = true,
+      },
+    },
+    -- stylua: ignore
+    keys = {
+      { "<leader>sn", "", desc = "+noice"},
+      { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
+      { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
+      { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
+      { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
+      { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
+      { "<leader>snt", function() require("noice").cmd("pick") end, desc = "Noice Picker (Telescope/FzfLua)" },
+    },
+    config = function(_, opts)
+      -- HACK: noice shows messages from before it was enabled,
+      -- but this is not ideal when Lazy is installing plugins,
+      -- so clear the messages in this case.
+      if vim.o.filetype == "lazy" then
+        vim.cmd [[messages clear]]
+      end
+      require("noice").setup(opts)
+    end,
+  },
   {
     "rubiin/fortune.nvim",
     config = function()
@@ -1145,39 +1195,49 @@ require("lazy").setup({
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     "EdenEast/nightfox.nvim",
     priority = 1000, -- Make sure to load this before all the other start plugins.
-    opts = {
-      fox = "dayfox",
-      transparent = true,
-      italic_keywords = true,
-      terminal_colors = true,
-      styles = {
-        functions = "italic,bold", -- styles can be a comma separated list
-      },
-      inverse = {
-        match_paren = true, -- inverse the highlighting of match_parens
-      },
-      colors = {
-        red = "#FFCCCB", -- Override the red color for MAX POWER
-      },
-    },
-    init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+    config = function()
+      require("nightfox").setup {
+        options = {
+          transparent = false,
+          terminal_colors = true,
+          inverse = {
+            match_paren = true,
+          },
+          styles = {
+            comments = "italic",
+            keywords = "bold",
+            functions = "bold",
+          },
+        },
+        palettes = {
+          all = {
+            red = "#FFCCCB",
+          },
+        },
+      }
       vim.cmd.colorscheme "nordfox"
 
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi "Comment gui=none"
+      -- Force italic highlights after colorscheme loads
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "*",
+        callback = function()
+          vim.api.nvim_set_hl(0, "Comment", { italic = true })
+          vim.api.nvim_set_hl(0, "Keyword", { italic = true })
+          vim.api.nvim_set_hl(0, "@comment", { italic = true, link = "Comment" })
+          vim.api.nvim_set_hl(0, "@keyword", { italic = true })
+        end,
+      })
     end,
   },
 
   -- Highlight todo, notes, etc in comments
-  {
-    "folke/todo-comments.nvim",
-    event = "VimEnter",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = { signs = false },
-  },
+  -- TEMPORARILY DISABLED TO TEST ITALICS
+  -- {
+  --   "folke/todo-comments.nvim",
+  --   event = "VimEnter",
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  --   opts = { signs = false },
+  -- },
 
   { -- Collection of various small independent plugins/modules
     "echasnovski/mini.nvim",

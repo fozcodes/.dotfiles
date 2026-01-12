@@ -1,6 +1,10 @@
 window-padding-x = 20
 window-padding-y = 20
-font-family = "Iosevka Term Slab Light Extended"
+
+font-family = "Victor Mono"
+#font-family-bold = "Victor Mono Bold"
+#font-family-italic = "Victor Mono Italic"
+#font-family-bold-italic = "Victor Mono Bold Italic"
 
 #custom-shader = shaders/spotlight.glsl
 
