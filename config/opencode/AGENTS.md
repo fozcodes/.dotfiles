@@ -14,9 +14,11 @@
 - **ALWAYS** Make sure `noUncheckedIndexedAccess` is enabled in `tsconfig.json`. If it isn't, fix it, and let me know.
 - Don't specify return types. You're not smarter than the compiler.
 - Don't use OOP. Use functional programming principles.
+- **NEVER** use `any`. If you don't know the type, use generics or `unknown`.
 
 ## Python-specific guidelines
 
-- Prefer to use Pydantic models and a functional programming approach to data transformations.
+- Prefer to use Pydantic models and a functional programming approach to all designs.
 - Avoid Pandas like the plague. Use it only when absolutely necessary - which is pretty much never.
-- Don't solve circular imports by using local imports; refactor and re-organize modules/folders instead.
+- **NEVER** solve circular imports by using local imports; refactor and re-organize modules/folders instead.
+- **NEVER** solve circular type imports using `if TYPE_CHECKING` imports; refactor and re-organize modules/folders instead.
