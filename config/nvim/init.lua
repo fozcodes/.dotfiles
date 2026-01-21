@@ -574,29 +574,19 @@ require("lazy").setup({
     end,
   },
   {
-    "preservim/nerdtree",
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
     dependencies = {
-      { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
-      "ryanoasis/vim-devicons",
-      "Xuyuanp/nerdtree-git-plugin",
-      "vwxyutarooo/nerdtree-devicons-syntax",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons", -- optional, but recommended
     },
-    init = function()
-      vim.g.NERDTreeMapJumpNextSibling = ""
-      vim.g.NERDTreeMapJumpPrevSibling = ""
-    end,
+    lazy = false, -- neo-tree will lazily load itself
     config = function()
-      vim.g.NERDTreeShutUp = 1
-      vim.g.NERDTreeShowHidden = 1
-      vim.g.NERDTreeMapJumpNextSibling = ""
-      vim.g.NERDTreeMapJumpPrevSibling = ""
-      vim.keymap.set("n", "<C-e>", ":NERDTreeToggle<CR>", { desc = "Toggle NERDTree" })
-      vim.NERDTreeShowBookmarks = 1
-      vim.NERDTreeIgnore = "['.py[cd]$', '~$', '.swo$', '.swp$', '^.git$', '^.hg$', '^.svn$', '.bzr$']"
-      vim.NERDTreeChDirMode = 0
-      vim.NERDTreeMouseMode = 0
-      vim.NERDTreeShowHidden = 1
-      vim.NERDTreeQuitOnOpen = 1
+      -- Set the keybindings directly here to avoid lazy loading
+      vim.api.nvim_set_keymap("n", "<C-e>", ":Neotree filesystem toggle left<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_hl(0, "NeoTreeNormal", { bg = "NONE" })
+      vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { bg = "NONE" })
     end,
   },
   { -- LSP Configuration & Plugins
