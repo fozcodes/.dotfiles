@@ -1222,12 +1222,16 @@ require("lazy").setup({
 
   -- Highlight todo, notes, etc in comments
   -- TEMPORARILY DISABLED TO TEST ITALICS
-  -- {
-  --   "folke/todo-comments.nvim",
-  --   event = "VimEnter",
-  --   dependencies = { "nvim-lua/plenary.nvim" },
-  --   opts = { signs = false },
-  -- },
+  {
+    "folke/todo-comments.nvim",
+    event = "VimEnter",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("todo-comments").setup { signs = false }
+      -- Set the keybindings directly here to avoid lazy loading
+      vim.api.nvim_set_keymap("n", "<leader>td", ":TodoTelescope<CR>", { noremap = true, silent = true })
+    end,
+  },
 
   { -- Collection of various small independent plugins/modules
     "echasnovski/mini.nvim",
@@ -1260,7 +1264,18 @@ require("lazy").setup({
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
-        return "%2l:%-2v"
+        local mode = vim.fn.mode()
+        local recording = vim.fn.reg_recording()
+        local recording_str = recording ~= "" and "󰑋 @" .. recording .. " " or ""
+
+        if mode:match "[vV\22]" then
+          local starts = vim.fn.line "v"
+          local ends = vim.fn.line "."
+          local lines = math.abs(ends - starts) + 1
+          return recording_str .. lines .. "L %2l:%-2v"
+        else
+          return recording_str .. "%2l:%-2v"
+        end
       end
 
       -- Function to wrap lines to a specified width using recursion
