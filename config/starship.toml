@@ -25,3 +25,7 @@ disabled = true
 full_symbol = '🔋 '
 charging_symbol = '⚡️ '
 discharging_symbol = '💀 '
+
+[time]
+disabled = false
+time_format = "%T"
