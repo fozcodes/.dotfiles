@@ -4,9 +4,13 @@
   "permission": {
     "edit": "ask",
     "bash": {
-      "*": "ask",
-      "git *": "ask",
+      "*": "allow",
+      "rm *": "ask",
+      "git push *": "ask",
+      "git commit *": "ask",
+      "git reset *": "ask",
       "terraform *": "ask",
+      "sed *": "ask",
     },
     "webfetch": "allow"
   },
