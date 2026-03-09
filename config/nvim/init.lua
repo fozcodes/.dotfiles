@@ -233,6 +233,18 @@ vim.opt.foldlevelstart = 10
 vim.opt.foldmethod = "indent"
 -- space open/closes folds
 vim.keymap.set("n", "<space>", "za", { desc = "Toggle Fold" })
+
+-- Toggle GitHub Copilot
+vim.keymap.set("n", "<leader>ai", function()
+  local status = vim.fn["copilot#Enabled"]()
+  if status == 1 then
+    vim.cmd("Copilot disable")
+    print("Copilot disabled")
+  else
+    vim.cmd("Copilot enable")
+    print("Copilot enabled")
+  end
+end, { desc = "Toggle Copilot" })
 -- }}}
 
 -- [[ Basic Autocommands ]]
