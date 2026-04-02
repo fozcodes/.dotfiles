@@ -238,11 +238,11 @@ vim.keymap.set("n", "<space>", "za", { desc = "Toggle Fold" })
 vim.keymap.set("n", "<leader>ai", function()
   local status = vim.fn["copilot#Enabled"]()
   if status == 1 then
-    vim.cmd("Copilot disable")
-    print("Copilot disabled")
+    vim.cmd "Copilot disable"
+    print "Copilot disabled"
   else
-    vim.cmd("Copilot enable")
-    print("Copilot enabled")
+    vim.cmd "Copilot enable"
+    print "Copilot enabled"
   end
 end, { desc = "Toggle Copilot" })
 -- }}}
@@ -703,7 +703,7 @@ require("lazy").setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+          map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [d]efinition")
 
           -- Find references for the word under your cursor.
           map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
