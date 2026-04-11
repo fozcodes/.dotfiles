@@ -1,8 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "system",
   "plugin": [
-    "opencode-claude-bridge@1.8.0"
+    "opencode-claude-bridge@1.8.0",
+    "superpowers@git+https://github.com/obra/superpowers.git"
   ],
   "permission": {
     "edit": "ask",

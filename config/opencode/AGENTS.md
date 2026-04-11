@@ -23,6 +23,14 @@
 - **NEVER** solve circular imports by using local imports; refactor and re-organize modules/folders instead.
 - **NEVER** solve circular type imports using `if TYPE_CHECKING` imports; refactor and re-organize modules/folders instead.
 
+### General best Python practices:
+
+- Avoid Object Oriented Programming; prefer functional programming with pure
+  functions. Use the Toolz library for functional utilities.
+- DO NOT NEST functions or create closure functions.
+- Avoid mutable state; prefer immutable data structures (tuples, frozensets).
+- Don't solve circular imports by using local imports; refactor and re-organize modules/folders instead
+
 ## Workflow Orchestration
 
 ### 1. Plan Node Default
@@ -82,4 +90,3 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 - _Simplicity First_: Make every change as simple as possible. Impact minimal code.
 - _No Laziness_: Find root causes. No temporary fixes. Senior developer standards.
 - _Minimat Impact_: Changes should only touch what's necessary. Avoid introducing bugs.
-
