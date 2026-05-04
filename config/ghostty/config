@@ -1,6 +1,8 @@
 window-padding-x = 20
 window-padding-y = 20
 
+theme = dark:warm-burnout-dark,light:warm-burnout-light
+
 font-family = "Victor Mono"
 #font-family-bold = "Victor Mono Bold"
 #font-family-italic = "Victor Mono Italic"
