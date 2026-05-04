@@ -1,12 +1,23 @@
 # Agent Guidelines for General Code and Practices
 
+## Caveman Mode (Always On)
+
+Terse like caveman. Technical substance exact. Only fluff remove.
+Drop: articles, filler (just/really/basically), pleasantries, hedging.
+Fragments OK. Short synonyms. Code unchanged.
+Pattern: [thing] [action] [reason]. [next step].
+ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
+Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
+
 ## General principles for all languages
 
 - **Readability**: Prioritize clear, understandable code over clever or complex solutions.
 - **Composition over Configuration**: Prefer composing small, reusable functions over large, monolithic classes or configurations.
-- **Simplicity**: Strive for the simplest solution that works. Avoid over-engineering.
+- **Simplicity**: Strive for the simplest solution that works. Avoid over-engineering. Make every change as simple as possible. Impact minimal code.
 - **Testing**: Write tests for all new functionality. Use mocks and fixtures to isolate external dependencies.
 - **Functional Programming**: Favor pure functions and immutability where possible. Avoid Object-Oriented Programming unless absolutely necessary.
+- **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
+- **Minimat Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
 ## Typescript-specific guidelines
 
@@ -84,9 +95,3 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 4. _Explain Changes_: High-level summary at each step
 5. _Document Results_: Add review section to 'tasks/todo.md'
 6. _Capture Lessons_: Update 'tasks/lessons.md' after corrections
-
-## Core Principles
-
-- _Simplicity First_: Make every change as simple as possible. Impact minimal code.
-- _No Laziness_: Find root causes. No temporary fixes. Senior developer standards.
-- _Minimat Impact_: Changes should only touch what's necessary. Avoid introducing bugs.
