@@ -241,3 +241,6 @@ source "$BREW_HOME/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.fish.i
 set -g -x "OPENCODE_CONFIG" "$HOME/Code/.opencode.jsonc"
 
 thefuck --alias | source
+
+# opencode
+fish_add_path /Users/ian.fosbery/.opencode/bin
