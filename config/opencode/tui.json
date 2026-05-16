@@ -4,8 +4,11 @@
   "keybinds": {
     "messages_line_up": "alt+k",
     "messages_line_down": "alt+j",
-    "messages_half_page_up": "ctrl+alt+k",
-    "messages_half_page_down": "ctrl+alt+j",
+    "messages_page_up": "ctrl+alt+k",
+    "messages_page_down": "ctrl+alt+j",
+    "messages_first": "ctrl+shift+j",
+    "messages_last": "ctrl+shift+k",
     "input_newline": "shift+return,ctrl+return,alt+return"
-  }
+  },
+  "mouse": false
 }

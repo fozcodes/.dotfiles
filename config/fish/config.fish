@@ -243,4 +243,4 @@ set -g -x "OPENCODE_CONFIG" "$HOME/Code/.opencode.jsonc"
 thefuck --alias | source
 
 # opencode
-fish_add_path /Users/foz/.opencode/bin
+fish_add_path ~/.opencode/bin

@@ -1238,6 +1238,15 @@ require("lazy").setup({
     config = function(plugin)
       vim.opt.rtp:append(plugin.dir .. "/nvim")
       vim.cmd.colorscheme "warm-burnout-dark"
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "*",
+        callback = function()
+          vim.api.nvim_set_hl(0, "Comment", { italic = true })
+          vim.api.nvim_set_hl(0, "Keyword", { italic = true })
+          vim.api.nvim_set_hl(0, "@comment", { italic = true, link = "Comment" })
+          vim.api.nvim_set_hl(0, "@keyword", { italic = true })
+        end,
+      })
     end,
   },
   -- Highlight todo, notes, etc in comments
