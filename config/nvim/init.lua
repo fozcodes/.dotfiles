@@ -1045,6 +1045,7 @@ require("lazy").setup({
       efm_config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, efm_config.capabilities or {})
 
       vim.lsp.config("efm", efm_config)
+      vim.lsp.enable "efm"
     end,
   },
 
