@@ -854,7 +854,7 @@ require("lazy").setup({
       }
 
       local prettier_format_command = { formatCommand = "prettierd ${INPUT}", formatStdin = true }
-      local prettier_format_command_higher_line_length = { formatCommand = "prettierd --print-width 160 ${INPUT}", formatStdin = true }
+      local prettier_format_command_higher_line_length = { formatCommand = "prettierd ${INPUT}", formatStdin = true }
 
       local efm_filetypes = {
         "css",
@@ -958,7 +958,7 @@ require("lazy").setup({
               scss = { prettier_format_command },
               css = { prettier_format_command_higher_line_length },
               graphql = { prettier_format_command },
-              markdown = { prettier_format_command },
+              markdown = { { formatCommand = "prettier --prose-wrap always --print-width 80 --stdin-filepath ${INPUT}", formatStdin = true } },
               terraform = { { formatCommand = "terraform fmt -", formatStdin = true } },
             },
           },
