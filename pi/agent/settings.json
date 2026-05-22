@@ -1,7 +1,13 @@
 {
-  "lastChangelogVersion": "0.74.0",
+  "lastChangelogVersion": "0.75.3",
+  "npmCommand": [
+    "/opt/homebrew/bin/npm"
+  ],
   "theme": "opencode-shade",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium"
+  "defaultThinkingLevel": "medium",
+  "packages": [
+    "npm:@juicesharp/rpiv-btw"
+  ]
 }
