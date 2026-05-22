@@ -1191,53 +1191,36 @@ require("lazy").setup({
     end,
   },
 
-  -- { -- You can easily change to a different colorscheme.
-  --   -- Change the name of the colorscheme plugin below, and then
-  --   -- change the command in the config to whatever the name of that colorscheme is.
-  --   --
-  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  --   "EdenEast/nightfox.nvim",
-  --   priority = 1000, -- Make sure to load this before all the other start plugins.
-  --   config = function()
-  --     require("nightfox").setup {
-  --       options = {
-  --         transparent = false,
-  --         terminal_colors = true,
-  --         inverse = {
-  --           match_paren = true,
-  --         },
-  --         styles = {
-  --           comments = "italic",
-  --           keywords = "bold",
-  --           functions = "bold",
-  --         },
-  --       },
-  --       palettes = {
-  --         all = {
-  --           red = "#FFCCCB",
-  --         },
-  --       },
-  --     }
-  --     vim.cmd.colorscheme "nordfox"
-  --
-  --     -- Force italic highlights after colorscheme loads
-  --     vim.api.nvim_create_autocmd("ColorScheme", {
-  --       pattern = "*",
-  --       callback = function()
-  --         vim.api.nvim_set_hl(0, "Comment", { italic = true })
-  --         vim.api.nvim_set_hl(0, "Keyword", { italic = true })
-  --         vim.api.nvim_set_hl(0, "@comment", { italic = true, link = "Comment" })
-  --         vim.api.nvim_set_hl(0, "@keyword", { italic = true })
-  --       end,
-  --     })
-  --   end,
-  -- },
-  {
-    "felipefdl/warm-burnout",
-    priority = 1000,
-    config = function(plugin)
-      vim.opt.rtp:append(plugin.dir .. "/nvim")
-      vim.cmd.colorscheme "warm-burnout-dark"
+  { -- You can easily change to a different colorscheme.
+    -- Change the name of the colorscheme plugin below, and then
+    -- change the command in the config to whatever the name of that colorscheme is.
+    --
+    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+    "EdenEast/nightfox.nvim",
+    priority = 1000, -- Make sure to load this before all the other start plugins.
+    config = function()
+      require("nightfox").setup {
+        options = {
+          transparent = false,
+          terminal_colors = true,
+          inverse = {
+            match_paren = true,
+          },
+          styles = {
+            comments = "italic",
+            keywords = "bold",
+            functions = "bold",
+          },
+        },
+        palettes = {
+          all = {
+            red = "#FFCCCB",
+          },
+        },
+      }
+      vim.cmd.colorscheme "nightfox"
+
+      -- Force italic highlights after colorscheme loads
       vim.api.nvim_create_autocmd("ColorScheme", {
         pattern = "*",
         callback = function()
@@ -1249,6 +1232,23 @@ require("lazy").setup({
       })
     end,
   },
+  -- {
+  --   "felipefdl/warm-burnout",
+  --   priority = 1000,
+  --   config = function(plugin)
+  --     vim.opt.rtp:append(plugin.dir .. "/nvim")
+  --     vim.cmd.colorscheme "warm-burnout-dark"
+  --     vim.api.nvim_create_autocmd("ColorScheme", {
+  --       pattern = "*",
+  --       callback = function()
+  --         vim.api.nvim_set_hl(0, "Comment", { italic = true })
+  --         vim.api.nvim_set_hl(0, "Keyword", { italic = true })
+  --         vim.api.nvim_set_hl(0, "@comment", { italic = true, link = "Comment" })
+  --         vim.api.nvim_set_hl(0, "@keyword", { italic = true })
+  --       end,
+  --     })
+  --   end,
+  -- },
   -- Highlight todo, notes, etc in comments
   -- TEMPORARILY DISABLED TO TEST ITALICS
   {
