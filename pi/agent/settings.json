@@ -4,8 +4,8 @@
     "/opt/homebrew/bin/npm"
   ],
   "theme": "opencode-shade",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultProvider": "opencode",
+  "defaultModel": "claude-sonnet-4",
   "defaultThinkingLevel": "medium",
   "packages": [
     "npm:@juicesharp/rpiv-btw"
