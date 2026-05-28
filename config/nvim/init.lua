@@ -800,22 +800,38 @@ require("lazy").setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      local function get_python_path(workspace)
+      local function get_python_venv(workspace)
         local util = require "lspconfig/util"
-
         local path = util.path
 
         -- Use activated virtualenv.
         if vim.env.VIRTUAL_ENV then
-          return path.join(vim.env.VIRTUAL_ENV, "bin", "python")
+          return vim.env.VIRTUAL_ENV
+        end
+
+        -- Prefer common in-project virtualenv names.
+        for _, dirname in ipairs { ".venv", "venv" } do
+          local cfg = path.join(workspace, dirname, "pyvenv.cfg")
+          if vim.fn.filereadable(cfg) == 1 then
+            return path.join(workspace, dirname)
+          end
         end
 
         -- Find and use virtualenv in workspace directory.
         for _, pattern in ipairs { "*", ".*" } do
           local match = vim.fn.glob(path.join(workspace, pattern, "pyvenv.cfg"))
           if match ~= "" then
-            return path.join(path.dirname(match), "bin", "python")
+            return path.dirname(match)
           end
+        end
+      end
+
+      local function get_python_path(workspace)
+        local util = require "lspconfig/util"
+        local venv = get_python_venv(workspace)
+
+        if venv then
+          return util.path.join(venv, "bin", "python")
         end
 
         -- Fallback to system Python.
@@ -845,6 +861,35 @@ require("lazy").setup({
 
         -- Fallback to system Python.
         return command
+      end
+
+      local function get_local_pyright_settings(workspace)
+        local local_config = vim.fn.stdpath "config" .. "/lua/local_pyright.lua"
+        if vim.fn.filereadable(local_config) ~= 1 then
+          return {}
+        end
+
+        local ok, config_or_error = pcall(dofile, local_config)
+        if not ok then
+          vim.notify("Failed to load local Pyright config: " .. config_or_error, vim.log.levels.WARN)
+          return {}
+        end
+
+        if type(config_or_error) == "function" then
+          local fn_ok, settings_or_error = pcall(config_or_error, workspace)
+          if fn_ok then
+            return settings_or_error or {}
+          end
+          vim.notify("Failed to build local Pyright config: " .. settings_or_error, vim.log.levels.WARN)
+          return {}
+        end
+
+        if type(config_or_error) == "table" then
+          return config_or_error
+        end
+
+        vim.notify("local_pyright.lua must return a table or function", vim.log.levels.WARN)
+        return {}
       end
 
       local eslint_lint_command = {
@@ -882,18 +927,31 @@ require("lazy").setup({
         -- gopls = {},
         -- pylsp = {},
         pyright = {
-          before_init = function(_, config)
-            config.settings.python.pythonPath = get_python_path(config.root_dir)
+          on_new_config = function(config, root_dir)
+            root_dir = root_dir or config.root_dir or vim.fn.getcwd()
+            config.settings = vim.tbl_deep_extend("force", config.settings or {}, get_local_pyright_settings(root_dir))
+            config.settings.python = config.settings.python or {}
+            config.settings.python.analysis = config.settings.python.analysis or {}
+            config.settings.python.pythonPath = get_python_path(root_dir)
+
+            local util = require "lspconfig/util"
+            local venv = get_python_venv(root_dir)
+            if venv then
+              config.settings.python.venvPath = util.path.dirname(venv)
+              config.settings.python.venv = util.path.basename(venv)
+            end
           end,
-          python = {
-            analysis = {
-              autoSearchPaths = true,
-              diagnosticMode = "workspace",
-              useLibraryCodeForTypes = true,
-              typeCheckingMode = "standard",
-              stubPath = "stubs",
+          settings = vim.tbl_deep_extend("force", {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                diagnosticMode = "workspace",
+                useLibraryCodeForTypes = true,
+                typeCheckingMode = "standard",
+                stubPath = "stubs",
+              },
             },
-          },
+          }, get_local_pyright_settings(vim.fn.getcwd())),
         },
         efm = {
           cmd = {
@@ -1025,20 +1083,16 @@ require("lazy").setup({
       })
       require("mason-tool-installer").setup { ensure_installed = ensure_installed }
 
-      require("mason-lspconfig").setup {
-        handlers = {
-          function(server_name)
-            if server_name == "efm" then
-              -- Skip EFM here - we'll handle it separately
-              return
-            end
+      -- mason-lspconfig v2 automatically enables installed servers with vim.lsp.enable().
+      -- Configure servers with vim.lsp.config() before calling mason-lspconfig.setup().
+      for server_name, server in pairs(servers) do
+        if server_name ~= "efm" then
+          server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+          vim.lsp.config(server_name, server)
+        end
+      end
 
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            require("lspconfig")[server_name].setup(server)
-          end,
-        },
-      }
+      require("mason-lspconfig").setup {}
 
       -- Setup EFM manually with your full config
       local efm_config = servers.efm or {}

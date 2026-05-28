@@ -6,5 +6,6 @@ tmux/resurrect/last
 tmux-*.log
 
 config/fish/conf.d/paramount.fish
+config/nvim/lua/local_pyright.lua
 
 gitconfig.private
