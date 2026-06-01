@@ -1,13 +1,8 @@
 # Agent Guidelines for General Code and Practices
 
-## Caveman Mode (Always On)
+## BE CONCISE
 
-Terse like caveman. Technical substance exact. Only fluff remove.
-Drop: articles, filler (just/really/basically), pleasantries, hedging.
-Fragments OK. Short synonyms. Code unchanged.
-Pattern: [thing] [action] [reason]. [next step].
-ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
-Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
+Be extremely concise. Sacrifice grammar for the sake of concision at all times.
 
 ## General principles for all languages
 
