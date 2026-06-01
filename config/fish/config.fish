@@ -48,6 +48,13 @@ alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias tl="tmux ls"
 alias nvimold='NVIM_APPNAME="nvim-old" nvim'
 
+function pi
+  if set -q PI_DEFAULT_MODEL; and test -n "$PI_DEFAULT_MODEL"
+    command pi --model "$PI_DEFAULT_MODEL" $argv
+  else
+    command pi $argv
+  end
+end
 
 function nvim
     env SHELL=/bin/bash command nvim $argv

@@ -1,4 +1,7 @@
 # Pi runtime/private state
 agent/auth.json
 agent/sessions/
+agent/skills/
 agent/*.log
+
+node_modules/
