@@ -14,11 +14,9 @@ return function(workspace)
   add_if_dir(paths, workspace .. "/src")
   add_if_dir(paths, workspace .. "/lib")
 
-  -- Current repo virtualenv site-packages. This makes namespace packages like
-  -- `some.weird.*` resolve even when Pyright does not pick up venv settings.
-  for _, site_packages in ipairs(vim.fn.glob(workspace .. "/.venv/lib/python*/site-packages", false, true)) do
-    add_if_dir(paths, site_packages)
-  end
+  -- Do not add .venv/site-packages here. Pyright gets installed packages from
+  -- the configured venv; adding site-packages to extraPaths makes the language
+  -- server index thousands of library files on save.
 
   -- Sibling Vantage service checkouts, e.g.
   -- ../some-weird-lib-naming-apis/src/some/weird/apis
@@ -32,6 +30,8 @@ return function(workspace)
     -- Return the extraPaths in the format expected by Pyright.
     -- python = {
     --   analysis = {
+    --     diagnosticMode = "openFilesOnly",
+    --     indexing = false,
     --     extraPaths = paths,
     --   },
     -- },
