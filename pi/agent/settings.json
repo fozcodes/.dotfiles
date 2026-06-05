@@ -1,8 +1,5 @@
 {
-  "lastChangelogVersion": "0.75.3",
-  "npmCommand": [
-    "/opt/homebrew/bin/npm"
-  ],
+  "lastChangelogVersion": "0.78.1",
   "theme": "opencode-shade",
   "defaultProvider": "opencode",
   "defaultModel": "claude-sonnet-4",
