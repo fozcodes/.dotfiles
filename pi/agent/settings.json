@@ -1,13 +1,14 @@
 {
-  "lastChangelogVersion": "0.75.3",
+  "lastChangelogVersion": "0.78.0",
   "npmCommand": [
-    "/opt/homebrew/bin/npm"
+    "/Users/ian.fosbery/.asdf/plugins/nodejs/shims/npm"
   ],
   "theme": "opencode-shade",
-  "defaultProvider": "opencode",
-  "defaultModel": "claude-sonnet-4",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "medium",
   "packages": [
-    "npm:@juicesharp/rpiv-btw"
+    "npm:@juicesharp/rpiv-btw",
+    "npm:pi-subagents"
   ]
 }
