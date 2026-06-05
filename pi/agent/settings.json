@@ -1,10 +1,11 @@
 {
   "lastChangelogVersion": "0.78.1",
   "theme": "opencode-shade",
-  "defaultProvider": "opencode",
-  "defaultModel": "claude-sonnet-4",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "medium",
   "packages": [
-    "npm:@juicesharp/rpiv-btw"
+    "npm:@juicesharp/rpiv-btw",
+    "npm:pi-subagents"
   ]
 }

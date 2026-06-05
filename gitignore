@@ -10,5 +10,6 @@
 
 **/ignoreme/**/*
 **/ignore/**/*
+**/.scratch/**/*
 
 **/Session.vim
