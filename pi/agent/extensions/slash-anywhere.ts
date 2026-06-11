@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { CombinedAutocompleteProvider, Editor } from "@earendil-works/pi-tui";
 
 type EditorRuntime = {
   state: {
@@ -31,11 +32,6 @@ type ProviderRuntime = {
   shouldTriggerFileCompletion: (lines: string[], cursorLine: number, cursorCol: number) => boolean;
 };
 
-type PiTuiModule = {
-  Editor: { prototype: Record<string, unknown> };
-  CombinedAutocompleteProvider: { prototype: ProviderRuntime };
-};
-
 const slashTokenAtCursor = (textBeforeCursor: string) => {
   const match = textBeforeCursor.match(/(?:^|\s)(\/[^\n]*)$/);
   return match?.[1] ?? null;
@@ -44,9 +40,8 @@ const slashTokenAtCursor = (textBeforeCursor: string) => {
 const isCommandNamePrefix = (prefix: string) =>
   prefix.startsWith("/") && !prefix.slice(1).includes("/");
 
-export default async function (pi: ExtensionAPI) {
-  const tui = await import("/opt/homebrew/lib/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-tui/dist/index.js") as PiTuiModule;
-  const editorPrototype = tui.Editor.prototype;
+export default function (pi: ExtensionAPI) {
+  const editorPrototype = Editor.prototype as Record<string, unknown>;
 
   editorPrototype.isSlashMenuAllowed = function () {
     return true;
@@ -73,7 +68,7 @@ export default async function (pi: ExtensionAPI) {
     this.forceFileAutocomplete(true);
   };
 
-  const providerPrototype = tui.CombinedAutocompleteProvider.prototype;
+  const providerPrototype = CombinedAutocompleteProvider.prototype as ProviderRuntime;
   const originalGetSuggestions = providerPrototype.getSuggestions;
   const originalApplyCompletion = providerPrototype.applyCompletion;
   const originalShouldTriggerFileCompletion = providerPrototype.shouldTriggerFileCompletion;
