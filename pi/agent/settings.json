@@ -1,11 +1,16 @@
 {
   "lastChangelogVersion": "0.78.1",
   "theme": "opencode-shade",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "defaultProvider": "opencode",
+  "defaultModel": "big-pickle",
+  "defaultThinkingLevel": "high",
   "packages": [
     "npm:@juicesharp/rpiv-btw",
-    "npm:pi-subagents"
+    {
+      "source": "npm:pi-subagents",
+      "extensions": [
+        "-src/extension/index.ts"
+      ]
+    }
   ]
 }

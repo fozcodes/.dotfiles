@@ -73,7 +73,8 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 
 ### 3. Self-Improvement Loop
 
-- After ANY correction from the user: update '.scratch/lessons.md' with the pattern
+- After ANY correction from the user: update '.scratch/lessons.md' with the
+  pattern
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
 - Review lessons at session start for relevant project
@@ -102,7 +103,8 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 
 ## Task Management
 
-- Always use `.scratch/` for agent working files (`todo.md`, `lessons.md`, notes, temp plans). Never create repo-root `tasks/` for agent state.
+- Always use `.scratch/` for agent working files (`todo.md`, `lessons.md`,
+  notes, temp plans). Never create repo-root `tasks/` for agent state.
 
 1. _Plan First_: Write plan to '.scratch/todo.md' with checkable items
 2. _Verify Plan_: Check in before starting implementation

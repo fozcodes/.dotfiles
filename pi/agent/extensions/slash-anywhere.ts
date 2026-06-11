@@ -45,7 +45,7 @@ const isCommandNamePrefix = (prefix: string) =>
   prefix.startsWith("/") && !prefix.slice(1).includes("/");
 
 export default async function (pi: ExtensionAPI) {
-  const tui = await import("/opt/homebrew/lib/node_modules/@earendil-works/pi-coding-agent/node_modules/@earendil-works/pi-tui/dist/index.js") as PiTuiModule;
+  const tui = await import("@earendil-works/pi-tui") as PiTuiModule;
   const editorPrototype = tui.Editor.prototype;
 
   editorPrototype.isSlashMenuAllowed = function () {
