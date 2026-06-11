@@ -49,7 +49,9 @@ alias tl="tmux ls"
 alias nvimold='NVIM_APPNAME="nvim-old" nvim'
 
 function pi
-  if set -q PI_DEFAULT_MODEL; and test -n "$PI_DEFAULT_MODEL"
+  if test "$argv[1]" = update
+    command pi $argv
+  else if set -q PI_DEFAULT_MODEL; and test -n "$PI_DEFAULT_MODEL"
     command pi --model "$PI_DEFAULT_MODEL" $argv
   else
     command pi $argv
