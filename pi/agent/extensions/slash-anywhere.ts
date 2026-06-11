@@ -29,7 +29,11 @@ type ProviderRuntime = {
     item: AutocompleteItem,
     prefix: string,
   ) => { lines: string[]; cursorLine: number; cursorCol: number };
-  shouldTriggerFileCompletion: (lines: string[], cursorLine: number, cursorCol: number) => boolean;
+  shouldTriggerFileCompletion: (
+    lines: string[],
+    cursorLine: number,
+    cursorCol: number,
+  ) => boolean;
 };
 
 const slashTokenAtCursor = (textBeforeCursor: string) => {
@@ -40,24 +44,26 @@ const slashTokenAtCursor = (textBeforeCursor: string) => {
 const isCommandNamePrefix = (prefix: string) =>
   prefix.startsWith("/") && !prefix.slice(1).includes("/");
 
-export default function (pi: ExtensionAPI) {
+export default function(pi: ExtensionAPI) {
   const editorPrototype = Editor.prototype as Record<string, unknown>;
 
-  editorPrototype.isSlashMenuAllowed = function () {
+  editorPrototype.isSlashMenuAllowed = function() {
     return true;
   };
 
-  editorPrototype.isAtStartOfMessage = function (this: EditorRuntime) {
+  editorPrototype.isAtStartOfMessage = function(this: EditorRuntime) {
     const currentLine = this.state.lines[this.state.cursorLine] ?? "";
     const beforeCursor = currentLine.slice(0, this.state.cursorCol);
     return /(?:^|\s)\/$/.test(beforeCursor);
   };
 
-  editorPrototype.isInSlashCommandContext = function (textBeforeCursor: string) {
+  editorPrototype.isInSlashCommandContext = function(
+    textBeforeCursor: string,
+  ) {
     return slashTokenAtCursor(textBeforeCursor) !== null;
   };
 
-  editorPrototype.handleTabCompletion = function (this: EditorRuntime) {
+  editorPrototype.handleTabCompletion = function(this: EditorRuntime) {
     const currentLine = this.state.lines[this.state.cursorLine] ?? "";
     const beforeCursor = currentLine.slice(0, this.state.cursorCol);
     const slashToken = slashTokenAtCursor(beforeCursor);
@@ -68,12 +74,19 @@ export default function (pi: ExtensionAPI) {
     this.forceFileAutocomplete(true);
   };
 
-  const providerPrototype = CombinedAutocompleteProvider.prototype as ProviderRuntime;
+  const providerPrototype =
+    CombinedAutocompleteProvider.prototype as ProviderRuntime;
   const originalGetSuggestions = providerPrototype.getSuggestions;
   const originalApplyCompletion = providerPrototype.applyCompletion;
-  const originalShouldTriggerFileCompletion = providerPrototype.shouldTriggerFileCompletion;
+  const originalShouldTriggerFileCompletion =
+    providerPrototype.shouldTriggerFileCompletion;
 
-  providerPrototype.getSuggestions = async function (lines, cursorLine, cursorCol, options) {
+  providerPrototype.getSuggestions = async function(
+    lines,
+    cursorLine,
+    cursorCol,
+    options,
+  ) {
     if (!options.force) {
       const currentLine = lines[cursorLine] ?? "";
       const textBeforeCursor = currentLine.slice(0, cursorCol);
@@ -81,14 +94,32 @@ export default function (pi: ExtensionAPI) {
       if (slashToken && !textBeforeCursor.startsWith("/")) {
         const fakeLines = [...lines];
         fakeLines[cursorLine] = slashToken;
-        const result = await originalGetSuggestions.call(this, fakeLines, cursorLine, slashToken.length, options);
+        const result = await originalGetSuggestions.call(
+          this,
+          fakeLines,
+          cursorLine,
+          slashToken.length,
+          options,
+        );
         if (result) return result;
       }
     }
-    return originalGetSuggestions.call(this, lines, cursorLine, cursorCol, options);
+    return originalGetSuggestions.call(
+      this,
+      lines,
+      cursorLine,
+      cursorCol,
+      options,
+    );
   };
 
-  providerPrototype.applyCompletion = function (lines, cursorLine, cursorCol, item, prefix) {
+  providerPrototype.applyCompletion = function(
+    lines,
+    cursorLine,
+    cursorCol,
+    item,
+    prefix,
+  ) {
     if (isCommandNamePrefix(prefix)) {
       const currentLine = lines[cursorLine] ?? "";
       const beforePrefix = currentLine.slice(0, cursorCol - prefix.length);
@@ -101,15 +132,31 @@ export default function (pi: ExtensionAPI) {
         cursorCol: beforePrefix.length + item.value.length + 2,
       };
     }
-    return originalApplyCompletion.call(this, lines, cursorLine, cursorCol, item, prefix);
+    return originalApplyCompletion.call(
+      this,
+      lines,
+      cursorLine,
+      cursorCol,
+      item,
+      prefix,
+    );
   };
 
-  providerPrototype.shouldTriggerFileCompletion = function (lines, cursorLine, cursorCol) {
+  providerPrototype.shouldTriggerFileCompletion = function(
+    lines,
+    cursorLine,
+    cursorCol,
+  ) {
     const currentLine = lines[cursorLine] ?? "";
     const textBeforeCursor = currentLine.slice(0, cursorCol);
     const slashToken = slashTokenAtCursor(textBeforeCursor);
     if (slashToken && !slashToken.slice(1).includes(" ")) return false;
-    return originalShouldTriggerFileCompletion.call(this, lines, cursorLine, cursorCol);
+    return originalShouldTriggerFileCompletion.call(
+      this,
+      lines,
+      cursorLine,
+      cursorCol,
+    );
   };
 
   pi.on("session_start", (_event, ctx) => {
