@@ -3,5 +3,7 @@ agent/auth.json
 agent/sessions/
 agent/skills/
 agent/*.log
+agent/trust.json
+agent/run-history.jsonl
 
 node_modules/
