@@ -893,13 +893,23 @@ require("lazy").setup({
       end
 
       local eslint_lint_command = {
-        lintCommand = "./node_modules/.bin/eslint -f unix --stdin --stdin-filename ${INPUT}",
+        lintCommand = "./node_modules/.bin/eslint -f stylish --stdin --stdin-filename ${INPUT}",
         lintStdin = true,
         lintIgnoreExitCode = true,
+        lintFormats = {
+          "%E%f",
+          "%Z  %l:%c  %t%*[^ ]  %m",
+        },
       }
 
-      local prettier_format_command = { formatCommand = "prettierd ${INPUT}", formatStdin = true }
-      local prettier_format_command_higher_line_length = { formatCommand = "prettierd ${INPUT}", formatStdin = true }
+      local prettier_format_command = { formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true }
+      local prettier_format_command_higher_line_length = { formatCommand = "./node_modules/.bin/prettier --stdin-filepath ${INPUT}", formatStdin = true }
+      local prettierd_default_config = vim.fn.expand "~/.config/nvim/utils/linter-config/.prettierrc.json"
+      local prettierd_format_command = {
+        formatCommand = "prettierd ${INPUT}",
+        formatStdin = true,
+        env = { "PRETTIERD_DEFAULT_CONFIG=" .. prettierd_default_config },
+      }
 
       local efm_filetypes = {
         "css",
@@ -963,14 +973,15 @@ require("lazy").setup({
           },
           init_options = { documentFormatting = true, codeAction = true },
           before_init = function(_, config)
+            local root_dir = config.root_dir or vim.fn.getcwd()
             config.settings.languages.python = {
               {
-                lintCommand = get_python_command_path(config.root_dir, "flake8") .. " --config (find_up .flake8) --stdin-display-name ${INPUT} -",
+                lintCommand = get_python_command_path(root_dir, "flake8") .. " --config (find_up .flake8) --stdin-display-name ${INPUT} -",
                 lintStdin = true,
                 lintIgnoreExitCode = true,
               },
               {
-                lintCommand = get_python_command_path(config.root_dir, "mypy") .. " --help --show-column-numbers --config-file (find_up .mypy.ini) -C fos -",
+                lintCommand = get_python_command_path(root_dir, "mypy") .. " --help --show-column-numbers --config-file (find_up .mypy.ini) -C fos -",
                 lintStdin = true,
                 lintFormats = {
                   "%f:%l:%c: %trror: %m",
@@ -980,11 +991,11 @@ require("lazy").setup({
                 lintIgnoreExitCode = true,
               },
               {
-                formatCommand = get_python_command_path(config.root_dir, "isort") .. " --quiet -",
+                formatCommand = get_python_command_path(root_dir, "isort") .. " --quiet -",
                 formatStdin = true,
               },
               {
-                formatCommand = get_python_command_path(config.root_dir, "black") .. " --quiet --stdin-filename ${INPUT} -",
+                formatCommand = get_python_command_path(root_dir, "black") .. " --quiet --stdin-filename ${INPUT} -",
                 formatStdin = true,
               },
             }
@@ -1016,7 +1027,7 @@ require("lazy").setup({
               scss = { prettier_format_command },
               css = { prettier_format_command_higher_line_length },
               graphql = { prettier_format_command },
-              markdown = { { formatCommand = "prettier --prose-wrap always --print-width 80 --stdin-filepath ${INPUT}", formatStdin = true } },
+              markdown = { prettierd_format_command },
               terraform = { { formatCommand = "terraform fmt -", formatStdin = true } },
             },
           },
@@ -1124,13 +1135,19 @@ require("lazy").setup({
         -- languages here or re-enable it for the disabled ones.
         local disable_filetypes = { c = true, cpp = true }
         return {
-          timeout_ms = 500,
+          timeout_ms = 2000,
           lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
         }
       end,
+      formatters = {
+        prettierd = {
+          env = {
+            PRETTIERD_DEFAULT_CONFIG = vim.fn.expand "~/.config/nvim/utils/linter-config/.prettierrc.json",
+          },
+        },
+      },
       formatters_by_ft = {
         lua = { "stylua" },
-        -- Conform can also run multiple formatters sequentially
         python = { "isort", "black" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
