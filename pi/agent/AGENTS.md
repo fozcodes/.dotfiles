@@ -1,6 +1,6 @@
 # Agent Guidelines for General Code and Practices
 
-## BE CONCISE
+## BE CONCISE (always on)
 
 Be extremely concise. Sacrifice grammar for the sake of concision at all times.
 
