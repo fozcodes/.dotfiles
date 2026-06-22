@@ -9,3 +9,5 @@ config/fish/conf.d/paramount.fish
 config/nvim/lua/local_pyright.lua
 
 gitconfig.private
+
+.envrc
