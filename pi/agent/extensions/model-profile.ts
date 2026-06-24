@@ -25,9 +25,13 @@ type DefaultSettingsSnapshot = {
   values: Partial<Record<DefaultSettingsKey, unknown>>;
 };
 
-const defaultSettingsKeys: DefaultSettingsKey[] = [
+const modelDefaultSettingsKeys: DefaultSettingsKey[] = [
   "defaultProvider",
   "defaultModel",
+];
+
+const defaultSettingsKeys: DefaultSettingsKey[] = [
+  ...modelDefaultSettingsKeys,
   "defaultThinkingLevel",
 ];
 
@@ -77,13 +81,16 @@ function snapshotDefaultSettings(): DefaultSettingsSnapshot {
   return { path: settingsPath, existed, present, values };
 }
 
-function restoreDefaultSettings(snapshot: DefaultSettingsSnapshot) {
+function restoreDefaultSettings(
+  snapshot: DefaultSettingsSnapshot,
+  keys: DefaultSettingsKey[] = defaultSettingsKeys,
+) {
   if (!fs.existsSync(snapshot.path)) {
     return;
   }
 
   const current = readJsonObject(snapshot.path);
-  for (const key of defaultSettingsKeys) {
+  for (const key of keys) {
     if (snapshot.present.has(key)) {
       current[key] = snapshot.values[key];
     } else {
@@ -97,6 +104,16 @@ function restoreDefaultSettings(snapshot: DefaultSettingsSnapshot) {
   }
 
   fs.writeFileSync(snapshot.path, `${JSON.stringify(current, null, 2)}\n`, "utf-8");
+}
+
+function restoreDefaultsSoon(snapshot: DefaultSettingsSnapshot) {
+  setTimeout(() => {
+    try {
+      restoreDefaultSettings(snapshot, modelDefaultSettingsKeys);
+    } catch {
+      // Ignore background restore errors. /model-profile reports foreground errors.
+    }
+  }, 100);
 }
 
 function parseProfile(content: string, sourcePath: string) {
@@ -232,8 +249,24 @@ async function loadAndApplyProfile(pi: ExtensionAPI, ctx: ExtensionContext, noti
 }
 
 export default function modelProfile(pi: ExtensionAPI) {
+  let protectedDefaults: DefaultSettingsSnapshot | undefined;
+
   pi.on("session_start", async (_event, ctx) => {
+    try {
+      protectedDefaults = snapshotDefaultSettings();
+    } catch (error) {
+      ctx.ui.notify(
+        `Model default guard disabled: ${error instanceof Error ? error.message : String(error)}`,
+        "warning",
+      );
+    }
+
     await loadAndApplyProfile(pi, ctx, false);
+  });
+
+  pi.on("model_select", (event) => {
+    if (event.source === "restore" || !protectedDefaults) return;
+    restoreDefaultsSoon(protectedDefaults);
   });
 
   pi.registerCommand("model-profile", {
