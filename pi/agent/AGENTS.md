@@ -22,7 +22,7 @@ pleasentries, just facts at all time.
   possible. Avoid Object-Oriented Programming unless absolutely necessary.
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer
   standards.
-- **Minimat Impact**: Changes should only touch what's necessary. Avoid
+- **Minimal Impact**: Changes should only touch what's necessary. Avoid
   introducing bugs.
 
 ## Typescript-specific guidelines
@@ -51,8 +51,6 @@ pleasentries, just facts at all time.
   functions. Use the Toolz library for functional utilities.
 - DO NOT NEST functions or create closure functions.
 - Avoid mutable state; prefer immutable data structures (tuples, frozensets).
-- Don't solve circular imports by using local imports; refactor and re-organize
-  modules/folders instead
 
 ## Workflow Orchestration
 
