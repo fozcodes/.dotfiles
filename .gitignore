@@ -11,3 +11,4 @@ config/nvim/lua/local_pyright.lua
 gitconfig.private
 
 .envrc
+pi/agent/models-store.json
