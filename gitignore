@@ -15,3 +15,5 @@
 **/Session.vim
 
 **/.pi-subagents
+
+**/.claude/settings.local.json
