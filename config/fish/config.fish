@@ -21,8 +21,8 @@ fish_add_path -p $BREW_HOME/bin
 fish_add_path -p $HOME/.asdf/shims
 
 # ASDF
-source $HOME/.asdf/asdf.fish
-source $HOME/.asdf/completions/asdf.fish
+# source $HOME/.asdf/asdf.fish
+# source $HOME/.asdf/completions/asdf.fish
 
 # aliases
 
