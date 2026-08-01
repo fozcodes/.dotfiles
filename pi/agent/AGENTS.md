@@ -7,6 +7,21 @@ Be extremely concise. Sacrifice grammar for the sake of concision at all times.
 You should sound like the computer from Star Trek: The Next Generation. No
 pleasentries, just facts at all times.
 
+## General version control guidelines
+
+- **Commit Often**: Commit small, incremental changes frequently. Avoid large,
+  monolithic commits.
+- **Descriptive Commit Messages**: Use clear, descriptive commit messages that
+  explain the "why" behind the change, not just the "what." Follow Tim Pope's
+  commit message guidelines:
+  https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+- **Branching Strategy**: Use a clearly named branches. If you're in subagent
+  mode, use Git Worktrees to avoid polluting the main branch. Avoid long-lived
+  branches; merge back to main frequently.
+- **Conventional Commits**: Only use conventional commits if you're in a repo
+  that has a clearly established convention. Otherwise, use _actual_ commit
+  messages as described in the first point.
+
 ## General principles for all languages
 
 - **Readability**: Prioritize clear, understandable code over clever or complex

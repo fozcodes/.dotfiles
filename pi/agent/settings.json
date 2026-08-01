@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.80.3",
+  "lastChangelogVersion": "0.81.1",
   "npmCommand": [
     "/Users/ian.fosbery/.asdf/plugins/nodejs/shims/npm"
   ],
@@ -12,8 +12,9 @@
     {
       "source": "npm:pi-subagents",
       "extensions": [
-        "-src/extension/index.ts"
+        "+src/extension/index.ts"
       ]
-    }
+    },
+    "npm:@raquezha/noleaks@0.0.5"
   ]
 }

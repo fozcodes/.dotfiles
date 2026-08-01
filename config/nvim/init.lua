@@ -1148,6 +1148,7 @@ require("lazy").setup({
       },
       formatters_by_ft = {
         lua = { "stylua" },
+        markdown = { "prettierd" },
         python = { "isort", "black" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
