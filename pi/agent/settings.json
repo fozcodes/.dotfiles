@@ -1,8 +1,5 @@
 {
-  "lastChangelogVersion": "0.81.1",
-  "npmCommand": [
-    "~/.asdf/plugins/nodejs/shims/npm"
-  ],
+  "lastChangelogVersion": "0.83.0",
   "theme": "opencode-shade",
   "defaultProvider": "opencode",
   "defaultModel": "big-pickle",
