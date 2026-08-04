@@ -5,5 +5,6 @@ agent/skills/
 agent/*.log
 agent/trust.json
 agent/run-history.jsonl
+agent/usage-extension-cache.json
 
 node_modules/
