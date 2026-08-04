@@ -16,6 +16,7 @@ set PATH ~/.rd/bin $PATH
 
 set BREW_HOME (brew --prefix)
 
+
 fish_add_path -p $BREW_HOME/opt/postgresql@16/bin
 fish_add_path -p $BREW_HOME/bin
 fish_add_path -p $HOME/.asdf/shims
@@ -246,6 +247,8 @@ set -g fish_user_paths "$BREW_HOME/opt/libressl/bin" "/Users/foz/.bin" $fish_use
 set -g -x "OPENCODE_CONFIG" "$HOME/Code/.opencode.jsonc"
 
 thefuck --alias | source
+
+set -x EDITOR nvim
 
 # opencode
 fish_add_path ~/.opencode/bin
