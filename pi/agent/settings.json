@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.81.1",
+  "lastChangelogVersion": "0.83.0",
   "npmCommand": [
     "/Users/ian.fosbery/.asdf/plugins/nodejs/shims/npm"
   ],
@@ -12,9 +12,23 @@
     {
       "source": "npm:pi-subagents",
       "extensions": [
-        "+src/extension/index.ts"
+        "+src/extension/index.ts",
+        "+index.ts"
       ]
     },
     "npm:@raquezha/noleaks@0.0.5"
-  ]
+  ],
+  "extensions": [
+    "+extensions/usage-dashboard/index.ts"
+  ],
+  "subagents": {
+    "watchdog": {
+      "enabled": true,
+      "main": {
+        "enabled": true,
+        "model": "openai-codex/gpt-5.6-luna",
+        "thinking": "medium"
+      }
+    }
+  }
 }
