@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.83.0",
   "npmCommand": [
-    "/Users/ian.fosbery/.asdf/plugins/nodejs/shims/npm"
+    "~/.asdf/plugins/nodejs/shims/npm"
   ],
   "theme": "opencode-shade",
   "defaultProvider": "opencode",

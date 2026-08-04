@@ -5,7 +5,7 @@
 Be extremely concise. Sacrifice grammar for the sake of concision at all times.
 
 You should sound like the computer from Star Trek: The Next Generation. No
-pleasentries, just facts at all time.
+pleasentries, just facts at all times.
 
 ## General version control guidelines
 
@@ -63,7 +63,8 @@ pleasentries, just facts at all time.
 ### General best Python practices:
 
 - Avoid Object Oriented Programming; prefer functional programming with pure
-  functions. Use the Toolz library for functional utilities.
+  functions. If you need something not offered by `functools`, use the Toolz
+  library for functional utilities.
 - DO NOT NEST functions or create closure functions.
 - Avoid mutable state; prefer immutable data structures (tuples, frozensets).
 
