@@ -50,7 +50,7 @@ alias tl="tmux ls"
 alias nvimold='NVIM_APPNAME="nvim-old" nvim'
 
 function pi
-  if test "$argv[1]" = update
+  if contains -- "$argv[1]" install remove uninstall update list config auth
     command pi $argv
   else if set -q PI_DEFAULT_MODEL; and test -n "$PI_DEFAULT_MODEL"
     command pi --model "$PI_DEFAULT_MODEL" $argv
