@@ -1,2 +1,2 @@
 SYMLINK_DIRS="vim.snippets fonts font-patcher"
-EXCLUDES="pi/agent/npm pi/agent/sessions pi/agent/skills pi/agent/models-store.json pi/agent/auth.json ignore"
+EXCLUDES="pi/agent/npm pi/agent/sessions pi/agent/skills pi/agent/auth.json pi/agent/models-store.json pi/agent/trust.json pi/agent/run-history.jsonl pi/agent/usage-extension-cache.json pi/agent/*.log ignore"
