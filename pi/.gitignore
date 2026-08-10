@@ -8,3 +8,4 @@ agent/run-history.jsonl
 agent/usage-extension-cache.json
 
 node_modules/
+agent/npm/node_modules/
