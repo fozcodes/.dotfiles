@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.83.0",
+  "lastChangelogVersion": "0.84.1",
   "theme": "opencode-shade",
   "defaultProvider": "opencode",
   "defaultModel": "big-pickle",
@@ -13,7 +13,8 @@
         "+index.ts"
       ]
     },
-    "npm:@raquezha/noleaks@0.0.5"
+    "npm:@raquezha/noleaks@0.0.5",
+    "npm:pi-mcp-adapter"
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts"
