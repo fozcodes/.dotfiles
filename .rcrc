@@ -1,1 +1,1 @@
-SYMLINK_DIRS="vim.snippets pi fonts font-patcher"
+SYMLINK_DIRS="vim.snippets fonts font-patcher"
