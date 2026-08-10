@@ -14,4 +14,4 @@ gitconfig.private
 pi/agent/models-store.json
 pi/agent/mcp-cache.json
 
-.pi
+.pi/

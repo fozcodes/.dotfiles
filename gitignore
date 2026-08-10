@@ -17,3 +17,5 @@
 **/.pi-subagents
 
 **/.claude/settings.local.json
+
+**/.pi/**/*
