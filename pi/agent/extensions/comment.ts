@@ -1,3 +1,8 @@
+/**
+ * Comment Draft
+ *
+ * Opens the last completed assistant response in `$EDITOR`, then loads the edited quoted text into the input.
+ */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";

@@ -1,3 +1,24 @@
+/**
+ * Model-selection policy
+ *
+ * - `~/.pi` is symlinked to the `pi/` directory in the versioned dotfiles
+ *   repository. rcm deploys it across machines (`RCRC=~/.dotfiles/.rcrc rcup`).
+ * - `~/.pi/agent/settings.json` contains shared fallback defaults. This
+ *   extension never persists a session or project selection into those keys.
+ * - At session start, find the nearest `.pi/model-profile.json`, searching from
+ *   the working directory through its ancestors. Its `provider`, `model`, and
+ *   optional `thinkingLevel` apply only to the active session. For example:
+ *
+ *     { "provider": "openai-codex", "model": "gpt-5.6-terra", "thinkingLevel": "high" }
+ *
+ * - The extension snapshots and restores the global defaults, including after
+ *   a user changes `/model`, so project selections do not leak between repos.
+ * - Authentication, sessions, cached model catalogs, and other runtime state
+ *   are gitignored and intentionally remain machine-local.
+ *
+ * Do not use `PI_DEFAULT_MODEL` for persistent selection. The Fish wrapper
+ * turns it into a CLI override, which conflicts with this profile mechanism.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";

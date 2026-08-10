@@ -1,3 +1,8 @@
+/**
+ * Slash Anywhere
+ *
+ * Enables slash-command completion after whitespace anywhere in the input while retaining file completion for slash paths.
+ */
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { CombinedAutocompleteProvider, Editor } from "@earendil-works/pi-tui";
 

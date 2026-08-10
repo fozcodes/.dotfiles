@@ -1,3 +1,8 @@
+/**
+ * Extension Configuration
+ *
+ * Provides `/extensions` to enable or disable discovered extensions and inspect their package metadata or local docblocks.
+ */
 import { dirname, join, relative } from "node:path";
 import type {
 	ExtensionAPI,
@@ -12,8 +17,13 @@ import {
 	SettingsManager as PiSettingsManager,
 } from "@earendil-works/pi-coding-agent";
 import { Container, type SettingItem, SettingsList } from "@earendil-works/pi-tui";
+import { getExtensionDetails, toggleDetailDescriptions } from "./toggle-extensions/details.ts";
 
-type ExtensionResource = ResolvedResource & { id: string; label: string };
+type ExtensionResource = ResolvedResource & {
+	id: string;
+	label: string;
+	details: string;
+};
 type ResourceType = "extensions";
 
 const stripPrefix = (value: string) =>
@@ -131,10 +141,14 @@ const updateExtension = (
 const buildResources = (extensions: ResolvedResource[]) =>
 	extensions
 		.map((extension, index): ExtensionResource => {
-			const resource = { ...extension, id: String(index), label: "" };
+			const resource = { ...extension, id: String(index), label: "", details: "" };
 			return {
 				...resource,
 				label: `${getDisplayScope(resource)}: ${relative(extension.metadata.baseDir ?? dirname(extension.path), extension.path)}`,
+				details: getExtensionDetails(
+					extension.path,
+					extension.metadata.origin === "package" ? extension.metadata.baseDir : undefined,
+				),
 			};
 		})
 		.sort((a, b) => a.label.localeCompare(b.label));
@@ -160,6 +174,7 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 			}
 
 			await ctx.ui.custom((tui, theme, _kb, done) => {
+				let showingDetails = false;
 				const items: SettingItem[] = resources.map((resource) => ({
 					id: resource.id,
 					label: resource.label,
@@ -174,7 +189,10 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 						render() {
 							return [
 								theme.fg("accent", theme.bold("Extension Configuration")),
-								theme.fg("muted", "Toggle entries, Esc to close. Changes apply after reload."),
+								theme.fg(
+									"muted",
+									`Toggle entries, ? to ${showingDetails ? "show paths" : "show details"}, Esc to close. Changes apply after reload.`,
+								),
 								"",
 							];
 						}
@@ -208,7 +226,11 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 					render: (width: number) => container.render(width),
 					invalidate: () => container.invalidate(),
 					handleInput: (data: string) => {
-						settingsList.handleInput?.(data);
+						if (data === "?") {
+							showingDetails = toggleDetailDescriptions(showingDetails, resources, items);
+						} else {
+							settingsList.handleInput?.(data);
+						}
 						tui.requestRender();
 					},
 				};
