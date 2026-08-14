@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.84.1",
+  "lastChangelogVersion": "0.84.2",
   "theme": "opencode-shade",
   "defaultProvider": "opencode",
   "defaultModel": "big-pickle",
@@ -10,11 +10,12 @@
       "source": "npm:pi-subagents",
       "extensions": [
         "+src/extension/index.ts",
-        "+index.ts"
+        "-index.ts"
       ]
     },
     "npm:@raquezha/noleaks@0.0.5",
-    "npm:pi-mcp-adapter"
+    "npm:pi-mcp-adapter",
+    "git:github.com/dmmulroy/pi-web-tools"
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts"
