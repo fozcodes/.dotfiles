@@ -95,6 +95,10 @@ prefix = "ctrl+s"
 # focus_pane_down = "prefix+j"
 # focus_pane_up = "prefix+k"
 # focus_pane_right = "prefix+l"
+# The prefix+j/k keys below are reserved for tmux-style resizing.
+# Direct Ctrl+h/j/k/l navigation remains provided by vim-herdr-navigation.
+focus_pane_down = ""
+focus_pane_up = ""
 # cycle_pane_next = "prefix+tab"
 # cycle_pane_previous = "prefix+shift+tab"
 # last_pane = ""          # optional, unset by default; bind e.g. "prefix+tab" for global back-and-forth
@@ -139,6 +143,20 @@ key = "ctrl+l"
 type = "plugin_action"
 command = "vim-herdr-navigation.right"
 description = "navigate right (vim/herdr)"
+
+# Match the existing tmux resize muscle memory. Herdr's amount is a split
+# ratio increment; 0.05 is the built-in resize-mode step.
+[[keys.command]]
+key = "prefix+j"
+type = "shell"
+command = "herdr pane resize --direction down --amount 0.05"
+description = "resize pane down"
+
+[[keys.command]]
+key = "prefix+k"
+type = "shell"
+command = "herdr pane resize --direction up --amount 0.05"
+description = "resize pane up"
 
 # Custom commands use the same binding syntax.
 # type = "shell" runs detached in the background.
