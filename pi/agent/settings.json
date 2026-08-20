@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.84.2",
   "theme": "opencode-shade",
-  "defaultProvider": "opencode",
-  "defaultModel": "big-pickle",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "kimi-k2.7-code",
   "defaultThinkingLevel": "high",
   "packages": [
     "npm:@juicesharp/rpiv-btw",
@@ -15,7 +15,8 @@
     },
     "npm:@raquezha/noleaks@0.0.5",
     "npm:pi-mcp-adapter",
-    "git:github.com/dmmulroy/pi-web-tools"
+    "git:github.com/dmmulroy/pi-web-tools",
+    "ssh://git@github.com/earendil-works/pi-transcribe"
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts"
