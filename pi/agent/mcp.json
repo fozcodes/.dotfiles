@@ -4,7 +4,7 @@
       "command": "npx",
       "args": ["-y", "mcp-searxng"],
       "env": {
-        "SEARXNG_URL": "http://localhost:8080/",
+        "SEARXNG_URL": "http://127.0.0.1:8989/",
         "SEARXNG_FANOUT": "false",
           "SEARXNG_TIMEOUT_MS": "10000",
           "SEARXNG_MAX_RESULTS": "5",
