@@ -1,6 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { isToolCallEventType } from "@earendil-works/pi-coding-agent";
-import { parsePushCommands } from "./git-main-guard.logic.ts";
+import { parsePushCommands } from "./logic.ts";
 
 type GuardedPush = { command: string; remote?: string; force: boolean };
 

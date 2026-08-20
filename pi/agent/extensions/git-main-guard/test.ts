@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parsePushCommands, pushTargetsMain } from "./git-main-guard.logic.ts";
+import { parsePushCommands, pushTargetsMain } from "./logic.ts";
 
 test("recognizes explicit pushes to main", () => {
 	assert.equal(pushTargetsMain("git push origin main"), true);
