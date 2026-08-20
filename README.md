@@ -14,7 +14,8 @@ Also, make _sure_ that your subdirectories _aren't_ empty. Like for example, if 
 
 ### Herdr
 
-`vim-herdr-navigation` is pinned as a Git submodule under `vendor/`. After
+`vim-herdr-navigation` is pinned as a Git submodule under
+`config/herdr/vendor/`, which deploys to `~/.config/herdr/vendor/`. After
 installing Herdr and jq, initialize and link it with:
 
 ```sh

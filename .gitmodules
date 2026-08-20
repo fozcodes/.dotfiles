@@ -4,6 +4,6 @@
 [submodule "config/ghostty/shaders"]
 	path = config/ghostty/shaders
 	url = git@github.com:KroneCorylus/ghostty-shader-playground.git
-[submodule "vendor/vim-herdr-navigation"]
-	path = vendor/vim-herdr-navigation
+[submodule "config/herdr/vendor/vim-herdr-navigation"]
+	path = config/herdr/vendor/vim-herdr-navigation
 	url = https://github.com/paulbkim-dev/vim-herdr-navigation.git

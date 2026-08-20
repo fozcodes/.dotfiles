@@ -4,7 +4,7 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ID="vim-herdr-navigation"
-PLUGIN_DIR="$DOTFILES_DIR/vendor/vim-herdr-navigation"
+PLUGIN_DIR="$DOTFILES_DIR/config/herdr/vendor/vim-herdr-navigation"
 
 if ! command -v herdr >/dev/null 2>&1; then
   printf 'herdr is not installed; install it before running %s\n' "$0" >&2
@@ -17,7 +17,7 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 if [[ ! -f "$PLUGIN_DIR/herdr-plugin.toml" ]]; then
-  git -C "$DOTFILES_DIR" submodule update --init -- vendor/vim-herdr-navigation
+  git -C "$DOTFILES_DIR" submodule update --init -- config/herdr/vendor/vim-herdr-navigation
 fi
 
 registered_root="$(herdr plugin list --json \

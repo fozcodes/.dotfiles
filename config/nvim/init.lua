@@ -302,7 +302,7 @@ require("lazy").setup({
     config = function()
       vim.g.tmux_navigator_no_mappings = 1 -- Disable default mappings
 
-      local herdr_navigation = vim.fn.expand("~/.dotfiles/vendor/vim-herdr-navigation/editor/nvim.lua")
+      local herdr_navigation = vim.fn.expand("~/.dotfiles/config/herdr/vendor/vim-herdr-navigation/editor/nvim.lua")
       if vim.fn.filereadable(herdr_navigation) == 1 then
         -- The Herdr integration falls back to tmux/plain wincmd when needed.
         dofile(herdr_navigation)
