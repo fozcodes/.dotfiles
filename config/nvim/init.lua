@@ -301,11 +301,19 @@ require("lazy").setup({
     lazy = false,
     config = function()
       vim.g.tmux_navigator_no_mappings = 1 -- Disable default mappings
-      -- Set the keybindings directly here to avoid lazy loading
-      vim.api.nvim_set_keymap("n", "<C-h>", ":TmuxNavigateLeft<CR>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap("n", "<C-j>", ":TmuxNavigateDown<CR>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap("n", "<C-k>", ":TmuxNavigateUp<CR>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap("n", "<C-l>", ":TmuxNavigateRight<CR>", { noremap = true, silent = true })
+
+      local herdr_navigation = vim.fn.expand("~/.dotfiles/vendor/vim-herdr-navigation/editor/nvim.lua")
+      if vim.fn.filereadable(herdr_navigation) == 1 then
+        -- The Herdr integration falls back to tmux/plain wincmd when needed.
+        dofile(herdr_navigation)
+      else
+        -- Preserve tmux navigation until the dotfiles submodule is initialized.
+        vim.api.nvim_set_keymap("n", "<C-h>", ":TmuxNavigateLeft<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "<C-j>", ":TmuxNavigateDown<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "<C-k>", ":TmuxNavigateUp<CR>", { noremap = true, silent = true })
+        vim.api.nvim_set_keymap("n", "<C-l>", ":TmuxNavigateRight<CR>", { noremap = true, silent = true })
+      end
+
       vim.api.nvim_set_keymap("n", "<C-\\>", ":TmuxNavigatePrevious<CR>", { noremap = true, silent = true })
     end,
   },
