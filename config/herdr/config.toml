@@ -95,10 +95,15 @@ new_workspace = "prefix+shift+s"
 # focus_pane_down = "prefix+j"
 # focus_pane_up = "prefix+k"
 # focus_pane_right = "prefix+l"
+
+######
 # The prefix+j/k keys below are reserved for tmux-style resizing.
 # Direct Ctrl+h/j/k/l navigation remains provided by vim-herdr-navigation.
 focus_pane_down = ""
 focus_pane_up = ""
+######
+
+
 # cycle_pane_next = "prefix+tab"
 # cycle_pane_previous = "prefix+shift+tab"
 # last_pane = ""          # optional, unset by default; bind e.g. "prefix+tab" for global back-and-forth
@@ -107,12 +112,12 @@ split_horizontal = "prefix+minus"
 # close_pane = "prefix+x"
 # zoom = "prefix+z"       # legacy alias: fullscreen
 # resize_mode = "prefix+r"
-# toggle_sidebar = "prefix+b"
+toggle_sidebar = "prefix+e"
 
 # Navigate-mode movement. These local shortcuts win while navigate mode is open.
 # They are independent from focus_pane_*. Do not include prefix+, esc, enter, tab, or 1..9 here.
-# navigate_workspace_up = "up"
-# navigate_workspace_down = "down"
+navigate_workspace_up = "k"
+navigate_workspace_down = "j"
 # navigate_pane_left = "h"      # left arrow always focuses the pane to the left
 # navigate_pane_down = "j"
 # navigate_pane_up = "k"
@@ -149,13 +154,13 @@ description = "navigate right (vim/herdr)"
 [[keys.command]]
 key = "prefix+j"
 type = "shell"
-command = "herdr pane resize --direction down --amount 0.05"
+command = "herdr pane resize --direction down --amount 0.07"
 description = "resize pane down"
 
 [[keys.command]]
 key = "prefix+k"
 type = "shell"
-command = "herdr pane resize --direction up --amount 0.05"
+command = "herdr pane resize --direction up --amount 0.07"
 description = "resize pane up"
 
 # Custom commands use the same binding syntax.
@@ -307,7 +312,7 @@ delivery = "system"
 
 # Play sounds when agents change state in background workspaces
 [ui.sound]
-# enabled = true
+enabled = true
 # Optional custom mp3 sound files. Relative paths are resolved from this config file's directory.
 # path = "sounds/notification.mp3"   # one mp3 file for all sound notifications
 # done_path = "sounds/done.mp3"      # overrides only finished notifications
