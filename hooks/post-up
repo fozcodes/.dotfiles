@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if command -v herdr >/dev/null 2>&1; then
+  "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)/bootstrap-herdr.sh"
+fi

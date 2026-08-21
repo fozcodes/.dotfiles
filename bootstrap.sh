@@ -63,8 +63,3 @@ chsh -s /opt/homebrew/bin/fish
 # copy rcm config
 ln -s ~/.dotfiles/.rcrc ~/.rcrc
 rcup
-
-# link Herdr plugins when Herdr has already been installed
-if command -v herdr >/dev/null 2>&1; then
-  ./bootstrap-herdr.sh
-fi
