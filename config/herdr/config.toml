@@ -97,10 +97,12 @@ new_workspace = "prefix+shift+s"
 # focus_pane_right = "prefix+l"
 
 ######
-# The prefix+j/k keys below are reserved for tmux-style resizing.
+# The prefix+h/j/k/l keys below are reserved for tmux-style resizing.
 # Direct Ctrl+h/j/k/l navigation remains provided by vim-herdr-navigation.
+focus_pane_left = ""
 focus_pane_down = ""
 focus_pane_up = ""
+focus_pane_right = ""
 ######
 
 
@@ -152,6 +154,12 @@ description = "navigate right (vim/herdr)"
 # Match the existing tmux resize muscle memory. Herdr's amount is a split
 # ratio increment; 0.05 is the built-in resize-mode step.
 [[keys.command]]
+key = "prefix+h"
+type = "shell"
+command = "herdr pane resize --direction left --amount 0.07"
+description = "resize pane left"
+
+[[keys.command]]
 key = "prefix+j"
 type = "shell"
 command = "herdr pane resize --direction down --amount 0.07"
@@ -162,6 +170,12 @@ key = "prefix+k"
 type = "shell"
 command = "herdr pane resize --direction up --amount 0.07"
 description = "resize pane up"
+
+[[keys.command]]
+key = "prefix+l"
+type = "shell"
+command = "herdr pane resize --direction right --amount 0.07"
+description = "resize pane right"
 
 # Custom commands use the same binding syntax.
 # type = "shell" runs detached in the background.
@@ -251,7 +265,7 @@ pane_borders = false
 # pane_scrollbars = true
 
 # Keep split panes visually separated instead of sharing divider borders.
-# pane_gaps = true
+pane_gaps = true
 
 # Show detected/reported agent labels in split pane borders when no manual pane name is set.
 # show_agent_labels_on_pane_borders = false
@@ -320,8 +334,8 @@ enabled = true
 
 # Per-agent overrides: default | on | off
 # By default, droid is muted.
-# [ui.sound.agents]
-# droid = "off"
+[ui.sound.agents]
+droid = "on"
 
 [session]
 # Resume supported AI-agent panes into their native conversation sessions after
@@ -346,7 +360,7 @@ enabled = true
 # Requires a Kitty graphics-compatible outer terminal.
 # kitty_graphics = false
 # Save recent pane screen history across full server restarts.
-pane_history = false
+pane_history = true
 # While prefix mode is active, temporarily switch the host input source to
 # an ASCII-capable mode so prefix commands register even when an IME is
 # active, then restore the previous input source when prefix mode exits. On
