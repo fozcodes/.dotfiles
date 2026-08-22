@@ -3,7 +3,7 @@
   "theme": "opencode-shade",
   "defaultProvider": "opencode-go",
   "defaultModel": "kimi-k2.7-code",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "medium",
   "packages": [
     "npm:@juicesharp/rpiv-btw",
     {
@@ -19,7 +19,8 @@
     "ssh://git@github.com/earendil-works/pi-transcribe"
   ],
   "extensions": [
-    "+extensions/usage-dashboard/index.ts"
+    "+extensions/usage-dashboard/index.ts",
+    "+extensions/jira/index.ts"
   ],
   "subagents": {
     "watchdog": {
