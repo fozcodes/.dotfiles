@@ -302,7 +302,7 @@ require("lazy").setup({
     config = function()
       vim.g.tmux_navigator_no_mappings = 1 -- Disable default mappings
 
-      local herdr_navigation = vim.fn.expand("~/.dotfiles/config/herdr/vendor/vim-herdr-navigation/editor/nvim.lua")
+      local herdr_navigation = vim.fn.expand "~/.dotfiles/config/herdr/vendor/vim-herdr-navigation/editor/nvim.lua"
       if vim.fn.filereadable(herdr_navigation) == 1 then
         -- The Herdr integration falls back to tmux/plain wincmd when needed.
         dofile(herdr_navigation)
@@ -1491,6 +1491,15 @@ require("lazy").setup({
     end,
   },
   "tpope/vim-obsession",
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.nvim" }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
