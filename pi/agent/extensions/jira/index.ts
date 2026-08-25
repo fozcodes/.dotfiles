@@ -3,6 +3,7 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 import { Type } from "typebox";
 import {
 	DEFAULT_SEARCH_FIELDS,
+	assigneeField,
 	basicAuthorization,
 	createAsyncQueue,
 	excerpt,
@@ -137,6 +138,7 @@ const mutationProject = (issueKey: string, projectKey?: string) => {
 const issueFields = Type.Array(Type.String(), { description: "Jira field names to return." });
 const optionalProject = Type.Optional(Type.String({ description: "Explicit Jira project key. Overrides this repository's default." }));
 const optionalIssueProject = Type.Optional(Type.String({ description: "Optional safety check: must match the issue key's project." }));
+const optionalAssigneeAccountId = Type.Optional(Type.String({ description: "Jira Cloud account ID. Find it with jira_assignable_users before assigning by name or email." }));
 
 export default function (pi: ExtensionAPI) {
 	const queueMutation = createAsyncQueue();
@@ -279,6 +281,35 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.registerTool({
+		name: "jira_assignable_users",
+		label: "Jira Assignable Users",
+		description: "Find users assignable in a Jira project or issue. This is read-only; use an accountId result with jira_create or jira_update.",
+		parameters: Type.Object({
+			query: Type.String({ description: "Name, email, or Jira account ID to find." }),
+			projectKey: optionalProject,
+			issueKey: Type.Optional(Type.String({ description: "Optional issue key; narrows results to users assignable to that issue." })),
+			limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 50, description: "Maximum users to return; defaults to 20." })),
+		}),
+		async execute(_id, params, signal, _update, ctx) {
+			try {
+				const query = params.query.trim();
+				if (!query) throw new Error("An assignable-user search query is required.");
+				const issueKey = params.issueKey ? normalizeIssueKey(params.issueKey) : undefined;
+				const projectKey = issueKey
+					? mutationProject(issueKey, params.projectKey)
+					: await resolveProject(ctx, params.projectKey);
+				const search = new URLSearchParams({ query, maxResults: String(params.limit ?? 20) });
+				if (issueKey) search.set("issueKey", issueKey);
+				else search.set("project", projectKey);
+				const body = await jiraRequest(`/user/assignable/search?${search}`, { signal });
+				return textResult(formatJson(body), { projectKey, ...(issueKey ? { issueKey } : {}) });
+			} catch (error) {
+				return errorResult(error);
+			}
+		},
+	});
+
+	pi.registerTool({
 		name: "jira_create_metadata",
 		label: "Jira Create Metadata",
 		description: "Retrieve allowed issue types for a Jira project before creating an issue. This is read-only.",
@@ -297,23 +328,25 @@ export default function (pi: ExtensionAPI) {
 	pi.registerTool({
 		name: "jira_create",
 		label: "Create Jira Issue",
-		description: "Create a Jira issue. Always asks the user to confirm the exact target and content before writing.",
+		description: "Create a Jira issue. Always asks the user to confirm the exact target and content before writing. Use jira_assignable_users before setting assigneeAccountId by name or email.",
 		parameters: Type.Object({
 			summary: Type.String({ description: "Issue title." }),
 			description: Type.String({ description: "Issue description in the user's voice. Preserve the supplied wording." }),
 			issueType: Type.Optional(Type.String({ description: "Jira issue type name; defaults to Task. Use jira_create_metadata if uncertain." })),
 			projectKey: optionalProject,
 			parent: Type.Optional(Type.String({ description: "Parent issue key, for example ABC-123." })),
+			assigneeAccountId: optionalAssigneeAccountId,
 			labels: Type.Optional(Type.Array(Type.String())),
 		}),
 		async execute(_id, params, signal, _update, ctx) {
 			try {
 				const projectKey = await resolveProject(ctx, params.projectKey);
 				const issueType = params.issueType?.trim() || "Task";
+				const assignee = assigneeField(params.assigneeAccountId);
 				const approved = await queueMutation(() => confirmMutation(
 					ctx,
 					`Create Jira issue in ${projectKey}?`,
-					`Type: ${issueType}\n${params.parent !== undefined ? `Parent: ${normalizeIssueKey(params.parent)}\n` : ""}Summary: ${params.summary}\n\nDescription:\n${excerpt(params.description, 1_500)}`,
+					`Type: ${issueType}\n${params.parent !== undefined ? `Parent: ${normalizeIssueKey(params.parent)}\n` : ""}${params.assigneeAccountId !== undefined ? `Assignee account ID: ${params.assigneeAccountId.trim()}\n` : ""}Summary: ${params.summary}\n\nDescription:\n${excerpt(params.description, 1_500)}`,
 					signal,
 				));
 				if (!approved) return textResult("Jira issue creation cancelled.");
@@ -326,6 +359,7 @@ export default function (pi: ExtensionAPI) {
 							description: textToAdf(params.description),
 							issuetype: { name: issueType },
 							...parentIssueField(params.parent),
+							...assignee,
 							...(params.labels ? { labels: params.labels } : {}),
 						},
 					},
@@ -341,7 +375,7 @@ export default function (pi: ExtensionAPI) {
 	pi.registerTool({
 		name: "jira_update",
 		label: "Update Jira Issue",
-		description: "Update an issue's summary, description, labels, or parent. Always asks the user to confirm before writing.",
+		description: "Update an issue's summary, description, labels, parent, or assignee. Always asks the user to confirm before writing. Use jira_assignable_users before setting assigneeAccountId by name or email.",
 		parameters: Type.Object({
 			issueKey: Type.String({ description: "Jira issue key." }),
 			projectKey: optionalIssueProject,
@@ -349,6 +383,7 @@ export default function (pi: ExtensionAPI) {
 			description: Type.Optional(Type.String()),
 			labels: Type.Optional(Type.Array(Type.String())),
 			parent: Type.Optional(Type.String({ description: "Parent issue key, for example ABC-123." })),
+			assigneeAccountId: optionalAssigneeAccountId,
 		}),
 		async execute(_id, params, signal, _update, ctx) {
 			try {
@@ -359,12 +394,13 @@ export default function (pi: ExtensionAPI) {
 					...(params.description !== undefined ? { description: textToAdf(params.description) } : {}),
 					...(params.labels !== undefined ? { labels: params.labels } : {}),
 					...parentIssueField(params.parent),
+					...assigneeField(params.assigneeAccountId),
 				};
 				if (Object.keys(fields).length === 0) throw new Error("Specify at least one field to update.");
 				const approved = await queueMutation(() => confirmMutation(
 					ctx,
 					`Update Jira issue ${issueKey}?`,
-					`Project: ${projectKey}\n${params.summary !== undefined ? `Summary: ${params.summary}\n` : ""}${params.description !== undefined ? `Description:\n${excerpt(params.description, 1_500)}\n` : ""}${params.labels !== undefined ? `Labels: ${params.labels.join(", ")}\n` : ""}${params.parent !== undefined ? `Parent: ${normalizeIssueKey(params.parent)}` : ""}`,
+					`Project: ${projectKey}\n${params.summary !== undefined ? `Summary: ${params.summary}\n` : ""}${params.description !== undefined ? `Description:\n${excerpt(params.description, 1_500)}\n` : ""}${params.labels !== undefined ? `Labels: ${params.labels.join(", ")}\n` : ""}${params.parent !== undefined ? `Parent: ${normalizeIssueKey(params.parent)}\n` : ""}${params.assigneeAccountId !== undefined ? `Assignee account ID: ${params.assigneeAccountId.trim()}` : ""}`,
 					signal,
 				));
 				if (!approved) return textResult("Jira issue update cancelled.");

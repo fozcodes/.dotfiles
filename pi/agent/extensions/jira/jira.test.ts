@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+	assigneeField,
 	basicAuthorization,
 	createAsyncQueue,
 	normalizeIssueKey,
@@ -27,10 +28,13 @@ test("validates and normalizes project and issue keys", () => {
 	assert.throws(() => normalizeIssueKey("PROJECT-zero"), /issue key/);
 });
 
-test("builds a validated parent issue field", () => {
+test("builds validated parent and assignee fields", () => {
 	assert.deepEqual(parentIssueField(), {});
 	assert.deepEqual(parentIssueField(" platform_2-42 "), { parent: { key: "PLATFORM_2-42" } });
 	assert.throws(() => parentIssueField("not-an-issue"), /issue key/);
+	assert.deepEqual(assigneeField(), {});
+	assert.deepEqual(assigneeField(" 123:account-id "), { assignee: { accountId: "123:account-id" } });
+	assert.throws(() => assigneeField(" "), /account ID/);
 });
 
 test("parses only required configuration", () => {

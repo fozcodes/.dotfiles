@@ -78,6 +78,13 @@ export const projectFromIssueKey = (issueKey: string) => normalizeIssueKey(issue
 export const parentIssueField = (parent?: string) =>
 	parent === undefined ? {} : { parent: { key: normalizeIssueKey(parent) } };
 
+export const assigneeField = (accountId?: string) => {
+	if (accountId === undefined) return {};
+	const normalizedAccountId = accountId.trim();
+	if (!normalizedAccountId) throw new Error("Jira assignee account ID is required.");
+	return { assignee: { accountId: normalizedAccountId } };
+};
+
 export const parseGlobalConfig = (value: unknown) => {
 	const record = asRecord(value);
 	if (!record) {

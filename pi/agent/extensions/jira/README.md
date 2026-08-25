@@ -54,6 +54,7 @@ Read-only:
 - `jira_search`
 - `jira_get`
 - `jira_create_metadata`
+- `jira_assignable_users`
 - `jira_transitions`
 
 Writes, each with an interactive confirmation. Confirmations are serialized, so a parallel tool batch presents one dialog at a time; Escape cancels the active confirmation and prevents queued writes from reaching Jira.
@@ -68,6 +69,8 @@ In print/JSON modes write tools refuse to run because no human confirmation is p
 ## Writing
 
 `jira_create` and `jira_update` accept an optional `parent` issue key (for example, `ABC-123`) and write it to Jira's `fields.parent`. The extension validates the key and shows the parent in its mutation confirmation.
+
+To assign a user, first call `jira_assignable_users` with their name or email and the relevant project or issue. Pass its `accountId` result as `assigneeAccountId` to `jira_create` or `jira_update`. Jira Cloud requires account IDs; assignment appears in the mutation confirmation.
 
 The extension preserves supplied summary, description, and comment text. Your repository context, examples, and instructions determine project conventions and voice. Jira descriptions and comments are sent as Atlassian Document Format paragraphs.
 
