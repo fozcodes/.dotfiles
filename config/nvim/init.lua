@@ -1500,6 +1500,10 @@ require("lazy").setup({
     ---@type render.md.UserConfig
     opts = {},
   },
+  {
+    "likec4/likec4.nvim",
+    build = "npm install -g likec4",
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
