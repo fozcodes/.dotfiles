@@ -10,7 +10,7 @@
       "source": "npm:pi-subagents",
       "extensions": [
         "+src/extension/index.ts",
-        "-index.ts"
+        "+index.ts"
       ]
     },
     "npm:@raquezha/noleaks@0.0.5",
@@ -31,5 +31,6 @@
         "thinking": "medium"
       }
     }
-  }
+  },
+  "hideThinkingBlock": false
 }
