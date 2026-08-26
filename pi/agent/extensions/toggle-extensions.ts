@@ -18,6 +18,10 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { Container, type SettingItem, SettingsList } from "@earendil-works/pi-tui";
 import { getExtensionDetails, toggleDetailDescriptions } from "./toggle-extensions/details.ts";
+import {
+	isProjectLocalPackage,
+	updateProjectPackageExtension,
+} from "./toggle-extensions/package-config.ts";
 
 type ExtensionResource = ResolvedResource & {
 	id: string;
@@ -90,6 +94,22 @@ const updatePackageExtension = (
 	agentDir: string,
 	enabled: boolean,
 ) => {
+	const pattern = getPattern(resource, cwd, agentDir);
+	if (
+		resource.metadata.scope === "user" &&
+		isProjectLocalPackage(resource.metadata.source)
+	) {
+		settingsManager.setProjectPackages(
+			updateProjectPackageExtension(
+				settingsManager.getProjectSettings().packages ?? [],
+				resource.metadata.source,
+				pattern,
+				enabled,
+			),
+		);
+		return;
+	}
+
 	const settings =
 		resource.metadata.scope === "project"
 			? settingsManager.getProjectSettings()
@@ -105,11 +125,7 @@ const updatePackageExtension = (
 
 	const pkg = typeof existing === "string" ? { source: existing } : { ...existing };
 	const current = pkg.extensions ?? [];
-	const updated = withResourceFilter(
-		current,
-		getPattern(resource, cwd, agentDir),
-		enabled,
-	);
+	const updated = withResourceFilter(current, pattern, enabled);
 	pkg.extensions = updated.length > 0 ? updated : undefined;
 
 	const hasFilters = ["extensions", "skills", "prompts", "themes"].some(
