@@ -22,6 +22,7 @@ import {
 	isProjectLocalPackage,
 	updateProjectPackageExtension,
 } from "./toggle-extensions/package-config.ts";
+import { ensureProjectSubagentsTemplate } from "./toggle-extensions/subagents-template.ts";
 
 type ExtensionResource = ResolvedResource & {
 	id: string;
@@ -189,6 +190,7 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 				return;
 			}
 
+			let settingsUpdates = Promise.resolve();
 			await ctx.ui.custom((tui, theme, _kb, done) => {
 				let showingDetails = false;
 				const items: SettingItem[] = resources.map((resource) => ({
@@ -223,15 +225,36 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 					(id, value) => {
 						const resource = byId.get(id);
 						if (!resource) return;
-						resource.enabled = value === "enabled";
-						updateExtension(
-							settingsManager,
-							resource,
-							ctx.cwd,
-							agentDir,
-							resource.enabled,
-						);
-						void settingsManager.flush();
+						const enabled = value === "enabled";
+						resource.enabled = enabled;
+						settingsUpdates = settingsUpdates
+							.then(async () => {
+								updateExtension(
+									settingsManager,
+									resource,
+									ctx.cwd,
+									agentDir,
+									enabled,
+								);
+								await settingsManager.flush();
+
+								if (
+									enabled &&
+									resource.metadata.origin === "package" &&
+									isProjectLocalPackage(resource.metadata.source)
+								) {
+									ensureProjectSubagentsTemplate(
+										join(ctx.cwd, ".pi", "settings.json"),
+									);
+									await settingsManager.reload();
+								}
+							})
+							.catch((error: unknown) => {
+								ctx.ui.notify(
+									error instanceof Error ? error.message : String(error),
+									"error",
+								);
+							});
 					},
 					() => done(undefined),
 					{ enableSearch: true },
@@ -252,6 +275,7 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 				};
 			});
 
+			await settingsUpdates;
 			await settingsManager.flush();
 			const reload = await ctx.ui.confirm(
 				"Reload Pi?",
