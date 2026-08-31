@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.84.3",
   "theme": "opencode-shade",
-  "defaultProvider": "opencode-go",
-  "defaultModel": "kimi-k2.7-code",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-terra",
   "defaultThinkingLevel": "medium",
   "packages": [
     "npm:@juicesharp/rpiv-btw",
@@ -23,3 +23,4 @@
   ],
   "hideThinkingBlock": false
 }
+
