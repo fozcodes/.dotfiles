@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.84.3",
+  "lastChangelogVersion": "0.84.4",
   "theme": "opencode-shade",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-terra",
@@ -8,7 +8,9 @@
     "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
-      "extensions": ["-index.ts"],
+      "extensions": [
+        "-index.ts"
+      ],
       "skills": [],
       "prompts": []
     },
@@ -23,4 +25,3 @@
   ],
   "hideThinkingBlock": false
 }
-
