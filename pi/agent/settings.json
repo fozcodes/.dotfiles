@@ -1,17 +1,18 @@
 {
   "lastChangelogVersion": "0.84.4",
   "theme": "opencode-shade",
-  "defaultProvider": "opencode-go",
-  "defaultModel": "kimi-k2.7-code",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-terra",
   "defaultThinkingLevel": "medium",
   "packages": [
     "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
       "extensions": [
-        "+src/extension/index.ts",
-        "+index.ts"
-      ]
+        "-index.ts"
+      ],
+      "skills": [],
+      "prompts": []
     },
     "npm:@raquezha/noleaks@0.0.5",
     "npm:pi-mcp-adapter",
@@ -22,15 +23,5 @@
     "+extensions/usage-dashboard/index.ts",
     "+extensions/jira/index.ts"
   ],
-  "subagents": {
-    "watchdog": {
-      "enabled": true,
-      "main": {
-        "enabled": true,
-        "model": "openai-codex/gpt-5.6-luna",
-        "thinking": "medium"
-      }
-    }
-  },
   "hideThinkingBlock": false
 }

@@ -1028,7 +1028,6 @@ require("lazy").setup({
               ["javascript.jsx"] = { prettier_format_command, eslint_lint_command },
               typescriptreact = { prettier_format_command, eslint_lint_command },
               javascriptreact = { prettier_format_command, eslint_lint_command },
-              json = { prettier_format_command },
               ["helm.yaml"] = {},
               yaml = { prettier_format_command },
               html = { prettier_format_command },
@@ -1158,6 +1157,7 @@ require("lazy").setup({
         lua = { "stylua" },
         markdown = { "prettierd" },
         python = { "isort", "black" },
+        json = { "prettierd" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.

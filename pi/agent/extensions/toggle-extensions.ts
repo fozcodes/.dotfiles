@@ -18,6 +18,11 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import { Container, type SettingItem, SettingsList } from "@earendil-works/pi-tui";
 import { getExtensionDetails, toggleDetailDescriptions } from "./toggle-extensions/details.ts";
+import {
+	isProjectLocalPackage,
+	updateProjectPackageExtension,
+} from "./toggle-extensions/package-config.ts";
+import { ensureProjectSubagentsTemplate } from "./toggle-extensions/subagents-template.ts";
 
 type ExtensionResource = ResolvedResource & {
 	id: string;
@@ -90,6 +95,22 @@ const updatePackageExtension = (
 	agentDir: string,
 	enabled: boolean,
 ) => {
+	const pattern = getPattern(resource, cwd, agentDir);
+	if (
+		resource.metadata.scope === "user" &&
+		isProjectLocalPackage(resource.metadata.source)
+	) {
+		settingsManager.setProjectPackages(
+			updateProjectPackageExtension(
+				settingsManager.getProjectSettings().packages ?? [],
+				resource.metadata.source,
+				pattern,
+				enabled,
+			),
+		);
+		return;
+	}
+
 	const settings =
 		resource.metadata.scope === "project"
 			? settingsManager.getProjectSettings()
@@ -105,11 +126,7 @@ const updatePackageExtension = (
 
 	const pkg = typeof existing === "string" ? { source: existing } : { ...existing };
 	const current = pkg.extensions ?? [];
-	const updated = withResourceFilter(
-		current,
-		getPattern(resource, cwd, agentDir),
-		enabled,
-	);
+	const updated = withResourceFilter(current, pattern, enabled);
 	pkg.extensions = updated.length > 0 ? updated : undefined;
 
 	const hasFilters = ["extensions", "skills", "prompts", "themes"].some(
@@ -173,6 +190,7 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 				return;
 			}
 
+			let settingsUpdates = Promise.resolve();
 			await ctx.ui.custom((tui, theme, _kb, done) => {
 				let showingDetails = false;
 				const items: SettingItem[] = resources.map((resource) => ({
@@ -207,15 +225,36 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 					(id, value) => {
 						const resource = byId.get(id);
 						if (!resource) return;
-						resource.enabled = value === "enabled";
-						updateExtension(
-							settingsManager,
-							resource,
-							ctx.cwd,
-							agentDir,
-							resource.enabled,
-						);
-						void settingsManager.flush();
+						const enabled = value === "enabled";
+						resource.enabled = enabled;
+						settingsUpdates = settingsUpdates
+							.then(async () => {
+								updateExtension(
+									settingsManager,
+									resource,
+									ctx.cwd,
+									agentDir,
+									enabled,
+								);
+								await settingsManager.flush();
+
+								if (
+									enabled &&
+									resource.metadata.origin === "package" &&
+									isProjectLocalPackage(resource.metadata.source)
+								) {
+									ensureProjectSubagentsTemplate(
+										join(ctx.cwd, ".pi", "settings.json"),
+									);
+									await settingsManager.reload();
+								}
+							})
+							.catch((error: unknown) => {
+								ctx.ui.notify(
+									error instanceof Error ? error.message : String(error),
+									"error",
+								);
+							});
 					},
 					() => done(undefined),
 					{ enableSearch: true },
@@ -236,6 +275,7 @@ export default function toggleExtensions(pi: ExtensionAPI) {
 				};
 			});
 
+			await settingsUpdates;
 			await settingsManager.flush();
 			const reload = await ctx.ui.confirm(
 				"Reload Pi?",
