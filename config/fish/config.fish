@@ -49,6 +49,10 @@ alias subl="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl"
 alias tl="tmux ls"
 alias nvimold='NVIM_APPNAME="nvim-old" nvim'
 
+# Snowflake cli
+fish_add_path /Applications/SnowSQL.app/Contents/MacOS/
+
+# functions
 function pi
   if contains -- "$argv[1]" install remove uninstall update list config auth
     command pi $argv
@@ -62,12 +66,13 @@ end
 function nvim
     env SHELL=/bin/bash command nvim $argv
 end
-# Snowflake cli
-fish_add_path /Applications/SnowSQL.app/Contents/MacOS/
 
-# functions
 function mkdircd
   mkdir -p $argv; and cd $argv
+end
+
+function mvd
+  mkdir -p (path dirname -- $argv[-1]); and command mv $argv
 end
 
 function npms
@@ -113,6 +118,7 @@ function save_your_damn_notes
   git push origin main
 end
 
+# Kubernetes functions
 function get-k8s-namespaces
   kubectl get namespaces -o json | jq -r '.items[].metadata.name'
 end
