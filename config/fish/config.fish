@@ -6,8 +6,11 @@ function fish_right_prompt
   set_color normal
 end
 
-# Equivalent to `brew shellenv`, without starting Homebrew for every shell.
-set -gx HOMEBREW_PREFIX /opt/homebrew
+# Equivalent to `brew shellenv`, using the active installation's prefix. The
+# prefix is normally set by conf.d/python_bullshit.fish before this file loads.
+if not set -q HOMEBREW_PREFIX
+  set -gx HOMEBREW_PREFIX (brew --prefix)
+end
 set -gx HOMEBREW_CELLAR "$HOMEBREW_PREFIX/Cellar"
 set -gx HOMEBREW_REPOSITORY "$HOMEBREW_PREFIX"
 fish_add_path --global --move --path "$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/sbin"

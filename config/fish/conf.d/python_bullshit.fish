@@ -1,13 +1,16 @@
 ####### PYTHON BULLSHIT #######
-# Formula prefixes are stable paths under Homebrew's `opt` directory. Do not
-# invoke `brew --prefix` for each formula: that adds hundreds of milliseconds
-# to every interactive shell startup.
-set brew_prefix /opt/homebrew
+# Formula prefixes are stable paths under Homebrew's `opt` directory. Resolve
+# the active installation once, rather than invoking `brew --prefix` per formula.
+if not set -q HOMEBREW_PREFIX
+  set -gx HOMEBREW_PREFIX (brew --prefix)
+end
+
+set brew_prefix "$HOMEBREW_PREFIX"
 set brew_openssl_formula libressl
 
 if set -q USE_LEGACY_BREW
   echo "Setting the LDFLAGS and CPPFLAGS using legacy brew..."
-  set brew_prefix /usr/local
+  set brew_prefix (arch --x86_64 /usr/local/Homebrew/bin/brew --prefix)
   set brew_openssl_formula openssl@1.1
 end
 
