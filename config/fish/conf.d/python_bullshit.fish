@@ -1,31 +1,30 @@
 ####### PYTHON BULLSHIT #######
-set brew_zlib (brew --prefix zlib)
-set brew_xz (brew --prefix xz)
-set brew_readline (brew --prefix readline)
-set brew_bzip2 (brew --prefix bzip2)
-# set brew_openssl (brew --prefix openssl@3)
-set brew_openssl (brew --prefix libressl)
-set brew_libffi (brew --prefix libffi)
-set brew_sqlite (brew --prefix sqlite)
-set brew_libomp (brew --prefix libomp)
-set brew_gcc (brew --prefix gcc)
+# Formula prefixes are stable paths under Homebrew's `opt` directory. Do not
+# invoke `brew --prefix` for each formula: that adds hundreds of milliseconds
+# to every interactive shell startup.
+set brew_prefix /opt/homebrew
+set brew_openssl_formula libressl
 
 if set -q USE_LEGACY_BREW
   echo "Setting the LDFLAGS and CPPFLAGS using legacy brew..."
-  set brew_zlib (brow --prefix zlib)
-  set brew_xz (brow --prefix xz)
-  set brew_readline (brow --prefix readline)
-  set brew_bzip2 (brow --prefix bzip2)
-  set brew_openssl (brow --prefix openssl@1.1)
-  set brew_libffi (brow --prefix libffi)
-  set brew_sqlite (brow --prefix sqlite)
-  set brew_libomp (brow --prefix libomp)
+  set brew_prefix /usr/local
+  set brew_openssl_formula openssl@1.1
 end
+
+set brew_opt "$brew_prefix/opt"
+set brew_zlib "$brew_opt/zlib"
+set brew_xz "$brew_opt/xz"
+set brew_readline "$brew_opt/readline"
+set brew_bzip2 "$brew_opt/bzip2"
+set brew_openssl "$brew_opt/$brew_openssl_formula"
+set brew_libffi "$brew_opt/libffi"
+set brew_sqlite "$brew_opt/sqlite"
+set brew_libomp "$brew_opt/libomp"
 
 #set python pretty print on everywhere... even though it only works sometimes
 set -x TBVACCINE 1
 
-set -x OPENBLAS (brew --prefix openblas)
+set -x OPENBLAS "$brew_opt/openblas"
 
 set -x LDFLAGS "-L$brew_zlib/lib"
 set -x LDFLAGS "-L$brew_xz/lib $LDFLAGS"
@@ -54,7 +53,7 @@ set -x PKG_CONFIG_PATH "$brew_sqlite/lib/pkgconfig $PKG_CONFIG_PATH"
 # set -x CXX "$brew_gcc/bin/g++-14"
 
 set -x CFLAGS "-falign-functions=8 $CFLAGS"
-set -x CFLAGS "-I$(brew --prefix openblas)/include -O $CFLAGS"
+set -x CFLAGS "-I$OPENBLAS/include -O $CFLAGS"
 
 set -x FFLAGS "-fallow-argument-mismatch"
 

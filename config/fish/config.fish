@@ -6,7 +6,20 @@ function fish_right_prompt
   set_color normal
 end
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Equivalent to `brew shellenv`, without starting Homebrew for every shell.
+set -gx HOMEBREW_PREFIX /opt/homebrew
+set -gx HOMEBREW_CELLAR "$HOMEBREW_PREFIX/Cellar"
+set -gx HOMEBREW_REPOSITORY "$HOMEBREW_PREFIX"
+fish_add_path --global --move --path "$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/sbin"
+if test -n "$MANPATH[1]"
+  set -gx MANPATH '' $MANPATH
+end
+if not set -q INFOPATH
+  set INFOPATH ''
+end
+if not contains "$HOMEBREW_PREFIX/share/info" $INFOPATH
+  set -gx INFOPATH "$HOMEBREW_PREFIX/share/info" $INFOPATH
+end
 
 set PATH /usr/local/opt/make/libexec/gnubin $PATH
 set PATH /usr/local/opt/findutils/libexec/gnubin $PATH
@@ -14,7 +27,7 @@ set PATH ~/.local/bin $PATH
 set PATH /opt/homebrew/opt/postgresql@14/bin $PATH
 set PATH ~/.rd/bin $PATH
 
-set BREW_HOME (brew --prefix)
+set BREW_HOME "$HOMEBREW_PREFIX"
 
 
 fish_add_path -p $BREW_HOME/opt/postgresql@16/bin
@@ -252,7 +265,15 @@ set -g fish_user_paths "$BREW_HOME/opt/libressl/bin" "/Users/foz/.bin" $fish_use
 
 set -g -x "OPENCODE_CONFIG" "$HOME/Code/.opencode.jsonc"
 
-thefuck --alias | source
+function fuck --description "Correct your previous console command"
+  set -l fucked_up_command $history[1]
+  env TF_SHELL=fish TF_ALIAS=fuck PYTHONIOENCODING=utf-8 thefuck $fucked_up_command THEFUCK_ARGUMENT_PLACEHOLDER $argv | read -l unfucked_command
+  if test -n "$unfucked_command"
+    eval $unfucked_command
+    builtin history delete --exact --case-sensitive -- $fucked_up_command
+    builtin history merge
+  end
+end
 
 set -x EDITOR nvim
 

@@ -15,6 +15,11 @@ success_symbol = "[λ](bold green)"     # The "symbol" segment is being set to "
 [package]
 disabled = true
 
+# Swift version discovery can take >100ms merely because a Swift source file
+# is nearby. Keep the prompt responsive; use `swift --version` when needed.
+[swift]
+disabled = true
+
 [aws]
 disabled = true
 
