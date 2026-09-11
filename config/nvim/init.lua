@@ -1137,6 +1137,10 @@ require("lazy").setup({
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
+        if vim.b[bufnr].disable_autoformat then
+          return
+        end
+
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
@@ -1545,6 +1549,11 @@ require("lazy").setup({
     },
   },
 })
+
+vim.api.nvim_create_user_command("ToggleConform", function()
+  vim.b.disable_autoformat = not vim.b.disable_autoformat
+  vim.notify(("Conform autoformat: %s"):format(vim.b.disable_autoformat and "off" or "on"))
+end, { desc = "Toggle Conform autoformat for the current buffer" })
 
 -- Autocommand that sets foldmethod and foldlevel for init.lua only
 vim.api.nvim_create_autocmd("BufReadPost", {
