@@ -153,6 +153,14 @@ type = "plugin_action"
 command = "vim-herdr-navigation.right"
 description = "navigate right (vim/herdr)"
 
+# Golden ration configs
+[[keys.command]]
+key = "prefix+f"
+type = "plugin_action"
+command = "vv.golden-ratio.apply"
+description = "golden ratio"
+
+
 # Match the existing tmux resize muscle memory. Herdr's amount is a split
 # ratio increment; 0.05 is the built-in resize-mode step.
 [[keys.command]]
