@@ -279,7 +279,7 @@ function fuck --description "Correct your previous console command"
 end
 
 set -x EDITOR nvim
-set -x PI_WEB_TOOLS_EXA_ENDPOINT=http://127.0.0.1:8989
+set -x PI_WEB_TOOLS_EXA_ENDPOINT http://127.0.0.1:8989
 
 
 # opencode
