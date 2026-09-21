@@ -17,7 +17,8 @@
     "npm:@raquezha/noleaks@0.0.5",
     "npm:pi-mcp-adapter",
     "git:github.com/dmmulroy/pi-web-tools",
-    "ssh://git@github.com/earendil-works/pi-transcribe"
+    "ssh://git@github.com/earendil-works/pi-transcribe",
+    "npm:pi-context-view"
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts",
