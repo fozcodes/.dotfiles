@@ -8,21 +8,22 @@
  * UI: top-to-bottom, earliest-to-latest message (same as /fork).
  */
 
-import type { ExtensionAPI, SessionEntry } from "@earendil-works/pi-coding-agent";
+import {
+	UserMessageSelectorComponent,
+	type ExtensionAPI,
+	type SessionEntry,
+} from "@earendil-works/pi-coding-agent";
 import { readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 
-function formatUserEntry(entry: SessionEntry, idx: number): string {
-	const prefix = `[${String(idx).padStart(3)}] `;
-	if (entry.type !== "message" || entry.message.role !== "user") return `${prefix}❓`;
-	const content =
-		typeof entry.message.content === "string"
-			? entry.message.content
-			: entry.message.content
-					.filter((c) => c.type === "text")
-					.map((c) => c.text)
-					.join(" ");
-	return `${prefix}👤 ${content.slice(0, 60)}${content.length > 60 ? "…" : ""}`;
+function userMessageText(entry: SessionEntry): string {
+	if (entry.type !== "message" || entry.message.role !== "user") return "";
+	return typeof entry.message.content === "string"
+		? entry.message.content
+		: entry.message.content
+				.filter((content) => content.type === "text")
+				.map((content) => content.text)
+				.join(" ");
 }
 
 export default function (pi: ExtensionAPI) {
@@ -46,10 +47,9 @@ export default function (pi: ExtensionAPI) {
 				return;
 			}
 
-			// getBranch() returns leaf → root. Reverse so the UI is:
-			// top = earliest message, bottom = latest message (same as /fork).
-			// Filter to user messages only, matching /fork behavior.
-			const chronological = branch.slice().reverse();
+			// getBranch() is already earliest → latest, matching /fork.
+			// Filter to user messages only.
+			const chronological = branch.slice();
 			const userEntries = chronological.filter(
 				(entry) => entry.type === "message" && entry.message.role === "user",
 			);
@@ -59,24 +59,34 @@ export default function (pi: ExtensionAPI) {
 				return;
 			}
 
-			const labels = userEntries.map((entry, idx) => formatUserEntry(entry, idx));
+			const selectedEntryId = await ctx.ui.custom<string | undefined>((tui, _theme, _keybindings, done) => {
+				const selector = new UserMessageSelectorComponent(
+					userEntries.map((entry) => ({ id: entry.id, text: userMessageText(entry) })),
+					done,
+					() => done(undefined),
+					userEntries.at(-1)?.id,
+				);
+				const messageList = selector.getMessageList();
 
-			const selectedLabel = await ctx.ui.select(
-				"Split at this point (tangent → new session):",
-				labels,
-			);
-			if (!selectedLabel) {
+				return {
+					render: (width) => selector.render(width),
+					invalidate: () => selector.invalidate(),
+					handleInput: (data) => {
+						messageList.handleInput(data);
+						tui.requestRender();
+					},
+				};
+			});
+			if (!selectedEntryId) {
 				ctx.ui.notify("Split cancelled", "info");
 				return;
 			}
 
-			const selectedIdx = labels.indexOf(selectedLabel);
-			if (selectedIdx === -1) {
+			const selectedEntry = userEntries.find((entry) => entry.id === selectedEntryId);
+			if (!selectedEntry) {
 				ctx.ui.notify("Invalid selection", "error");
 				return;
 			}
-
-			const selectedEntry = userEntries[selectedIdx];
 			// forwardCount includes all entries from this user message onward
 			const chronologicalIdx = chronological.findIndex((e) => e.id === selectedEntry.id);
 			const forwardCount = chronological.length - chronologicalIdx;
@@ -92,17 +102,16 @@ export default function (pi: ExtensionAPI) {
 
 			// Read current session file
 			const content = readFileSync(sessionFile, "utf-8");
-			const lines = content.trim().split("\n");
-
-			if (lines.length === 0) {
+			const [headerLine, ...entryLines] = content.trim().split("\n");
+			if (!headerLine) {
 				ctx.ui.notify("Empty session file", "error");
 				return;
 			}
 
-			const header = JSON.parse(lines[0]);
+			const header = JSON.parse(headerLine);
 			const allEntries: SessionEntry[] = [];
-			for (let i = 1; i < lines.length; i++) {
-				const line = lines[i].trim();
+			for (const entryLine of entryLines) {
+				const line = entryLine.trim();
 				if (line) allEntries.push(JSON.parse(line));
 			}
 
