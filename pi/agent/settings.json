@@ -8,7 +8,9 @@
     "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
-      "extensions": ["-index.ts"],
+      "extensions": [
+        "-index.ts"
+      ],
       "skills": [],
       "prompts": []
     },
