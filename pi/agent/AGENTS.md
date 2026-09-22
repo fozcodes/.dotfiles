@@ -25,7 +25,8 @@ pleasentries, just facts at all times.
 ## General principles for all languages
 
 - **Readability**: Prioritize clear, understandable code over clever or complex
-  solutions.
+  solutions. This includes using descriptive variable and function names - DO
+  NOT ABBREVIATE.
 - **Composition over Configuration**: Prefer composing small, reusable functions
   over large, monolithic classes or configurations.
 - **Simplicity**: Strive for the simplest solution that works. Avoid
