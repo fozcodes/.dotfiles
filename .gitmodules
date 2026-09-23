@@ -7,3 +7,6 @@
 [submodule "config/herdr/vendor/vim-herdr-navigation"]
 	path = config/herdr/vendor/vim-herdr-navigation
 	url = https://github.com/paulbkim-dev/vim-herdr-navigation.git
+[submodule "config/herdr/vendor/herdr-golden-ratio"]
+	path = config/herdr/vendor/herdr-golden-ratio
+	url = https://github.com/vigneshwerv/herdr-golden-ratio.git
