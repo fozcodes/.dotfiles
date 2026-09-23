@@ -1016,7 +1016,7 @@ require("lazy").setup({
                   rootMarkers = { "mix.lock", "mix.exs" },
                 },
               },
-              sql = { { formatCommand = "sql-formatter --config ~/.sql-formatter.config.json", formatStdin = true } },
+              -- sql = { { formatCommand = "sql-formatter --config ~/.sql-formatter.config.json", formatStdin = true } },
               typescript = { prettier_format_command, eslint_lint_command },
               javascript = { prettier_format_command, eslint_lint_command },
               ["javascript.jsx"] = { prettier_format_command, eslint_lint_command },
@@ -1128,40 +1128,52 @@ require("lazy").setup({
         desc = "[F]ormat buffer",
       },
     },
-    opts = {
-      notify_on_error = true,
-      format_on_save = function(bufnr)
-        if vim.b[bufnr].disable_autoformat then
-          return
-        end
+    opts = function()
+      local conform_util = require "conform.util"
 
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        return {
-          timeout_ms = 2000,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-        }
-      end,
-      formatters = {
-        prettierd = {
-          env = {
-            PRETTIERD_DEFAULT_CONFIG = vim.fn.expand "~/.config/nvim/utils/linter-config/.prettierrc.json",
+      return {
+        notify_on_error = true,
+        format_on_save = function(bufnr)
+          if vim.b[bufnr].disable_autoformat then
+            return
+          end
+
+          -- Disable "format_on_save lsp_fallback" for languages that don't
+          -- have a well standardized coding style. You can add additional
+          -- languages here or re-enable it for the disabled ones.
+          local disable_filetypes = { c = true, cpp = true }
+          return {
+            timeout_ms = 2000,
+            lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+          }
+        end,
+        formatters = {
+          prettierd = {
+            env = {
+              PRETTIERD_DEFAULT_CONFIG = vim.fn.expand "~/.config/nvim/utils/linter-config/.prettierrc.json",
+            },
+          },
+          sqlfluff = {
+            command = "poetry",
+            args = { "run", "sqlfluff", "fix", "-" },
+            stdin = true,
+            cwd = conform_util.root_file { "pyproject.toml", ".sqlfluff" },
+            require_cwd = true,
           },
         },
-      },
-      formatters_by_ft = {
-        lua = { "stylua" },
-        markdown = { "prettierd" },
-        python = { "isort", "black" },
-        json = { "prettierd" },
-        --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
-      },
-    },
+        formatters_by_ft = {
+          lua = { "stylua" },
+          markdown = { "prettierd" },
+          python = { "isort", "black" },
+          json = { "prettierd" },
+          sql = { "sqlfluff" },
+          --
+          -- You can use a sub-list to tell conform to run *until* a formatter
+          -- is found.
+          -- javascript = { { "prettierd", "prettier" } },
+        },
+      }
+    end,
   },
 
   { -- Autocompletion
