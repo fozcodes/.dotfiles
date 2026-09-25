@@ -1,8 +1,11 @@
 import { readFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import type { Skill } from "@earendil-works/pi-coding-agent";
 
 const lockFileName = ".skill-lock.json";
+const globalAgentsDirectory = join(homedir(), ".agents");
+const globalAgentsSkillDirectory = join(globalAgentsDirectory, "skills");
 
 type SkillLock = Record<string, string>;
 
@@ -37,7 +40,14 @@ const loadLock = (path: string) => {
 	return lock;
 };
 
-export const getSkillPublisher = async (skill: Skill) => {
+export const matchSkillPublisher = (
+	skillName: string,
+	currentContent: string,
+	lockedContent: string,
+	publishers: SkillLock,
+) => (currentContent === lockedContent ? publishers[skillName] : undefined);
+
+const getPublisherFromAncestorLock = async (skill: Skill) => {
 	let directory = dirname(skill.filePath);
 
 	while (true) {
@@ -50,3 +60,21 @@ export const getSkillPublisher = async (skill: Skill) => {
 		directory = parent;
 	}
 };
+
+const getPublisherFromMatchingGlobalSkill = async (skill: Skill) => {
+	const publishers = await loadLock(join(globalAgentsDirectory, lockFileName));
+	if (!publishers[skill.name]) return undefined;
+
+	try {
+		const [currentContent, lockedContent] = await Promise.all([
+			readFile(skill.filePath, "utf8"),
+			readFile(join(globalAgentsSkillDirectory, skill.name, "SKILL.md"), "utf8"),
+		]);
+		return matchSkillPublisher(skill.name, currentContent, lockedContent, publishers);
+	} catch {
+		return undefined;
+	}
+};
+
+export const getSkillPublisher = async (skill: Skill) =>
+	(await getPublisherFromAncestorLock(skill)) ?? getPublisherFromMatchingGlobalSkill(skill);

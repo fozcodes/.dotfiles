@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parseSkillLock } from "./provenance.ts";
+import { matchSkillPublisher, parseSkillLock } from "./provenance.ts";
 
 test("maps skills to the repository recorded by skill-install", () => {
 	assert.deepEqual(
@@ -18,6 +18,15 @@ test("maps skills to the repository recorded by skill-install", () => {
 			"show-me": "humanlayer/skills",
 		},
 	);
+});
+
+test("attributes duplicate skills only when their contents match", () => {
+	const publishers = { implement: "mattpocock/skills" };
+	assert.equal(
+		matchSkillPublisher("implement", "same skill", "same skill", publishers),
+		"mattpocock/skills",
+	);
+	assert.equal(matchSkillPublisher("implement", "local edit", "upstream skill", publishers), undefined);
 });
 
 test("ignores malformed or incomplete lock metadata", () => {
