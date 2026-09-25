@@ -1,7 +1,7 @@
 /**
  * Skill configuration
  *
- * Provides `/skills` to inspect every loaded skill and toggle model invocation.
+ * Provides `/skills` and `/skill-settings` to inspect every loaded skill and toggle model invocation.
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { relative } from "node:path";
@@ -44,12 +44,16 @@ const updateSkill = async (skill: SkillResource, disabled: boolean) => {
 	if (updated !== source) await writeFile(skill.filePath, updated, "utf8");
 };
 
-export default function toggleSkills(pi: ExtensionAPI) {
-	pi.registerCommand("skills", {
-		description: "List skills and toggle model invocation",
+const registerSkillsCommand = (
+	pi: ExtensionAPI,
+	name: string,
+	description: string,
+) => {
+	pi.registerCommand(name, {
+		description,
 		handler: async (_args, ctx) => {
 			if (!ctx.hasUI) {
-				ctx.ui.notify("/skills requires interactive mode.", "error");
+				ctx.ui.notify("Skill settings require interactive mode.", "error");
 				return;
 			}
 
@@ -127,4 +131,13 @@ export default function toggleSkills(pi: ExtensionAPI) {
 			if (changed) await ctx.reload();
 		},
 	});
+};
+
+export default function toggleSkills(pi: ExtensionAPI) {
+	registerSkillsCommand(pi, "skills", "List skills and toggle model invocation");
+	registerSkillsCommand(
+		pi,
+		"skill-settings",
+		"List skills and toggle model invocation",
+	);
 }
