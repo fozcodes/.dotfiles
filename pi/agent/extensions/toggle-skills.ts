@@ -7,6 +7,11 @@ import { readFile, writeFile } from "node:fs/promises";
 import { relative } from "node:path";
 import { getSettingsListTheme, type ExtensionAPI, type Skill } from "@earendil-works/pi-coding-agent";
 import { Container, type SettingItem, SettingsList } from "@earendil-works/pi-tui";
+import {
+	formatSkillColumnHeader,
+	formatSkillColumns,
+	formatSkillDetails,
+} from "./toggle-skills/display.ts";
 import { setSkillModelInvocation } from "./toggle-skills/frontmatter.ts";
 
 type SkillResource = Skill & {
@@ -20,7 +25,7 @@ const buildResources = (skills: Skill[]) =>
 			(skill): SkillResource => ({
 				...skill,
 				id: skill.filePath,
-				label: `${skill.sourceInfo.scope}: ${skill.name}`,
+				label: formatSkillColumns(skill),
 			}),
 		)
 		.sort((left, right) => left.label.localeCompare(right.label));
@@ -56,7 +61,7 @@ export default function toggleSkills(pi: ExtensionAPI) {
 				const items: SettingItem[] = resources.map((resource) => ({
 					id: resource.id,
 					label: resource.label,
-					description: resource.description,
+					description: formatSkillDetails(resource),
 					currentValue: resource.disableModelInvocation ? "manual-only" : "agent-invocable",
 					values: ["agent-invocable", "manual-only"],
 				}));
@@ -69,8 +74,9 @@ export default function toggleSkills(pi: ExtensionAPI) {
 								theme.fg("accent", theme.bold("Skill Configuration")),
 								theme.fg(
 									"muted",
-									"Descriptions shown below. Changes apply after reload.",
+									"Source identifies the package or top-level resource. Changes apply after reload.",
 								),
+								formatSkillColumnHeader(),
 								"",
 							];
 						}
