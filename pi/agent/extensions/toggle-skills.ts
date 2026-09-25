@@ -5,8 +5,8 @@
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { relative } from "node:path";
-import type { ExtensionAPI, Skill } from "@earendil-works/pi-coding-agent";
-import { Container, type SettingItem, SettingsList, getSettingsListTheme } from "@earendil-works/pi-tui";
+import { getSettingsListTheme, type ExtensionAPI, type Skill } from "@earendil-works/pi-coding-agent";
+import { Container, type SettingItem, SettingsList } from "@earendil-works/pi-tui";
 import { setSkillModelInvocation } from "./toggle-skills/frontmatter.ts";
 
 type SkillResource = Skill & {
