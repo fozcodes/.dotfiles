@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { matchSkillPublisher, parseSkillLock } from "./provenance.ts";
+import {
+	matchSkillPublisher,
+	parsePublisherOverrides,
+	parseSkillLock,
+} from "./provenance.ts";
 
 test("maps skills to the repository recorded by skill-install", () => {
 	assert.deepEqual(
@@ -16,6 +20,19 @@ test("maps skills to the repository recorded by skill-install", () => {
 		{
 			implement: "mattpocock/skills",
 			"show-me": "humanlayer/skills",
+		},
+	);
+});
+
+test("reads author overrides scoped to the installing repository", () => {
+	assert.deepEqual(
+		parsePublisherOverrides(
+			JSON.stringify({
+				"mattpocock/skills": { caveman: "JuliusBrussee/caveman" },
+			}),
+		),
+		{
+			"mattpocock/skills": { caveman: "JuliusBrussee/caveman" },
 		},
 	);
 });

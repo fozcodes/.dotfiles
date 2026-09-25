@@ -4,10 +4,19 @@ import { dirname, join } from "node:path";
 import type { Skill } from "@earendil-works/pi-coding-agent";
 
 const lockFileName = ".skill-lock.json";
+const publisherOverridesFileName = "skill-publishers.json";
 const globalAgentsDirectory = join(homedir(), ".agents");
 const globalAgentsSkillDirectory = join(globalAgentsDirectory, "skills");
 
+const getAgentDirectory = () => {
+	const configured = process.env.PI_CODING_AGENT_DIR?.trim();
+	if (!configured) return join(homedir(), ".pi", "agent");
+	if (configured === "~") return homedir();
+	return configured.startsWith("~/") ? join(homedir(), configured.slice(2)) : configured;
+};
+
 type SkillLock = Record<string, string>;
+type PublisherOverrides = Record<string, Record<string, string>>;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);
@@ -24,6 +33,28 @@ export const parseSkillLock = (content: string) => {
 			}
 		}
 		return publishers;
+	} catch {
+		return {};
+	}
+};
+
+export const parsePublisherOverrides = (content: string) => {
+	try {
+		const parsed: unknown = JSON.parse(content);
+		if (!isRecord(parsed)) return {};
+
+		const overrides: PublisherOverrides = {};
+		for (const [installer, values] of Object.entries(parsed)) {
+			if (!isRecord(values)) continue;
+			const publishers: Record<string, string> = {};
+			for (const [skill, publisher] of Object.entries(values)) {
+				if (typeof publisher === "string" && publisher !== "") {
+					publishers[skill] = publisher;
+				}
+			}
+			if (Object.keys(publishers).length > 0) overrides[installer] = publishers;
+		}
+		return overrides;
 	} catch {
 		return {};
 	}
@@ -46,6 +77,16 @@ export const matchSkillPublisher = (
 	lockedContent: string,
 	publishers: SkillLock,
 ) => (currentContent === lockedContent ? publishers[skillName] : undefined);
+
+const publisherOverrides = readFile(
+	join(getAgentDirectory(), publisherOverridesFileName),
+	"utf8",
+)
+	.then(parsePublisherOverrides)
+	.catch(() => ({}));
+
+const getPublisherOverride = async (skillName: string, installer: string) =>
+	(await publisherOverrides)[installer]?.[skillName];
 
 const getPublisherFromAncestorLock = async (skill: Skill) => {
 	let directory = dirname(skill.filePath);
@@ -76,5 +117,9 @@ const getPublisherFromMatchingGlobalSkill = async (skill: Skill) => {
 	}
 };
 
-export const getSkillPublisher = async (skill: Skill) =>
-	(await getPublisherFromAncestorLock(skill)) ?? getPublisherFromMatchingGlobalSkill(skill);
+export const getSkillPublisher = async (skill: Skill) => {
+	const installer =
+		(await getPublisherFromAncestorLock(skill)) ??
+		(await getPublisherFromMatchingGlobalSkill(skill));
+	return installer ? (await getPublisherOverride(skill.name, installer)) ?? installer : undefined;
+};
