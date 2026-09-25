@@ -25,8 +25,8 @@ const skill: Skill = {
 };
 
 test("formats source as a fixed-width skills-list column", () => {
-	assert.equal(formatSkillColumnHeader(), "Name              Source            ");
-	assert.equal(formatSkillColumns(skill), "example-skill     npm:example-pkg   ");
+	assert.equal(formatSkillColumnHeader(), "Name            Publisher           ");
+	assert.equal(formatSkillColumns(skill, "mattpocock/skills"), "example-skill   mattpocock/skills   ");
 });
 
 test("uses its installation root for auto-discovered skills", () => {
@@ -45,8 +45,9 @@ test("uses its installation root for auto-discovered skills", () => {
 
 test("includes package provenance and installed location in skill details", () => {
 	assert.equal(
-		formatSkillDetails(skill),
+		formatSkillDetails(skill, "mattpocock/skills"),
 		[
+			"Publisher: mattpocock/skills",
 			"Source: npm:example-pkg",
 			"Origin: package (user)",
 			"Installed at: /packages/example",

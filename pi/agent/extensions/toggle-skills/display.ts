@@ -1,8 +1,8 @@
 import { homedir } from "node:os";
 import type { Skill } from "@earendil-works/pi-coding-agent";
 
-const nameColumnWidth = 16;
-const sourceColumnWidth = 18;
+const nameColumnWidth = 14;
+const publisherColumnWidth = 20;
 
 const fitColumn = (value: string, width: number) =>
 	(value.length <= width ? value : `${value.slice(0, width - 1)}…`).padEnd(width);
@@ -17,14 +17,15 @@ export const getSkillSource = (skill: Skill) =>
 		? abbreviateHome(skill.sourceInfo.baseDir ?? skill.baseDir)
 		: skill.sourceInfo.source;
 
-export const formatSkillColumns = (skill: Skill) =>
-	`${fitColumn(skill.name, nameColumnWidth)}  ${fitColumn(getSkillSource(skill), sourceColumnWidth)}`;
+export const formatSkillColumns = (skill: Skill, publisher: string) =>
+	`${fitColumn(skill.name, nameColumnWidth)}  ${fitColumn(publisher, publisherColumnWidth)}`;
 
 export const formatSkillColumnHeader = () =>
-	`${fitColumn("Name", nameColumnWidth)}  ${fitColumn("Source", sourceColumnWidth)}`;
+	`${fitColumn("Name", nameColumnWidth)}  ${fitColumn("Publisher", publisherColumnWidth)}`;
 
-export const formatSkillDetails = (skill: Skill) =>
+export const formatSkillDetails = (skill: Skill, publisher: string) =>
 	[
+		`Publisher: ${publisher}`,
 		`Source: ${getSkillSource(skill)}`,
 		`Origin: ${skill.sourceInfo.origin} (${skill.sourceInfo.scope})`,
 		`Installed at: ${skill.sourceInfo.baseDir ?? skill.sourceInfo.path}`,

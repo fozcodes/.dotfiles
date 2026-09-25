@@ -12,23 +12,29 @@ import {
 	formatSkillColumns,
 	formatSkillDetails,
 } from "./toggle-skills/display.ts";
+import { getSkillPublisher } from "./toggle-skills/provenance.ts";
 import { setSkillModelInvocation } from "./toggle-skills/frontmatter.ts";
 
 type SkillResource = Skill & {
 	id: string;
 	label: string;
+	publisher: string;
 };
 
-const buildResources = (skills: Skill[]) =>
-	skills
-		.map(
-			(skill): SkillResource => ({
-				...skill,
-				id: skill.filePath,
-				label: formatSkillColumns(skill),
+const buildResources = async (skills: Skill[]) =>
+	(
+		await Promise.all(
+			skills.map(async (skill) => {
+				const publisher = (await getSkillPublisher(skill)) ?? "unattributed";
+				return {
+					...skill,
+					id: skill.filePath,
+					label: formatSkillColumns(skill, publisher),
+					publisher,
+				};
 			}),
 		)
-		.sort((left, right) => left.label.localeCompare(right.label));
+	).sort((left, right) => left.label.localeCompare(right.label));
 
 const modeForValue = (value: string) => value === "manual-only";
 
@@ -47,7 +53,7 @@ export default function toggleSkills(pi: ExtensionAPI) {
 				return;
 			}
 
-			const resources = buildResources(ctx.getSystemPromptOptions().skills);
+			const resources = await buildResources(ctx.getSystemPromptOptions().skills);
 			if (resources.length === 0) {
 				ctx.ui.notify("No skills found.", "info");
 				return;
@@ -61,7 +67,7 @@ export default function toggleSkills(pi: ExtensionAPI) {
 				const items: SettingItem[] = resources.map((resource) => ({
 					id: resource.id,
 					label: resource.label,
-					description: formatSkillDetails(resource),
+					description: formatSkillDetails(resource, resource.publisher),
 					currentValue: resource.disableModelInvocation ? "manual-only" : "agent-invocable",
 					values: ["agent-invocable", "manual-only"],
 				}));
@@ -74,7 +80,7 @@ export default function toggleSkills(pi: ExtensionAPI) {
 								theme.fg("accent", theme.bold("Skill Configuration")),
 								theme.fg(
 									"muted",
-									"Source identifies the package or top-level resource. Changes apply after reload.",
+									"Publisher identifies the skill's author repository. Changes apply after reload.",
 								),
 								formatSkillColumnHeader(),
 								"",
