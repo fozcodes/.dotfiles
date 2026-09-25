@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
+import { homedir } from "node:os";
 import test from "node:test";
 import type { Skill } from "@earendil-works/pi-coding-agent";
-import { formatSkillColumnHeader, formatSkillColumns, formatSkillDetails } from "./display.ts";
+import {
+	formatSkillColumnHeader,
+	formatSkillColumns,
+	formatSkillDetails,
+	getSkillSource,
+} from "./display.ts";
 
 const skill: Skill = {
 	name: "example-skill",
@@ -21,6 +27,20 @@ const skill: Skill = {
 test("formats source as a fixed-width skills-list column", () => {
 	assert.equal(formatSkillColumnHeader(), "Name              Source            ");
 	assert.equal(formatSkillColumns(skill), "example-skill     npm:example-pkg   ");
+});
+
+test("uses its installation root for auto-discovered skills", () => {
+	const autoDiscoveredSkill: Skill = {
+		...skill,
+		sourceInfo: {
+			...skill.sourceInfo,
+			source: "auto",
+			origin: "top-level",
+			baseDir: `${homedir()}/.agents`,
+		},
+	};
+
+	assert.equal(getSkillSource(autoDiscoveredSkill), "~/.agents");
 });
 
 test("includes package provenance and installed location in skill details", () => {
