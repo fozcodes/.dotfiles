@@ -326,7 +326,11 @@ show_agent_labels_on_pane_borders = true
 # delivery = "off"
 # delay_seconds = 1
 
-delivery = "system"
+# NOTE: "system" delivery on macOS shows generic AppleScript icon and
+# opens Finder on click because herdr is a CLI binary without a .app
+# bundle identifier. Use "terminal" so Ghostty handles notifications
+# natively with proper icon and focus-on-click.
+delivery = "terminal"
 [ui.toast.herdr]
 # position = "bottom-right"
 
