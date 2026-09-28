@@ -1,0 +1,59 @@
+import assert from "node:assert/strict";
+import { homedir } from "node:os";
+import test from "node:test";
+import type { Skill } from "@earendil-works/pi-coding-agent";
+import {
+	formatSkillColumnHeader,
+	formatSkillColumns,
+	formatSkillDetails,
+	getSkillSource,
+} from "./display.ts";
+
+const skill: Skill = {
+	name: "example-skill",
+	description: "Does example work.",
+	filePath: "/packages/example/skills/example/SKILL.md",
+	baseDir: "/packages/example/skills/example",
+	sourceInfo: {
+		path: "/packages/example/skills/example/SKILL.md",
+		source: "npm:example-pkg",
+		scope: "user",
+		origin: "package",
+		baseDir: "/packages/example",
+	},
+	disableModelInvocation: false,
+};
+
+test("formats source as a fixed-width skills-list column", () => {
+	assert.equal(formatSkillColumnHeader(), "Name            Publisher           ");
+	assert.equal(formatSkillColumns(skill, "mattpocock/skills"), "example-skill   mattpocock/skills   ");
+});
+
+test("uses its installation root for auto-discovered skills", () => {
+	const autoDiscoveredSkill: Skill = {
+		...skill,
+		sourceInfo: {
+			...skill.sourceInfo,
+			source: "auto",
+			origin: "top-level",
+			baseDir: `${homedir()}/.agents`,
+		},
+	};
+
+	assert.equal(getSkillSource(autoDiscoveredSkill), "~/.agents");
+});
+
+test("includes package provenance and installed location in skill details", () => {
+	assert.equal(
+		formatSkillDetails(skill, "mattpocock/skills"),
+		[
+			"Publisher: mattpocock/skills",
+			"Source: npm:example-pkg",
+			"Origin: package (user)",
+			"Installed at: /packages/example",
+			"Skill file: /packages/example/skills/example/SKILL.md",
+			"",
+			"Does example work.",
+		].join("\n"),
+	);
+});
