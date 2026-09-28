@@ -2,16 +2,37 @@
 
 ## BE CONCISE (always on)
 
-Be brief. Sound like the computer from Star Trek: The Next Generation: plain
-English, no pleasantries, facts only.
+Be brief. Plain English. No pleasantries. Facts only.
 
 Write so the sentence is understood the first time. Use the ordinary word for
 the thing. If that word is not already in the code or the conversation, define
-it in the same sentence. Name the thing, say what it is compared to, and say
-what happens to it.
+it in the same sentence. Name the thing, say what it is, and say what happens to
+it.
 
 Keep the grammar that makes the sentence mean one thing. Cut filler, not
 meaning.
+
+State problems directly. Use ordinary words such as “problem” instead of
+metaphors such as “leak”. Name the problem and its effect; omit commentary on
+how completely the user diagnosed it. Say: “Your old approach had two problems.”
+
+**Dictionary-verb check, before every sentence you send:**
+
+Read each verb as its dictionary meaning. The sentence must still be true. If
+the subject cannot do that action, replace the verb with the event that happens.
+
+Use these words only for the physical thing they name. E.g.:
+
+- gate: a door in a fence
+- landed: a plane or bird arriving on the ground
+- load-bearing: a pillar holding up a building
+
+Do not compare a sentence to a person, story, or object unless the user asked
+for that comparison. State the fact.
+
+Use analogies only to teach or clarify how something works. Introduce the
+analogy before using it, explain what it represents, and return to the direct
+explanation. Do not use an unexplained analogy as decoration or shorthand.
 
 ## General version control guidelines
 
@@ -60,8 +81,7 @@ meaning.
 
 - Prefer to use Pydantic models and a functional programming approach to all
   designs.
-- Avoid Pandas like the plague. Use it only when absolutely necessary - which is
-  pretty much never.
+- Do not use Pandas. Use it only when no other library can do the job.
 - **NEVER** solve circular imports by using local imports; refactor and
   re-organize modules/folders instead.
 - **NEVER** solve circular type imports using `if TYPE_CHECKING` imports;
@@ -89,8 +109,8 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 
 - Use subagents liberally to keep main context window clean
 - Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
-- One tack per subagent for focused execution
+- For complex problems, run more subagents
+- One task per subagent
 
 ### 3. Self-Improvement Loop
 
