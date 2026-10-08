@@ -70,6 +70,8 @@ fish_add_path /Applications/SnowSQL.app/Contents/MacOS/
 
 # functions
 function pi
+  set -lx ASDF_NODEJS_VERSION (awk '$1 == "nodejs" { $1 = ""; sub(/^[ \t]+/, ""); print; exit }' ~/.tool-versions)
+
   if contains -- "$argv[1]" install remove uninstall update list config auth
     command pi $argv
   else if set -q PI_DEFAULT_MODEL; and test -n "$PI_DEFAULT_MODEL"
