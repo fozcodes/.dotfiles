@@ -38,7 +38,5 @@
   protocol = ssh
 [credential]
   helper = osxkeychain
-[include]
-    path = ~/.gitconfig.private
 [url "git@github.com:"]
-  insteadOf = https://github.com/
+	insteadOf = https://github.com/
