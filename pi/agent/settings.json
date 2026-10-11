@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.0.4",
+  "lastChangelogVersion": "1.1.0",
   "theme": "opencode-shade",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-terra",
@@ -17,7 +17,8 @@
     "npm:@raquezha/noleaks@0.0.5",
     "git:github.com/dmmulroy/pi-web-tools",
     "ssh://git@github.com/earendil-works/pi-transcribe",
-    "npm:pi-context-view"
+    "npm:pi-context-view",
+    "npm:pi-goal-x"
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts",
