@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.1.0",
+  "lastChangelogVersion": "1.2.0",
   "theme": "opencode-shade",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-terra",
@@ -8,9 +8,7 @@
     "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
-      "extensions": [
-        "-index.ts"
-      ],
+      "extensions": ["-index.ts"],
       "skills": [],
       "prompts": []
     },

@@ -36,6 +36,7 @@ set BREW_HOME "$HOMEBREW_PREFIX"
 fish_add_path -p $BREW_HOME/opt/postgresql@16/bin
 fish_add_path -p $BREW_HOME/bin
 fish_add_path -p $HOME/.asdf/shims
+fish_add_path -p -m $HOME/.pi/agent/bin
 
 # ASDF
 # source $HOME/.asdf/asdf.fish
