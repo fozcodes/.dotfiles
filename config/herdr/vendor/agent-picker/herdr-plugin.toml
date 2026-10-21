@@ -1,0 +1,20 @@
+id = "foz.agent-picker"
+name = "Agent Picker"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Fuzzy-pick and focus an agent from the current Herdr session."
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "open"
+title = "Pick an agent"
+contexts = ["global"]
+command = ["bash", "scripts/open.sh"]
+
+[[panes]]
+id = "picker"
+title = "Agents"
+placement = "popup"
+width = "80%"
+height = "50%"
+command = ["bash", "scripts/pick.sh"]

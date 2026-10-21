@@ -155,6 +155,13 @@ type = "plugin_action"
 command = "vim-herdr-navigation.right"
 description = "navigate right (vim/herdr)"
 
+# Agent picker
+[[keys.command]]
+key = "prefix+a"
+type = "plugin_action"
+command = "foz.agent-picker.open"
+description = "pick an agent"
+
 # Golden ration configs
 [[keys.command]]
 key = "prefix+f"

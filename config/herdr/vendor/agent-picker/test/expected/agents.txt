@@ -1,0 +1,8 @@
+! blocked  1 api                  claude   Approve the destructive migration	wa1:p2 wa1:t2
+! blocked  4 a rather long label  codex    Waiting on your review	wd4:p1 wd4:t1
++ done     2 web                  claude   Second pane	wb2:p2 wb2:t2
++ done     2 web                  claude   Tenth pane	wb2:p10 wb2:t3
+. idle     0 we5                  codex    Workspace not in the list	we5:p1 we5:t1
+. idle     1 api                  claude   Refactor the router	wa1:p1 wa1:t1
+> working  2 web                  claude   Ship the landing page	wb2:p1 wb2:t1
+? unknown  3 ~notes               claude   claude	wc3:p1 wc3:t1
