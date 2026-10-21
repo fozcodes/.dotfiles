@@ -32,6 +32,10 @@ set PATH ~/.rd/bin $PATH
 
 set BREW_HOME "$HOMEBREW_PREFIX"
 
+# Skip brew bundle's Go dumper: no Go binaries installed, and its `go` probe
+# fails under brew's scrubbed PATH (asdf shim can't find `asdf`).
+set -gx HOMEBREW_BUNDLE_DUMP_NO_GO 1
+
 
 fish_add_path -p $BREW_HOME/opt/postgresql@16/bin
 fish_add_path -p $BREW_HOME/bin
