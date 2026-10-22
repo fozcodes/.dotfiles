@@ -84,6 +84,13 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
   standards.
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid
   introducing bugs.
+- **Strategic over Tactical**: Focus on long-term maintainability and
+  scalability rather than short-term gains. Avoid quick fixes that compromise
+  code quality.
+- **Parallelism**: When possible, break down tasks into smaller, independent
+  units that can be executed in parallel to improve efficiency and reduce
+  bottlenecks. In such cases, treat errors as data that can be collected and
+  reported, rather than stopping any sub-process or the entire process.
 
 ## Typescript-specific guidelines
 
@@ -149,6 +156,8 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 - For non-trivial changes: pause and ask "Is there a more elegant way?"
 - If a fix feels hacky: "Knowing everything I know now, implement the elegant
   solution"
+- See _General principles for all languages_ above, specifically **Strategic
+  over Tactical** and **Simplicity**
 - Skip this for simple, obvious fixes – don't over-engineer
 - Challenge your own work before presenting it
 
@@ -162,7 +171,8 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 ## Task Management
 
 - Always use `.scratch/` for agent working files (`todo.md`, `lessons.md`,
-  notes, temp plans). Never create repo-root `tasks/` for agent state.
+  notes, temp plans) unless otherwise directed. Never create repo-root `tasks/`
+  for agent state.
 
 1. _Plan First_: Write plan to '.scratch/todo.md' with checkable items
 2. _Verify Plan_: Check in before starting implementation
