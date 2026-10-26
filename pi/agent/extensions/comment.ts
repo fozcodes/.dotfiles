@@ -118,10 +118,43 @@ export default function comment(pi: ExtensionAPI) {
       }
 
       try {
-        const editedText = editWithExternalEditor(
-          formatQuotedEditorText(lastAssistantText),
-        );
-        ctx.ui.setEditorText(editedText);
+        // Run the editor inside ctx.ui.custom so the TUI stops first. An
+        // external editor mutates raw-input / keyboard-protocol state; if it
+        // runs while the TUI is active, bindings and scrolling break until Pi
+        // restarts.
+        const outcome = await ctx.ui.custom<
+          { text?: string; error?: Error } | undefined
+        >((tui, _theme, _keybindings, done) => {
+          tui.stop();
+
+          let result: { text?: string; error?: Error } | undefined;
+          try {
+            result = {
+              text: editWithExternalEditor(
+                formatQuotedEditorText(lastAssistantText),
+              ),
+            };
+          } catch (error) {
+            result = {
+              error: error instanceof Error ? error : new Error(String(error)),
+            };
+          } finally {
+            tui.start();
+            tui.requestRender(true);
+            done(result);
+          }
+
+          return { render: () => [], invalidate: () => {} };
+        });
+
+        if (outcome?.error) {
+          throw outcome.error;
+        }
+        if (!outcome?.text) {
+          return;
+        }
+
+        ctx.ui.setEditorText(outcome.text);
         ctx.ui.notify(
           "Loaded edited quoted assistant text into the editor",
           "info",
