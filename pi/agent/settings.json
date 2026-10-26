@@ -22,7 +22,8 @@
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts",
-    "+extensions/jira/index.ts"
+    "+extensions/jira/index.ts",
+    "+extensions/shaded-input.ts"
   ],
   "hideThinkingBlock": false,
   "markdown.mermaid": "final"
