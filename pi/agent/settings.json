@@ -16,13 +16,14 @@
     },
     "npm:@raquezha/noleaks@0.0.5",
     "git:github.com/dmmulroy/pi-web-tools",
-    "ssh://git@github.com/earendil-works/pi-transcribe",
     "npm:pi-context-view",
-    "npm:pi-goal-x"
+    "npm:pi-goal-x",
+    "npm:@earendil-works/pi-voice"
   ],
   "extensions": [
     "+extensions/usage-dashboard/index.ts",
-    "+extensions/jira/index.ts"
+    "+extensions/jira/index.ts",
+    "+extensions/shaded-input.ts"
   ],
   "hideThinkingBlock": false,
   "markdown.mermaid": "final"
