@@ -66,6 +66,12 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
 - **Observability**: Make important state transitions and failures diagnosable
   through explicit checks, useful logs or traces, and clear recovery steps.
 
+### Docker-related things
+
+- Use `docker` compatible designs as if everything is done with Docker.
+- This machine uses `podman`, which should have full compatibility with Docker.
+  If you find a command that doesn't work, report it and we'll fix it.
+
 ## General principles for all languages
 
 - **Readability**: Prioritize clear, understandable code over clever or complex
