@@ -66,6 +66,10 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
 - **Observability**: Make important state transitions and failures diagnosable
   through explicit checks, useful logs or traces, and clear recovery steps.
 
+- **Prefix all commands with `source ../.envrc && source .envrc &&` to load
+  environment variables from `.envrc` files. If you see an env variable that
+  says `prod`, stop.**
+
 ### Docker-related things
 
 - Use `docker` compatible designs as if everything is done with Docker.
@@ -116,9 +120,6 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
   re-organize modules/folders instead.
 - **NEVER** solve circular type imports using `if TYPE_CHECKING` imports;
   refactor and re-organize modules/folders instead.
-
-### General best Python practices:
-
 - Avoid Object Oriented Programming; prefer functional programming with pure
   functions. If you need something not offered by `functools`, use the Toolz
   library for functional utilities.

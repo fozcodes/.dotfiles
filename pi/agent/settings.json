@@ -17,7 +17,12 @@
     "npm:@raquezha/noleaks@0.0.5",
     "git:github.com/dmmulroy/pi-web-tools",
     "npm:pi-context-view",
-    "npm:pi-goal-x",
+    {
+      "source": "npm:pi-goal-x",
+      "extensions": [
+        "-extensions/goal.ts"
+      ]
+    },
     "npm:@earendil-works/pi-voice"
   ],
   "extensions": [
