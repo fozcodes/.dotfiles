@@ -187,3 +187,8 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 4. _Explain Changes_: High-level summary at each step
 5. _Document Results_: Add review section to '.scratch/todo.md'
 6. _Capture Lessons_: Update '.scratch/lessons.md' after corrections
+
+## Additional Rules
+
+Read [AGENTS-PRIVATE.md](AGENTS-PRIVATE.md) if it exists for additional rules
+and guidelines that apply to all agents.
