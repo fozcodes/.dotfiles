@@ -1,5 +1,9 @@
 # Agent Guidelines for General Code and Practices
 
+## Documentation
+
+- **NEVER** write tests for Markdown or documentation files.
+
 ## BE CONCISE (always on)
 
 Be brief. Plain English. No pleasantries. Facts only.
