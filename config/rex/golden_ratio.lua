@@ -221,16 +221,21 @@ local last_revision = {}
 local last_focus = {}
 local pending_timers = {}
 
+local function attach_and_remember(session_id)
+  local attached, attach_error = rex.session.attach{ session_id = session_id }
+  if not attached or not attached.view then
+    rex.log("warn", "golden ratio: cannot attach to session: " .. tostring(attach_error))
+    return
+  end
+
+  last_revision[session_id] = attached.view.revision
+  last_focus[session_id] = focused_signature(attached.view)
+end
+
 local sessions, sessions_error = rex.call("session.list")
 if sessions then
   for _, session in ipairs(sessions.sessions or {}) do
-    local view, view_error = rex.session.view{ session_id = session.session_id }
-    if view then
-      last_revision[session.session_id] = view.revision
-      last_focus[session.session_id] = focused_signature(view)
-    else
-      rex.log("warn", "golden ratio: cannot read session view: " .. tostring(view_error))
-    end
+    attach_and_remember(session.session_id)
   end
 else
   rex.log("warn", "golden ratio: cannot list sessions: " .. tostring(sessions_error))
@@ -279,6 +284,12 @@ rex.on("session_view_changed", function(ctx, event)
     apply_to_view(session_id, view)
   end)
   pending_timers[session_id] = timer
+end)
+
+rex.on("session_created", function(_, event)
+  if event.session_id then
+    attach_and_remember(event.session_id)
+  end
 end)
 
 rex.on("session_destroyed", function(_, event)
