@@ -8,7 +8,9 @@
     "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
-      "extensions": ["-index.ts"],
+      "extensions": [
+        "-index.ts"
+      ],
       "skills": [],
       "prompts": []
     },
@@ -17,7 +19,9 @@
     "npm:pi-context-view",
     {
       "source": "npm:pi-goal-x",
-      "extensions": ["-extensions/goal.ts"]
+      "extensions": [
+        "-extensions/goal.ts"
+      ]
     },
     "npm:@earendil-works/pi-voice"
   ],
@@ -27,10 +31,15 @@
     "+extensions/shaded-input.ts"
   ],
   "hideThinkingBlock": false,
-  "markdown.mermaid": "final",
+  "markdown": {
+    "mermaid": "final"
+  },
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"project\"}": "0.84.0",
     "{\"source\":\"npm:@raquezha/noleaks@0.0.5\",\"scope\":\"user\"}": "0.0.5",
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
+  },
+  "terminal": {
+    "clearOnShrink": true
   }
 }
