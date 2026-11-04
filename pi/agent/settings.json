@@ -28,7 +28,7 @@
   "hideThinkingBlock": false,
   "markdown.mermaid": "final",
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.82.1",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0",
     "{\"source\":\"npm:@raquezha/noleaks@0.0.5\",\"scope\":\"user\"}": "0.0.5"
   }
 }
