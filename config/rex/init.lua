@@ -16,6 +16,133 @@ local function is_nvim_foreground(process)
   return nvim_process_names[name] == true
 end
 
+local layout_epsilon = 0.000001
+
+local function active_window(view)
+  for _, window in ipairs(view.windows or {}) do
+    if window.window_id == view.active_window_id then
+      return window
+    end
+  end
+  return nil
+end
+
+local function collect_layout_blocks(node, blocks)
+  if node.block_id and node.rect then
+    blocks[#blocks + 1] = { block_id = node.block_id, rect = node.rect }
+    return
+  end
+  if not node.split then
+    return
+  end
+  collect_layout_blocks(node.split.before, blocks)
+  collect_layout_blocks(node.split.after, blocks)
+end
+
+local function adjacent_pane_distance(source, candidate, direction)
+  local source_x, source_y, source_width, source_height = unpack(source.rect)
+  local candidate_x, candidate_y, candidate_width, candidate_height = unpack(candidate.rect)
+  if direction == "up" or direction == "down" then
+    local overlap = math.min(source_x + source_width, candidate_x + candidate_width)
+      - math.max(source_x, candidate_x)
+    if overlap <= layout_epsilon then
+      return nil
+    end
+    if direction == "up" then
+      local distance = source_y - (candidate_y + candidate_height)
+      if distance >= -layout_epsilon then
+        return math.max(0, distance), overlap
+      end
+    else
+      local distance = candidate_y - (source_y + source_height)
+      if distance >= -layout_epsilon then
+        return math.max(0, distance), overlap
+      end
+    end
+    return nil
+  end
+
+  local overlap = math.min(source_y + source_height, candidate_y + candidate_height)
+    - math.max(source_y, candidate_y)
+  if overlap <= layout_epsilon then
+    return nil
+  end
+  if direction == "left" then
+    local distance = source_x - (candidate_x + candidate_width)
+    if distance >= -layout_epsilon then
+      return math.max(0, distance), overlap
+    end
+  else
+    local distance = candidate_x - (source_x + source_width)
+    if distance >= -layout_epsilon then
+      return math.max(0, distance), overlap
+    end
+  end
+  return nil
+end
+
+local function adjacent_tiled_pane(view, focused_block_id, direction)
+  local window = active_window(view)
+  if not window then
+    return nil
+  end
+
+  local blocks = {}
+  for _, layer in ipairs(window.layers or {}) do
+    if layer.kind == "tiled" and layer.layout then
+      collect_layout_blocks(layer.layout, blocks)
+    end
+  end
+
+  local focused_block
+  for _, block in ipairs(blocks) do
+    if block.block_id == focused_block_id then
+      focused_block = block
+      break
+    end
+  end
+  if not focused_block then
+    return nil
+  end
+
+  local nearest_block_id
+  local nearest_distance
+  local nearest_overlap
+  for _, candidate in ipairs(blocks) do
+    if candidate.block_id ~= focused_block_id then
+      local distance, overlap = adjacent_pane_distance(focused_block, candidate, direction)
+      if distance and overlap and (
+        not nearest_distance
+        or distance < nearest_distance - layout_epsilon
+        or (math.abs(distance - nearest_distance) <= layout_epsilon and overlap > nearest_overlap)
+      ) then
+        nearest_block_id = candidate.block_id
+        nearest_distance = distance
+        nearest_overlap = overlap
+      end
+    end
+  end
+  return nearest_block_id
+end
+
+local function focus_adjacent_pane(session_id, block_id, direction)
+  local view, view_error = rex.session.view { session_id = session_id }
+  if not view then
+    rex.log("warn", "pane navigation: view lookup failed: " .. tostring(view_error))
+    return nil, view_error
+  end
+
+  local target_block_id = adjacent_tiled_pane(view, block_id, direction)
+  if target_block_id then
+    return rex.session.focus_block { session_id = session_id, block_id = target_block_id }
+  end
+  return rex.call("session.focus_direction", {
+    session_id = session_id,
+    direction = direction,
+    wrap = false,
+  })
+end
+
 local function bind_pane_navigation(key, direction)
   rex.bind(key, function(ctx)
     if not ctx.session_id or not ctx.block_id then
@@ -43,10 +170,7 @@ local function bind_pane_navigation(key, direction)
       return false
     end
 
-    local result, focus_error = rex.call("session.focus_direction", {
-      session_id = ctx.session_id,
-      direction = direction,
-    })
+    local result, focus_error = focus_adjacent_pane(ctx.session_id, ctx.block_id, direction)
     if not result then
       rex.log("warn", "pane navigation: focus failed: " .. tostring(focus_error))
     end
