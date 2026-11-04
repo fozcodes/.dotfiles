@@ -302,9 +302,12 @@ require("lazy").setup({
     config = function()
       vim.g.tmux_navigator_no_mappings = 1 -- Disable default mappings
 
+      local rex_navigation = vim.fn.expand "~/.dotfiles/config/nvim/lua/custom/rex_navigation.lua"
       local herdr_navigation = vim.fn.expand "~/.dotfiles/config/herdr/vendor/vim-herdr-navigation/editor/nvim.lua"
-      if vim.fn.filereadable(herdr_navigation) == 1 then
-        -- The Herdr integration falls back to tmux/plain wincmd when needed.
+      if vim.env.REX_SESSION and vim.env.REX_SESSION ~= "" and vim.fn.filereadable(rex_navigation) == 1 then
+        dofile(rex_navigation)
+      elseif vim.fn.filereadable(herdr_navigation) == 1 then
+        -- Keep the existing Herdr integration when Neovim runs in Herdr.
         dofile(herdr_navigation)
       else
         -- Preserve tmux navigation until the dotfiles submodule is initialized.

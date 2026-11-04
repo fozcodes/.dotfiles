@@ -8,9 +8,7 @@
     "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
-      "extensions": [
-        "-index.ts"
-      ],
+      "extensions": ["-index.ts"],
       "skills": [],
       "prompts": []
     },
@@ -19,9 +17,7 @@
     "npm:pi-context-view",
     {
       "source": "npm:pi-goal-x",
-      "extensions": [
-        "-extensions/goal.ts"
-      ]
+      "extensions": ["-extensions/goal.ts"]
     },
     "npm:@earendil-works/pi-voice"
   ],
