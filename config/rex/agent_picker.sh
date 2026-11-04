@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_PATH="/Users/foz/.dotfiles/config/rex/agent_picker.sh"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="$SCRIPT_DIR/$(basename -- "${BASH_SOURCE[0]}")"
 REX_BIN="${REX_BIN:-$(command -v rex || true)}"
 JQ_BIN="${JQ_BIN:-$(command -v jq || true)}"
 FZF_BIN="${FZF_BIN:-$(command -v fzf || true)}"
@@ -11,8 +12,9 @@ done
 for candidate in /opt/homebrew/bin/fzf /usr/local/bin/fzf; do
   if [[ -z "$FZF_BIN" && -x "$candidate" ]]; then FZF_BIN="$candidate"; fi
 done
-if [[ -z "$REX_BIN" && -x "/Users/foz/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex" ]]; then
-  REX_BIN="/Users/foz/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex"
+rex_app_binary="$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex"
+if [[ -z "$REX_BIN" && -x "$rex_app_binary" ]]; then
+  REX_BIN="$rex_app_binary"
 fi
 PICKER_SESSION="${REX_SESSION:-}"
 PICKER_BLOCK="${REX_BLOCK:-}"
@@ -90,59 +92,65 @@ matching_status_record() {
   '
 }
 
+list_session_rows() {
+  local session_id="$1" session_label="$2" view_json
+  view_json="$(rex_api -s "$session_id" session.view)" || return 0
+
+  while IFS=$'\t' read -r window_id window_label block_id; do
+    [[ -n "$block_id" ]] || continue
+
+    local process_json status_json status_record state status_message title cwd project
+    process_json="$(rex_api -s "$session_id" block.method \
+      "$("$JQ_BIN" -cn --arg block "$block_id" \
+        '{block_id:$block,method:"process"}')" 2>/dev/null)" || continue
+    status_json="$(rex_api -s "$session_id" block.method \
+      "$("$JQ_BIN" -cn --arg block "$block_id" \
+        '{block_id:$block,method:"program_status"}')" 2>/dev/null)" || status_json='{"records":[]}'
+
+    status_record="$(printf '%s' "$status_json" | matching_status_record)"
+    if [[ "$status_record" == '{}' ]] && ! printf '%s' "$process_json" | is_pi_process; then
+      continue
+    fi
+
+    state="$(printf '%s' "$status_record" | "$JQ_BIN" -r '.state // "unknown"')"
+    status_message="$(printf '%s' "$status_record" | "$JQ_BIN" -r '.msg // ""')"
+    title="$(printf '%s' "$status_record" | "$JQ_BIN" -r '.title // ""')"
+    cwd="$(printf '%s' "$process_json" | "$JQ_BIN" -r '.foreground.cwd // ""')"
+    project="${cwd%/}"
+    project="${project##*/}"
+    [[ -n "$title" ]] || title="$project"
+    [[ -n "$title" ]] || title="Pi"
+    [[ -n "$session_label" ]] || session_label="Session"
+    [[ -n "$window_label" ]] || window_label="Window"
+
+    local marker display rank
+    marker="$(status_style "$state")"
+    rank="$(status_rank "$state")"
+    display="$marker $state  $(clean_field "$title")  $(clean_field "$session_label") / $(clean_field "$window_label")"
+    printf '%s\037%s\037%s\037%s\037%s\037%s\037%s\n' \
+      "$rank" "$display" "$session_id" "$block_id" \
+      "$(clean_field "$status_message")" "$(clean_field "$title")" "$window_id"
+  done < <("$JQ_BIN" -r '
+    .windows[]? as $window
+    | $window.layers[]?.blocks[]?
+    | select(.creator_name == "com.superlogical.terminal")
+    | [$window.window_id // "", $window.label // "", .block_id // ""]
+    | @tsv
+  ' <<< "$view_json")
+}
+
 list_rows() {
   require_commands
   local sessions_json
   sessions_json="$("$REX_BIN" ls --json)" || fail "could not list sessions"
 
-  while IFS=$'\t' read -r session_id session_label; do
-    [[ -n "$session_id" ]] || continue
-    local view_json
-    view_json="$(rex_api -s "$session_id" session.view)" || continue
-
-    while IFS=$'\t' read -r window_id window_label block_id; do
-      [[ -n "$block_id" ]] || continue
-
-      local process_json status_json status_record state status_message title cwd project
-      process_json="$(rex_api -s "$session_id" block.method \
-        "$("$JQ_BIN" -cn --arg block "$block_id" \
-          '{block_id:$block,method:"process"}')" 2>/dev/null)" || continue
-      status_json="$(rex_api -s "$session_id" block.method \
-        "$("$JQ_BIN" -cn --arg block "$block_id" \
-          '{block_id:$block,method:"program_status"}')" 2>/dev/null)" || status_json='{"records":[]}'
-
-      status_record="$(printf '%s' "$status_json" | matching_status_record)"
-      if [[ "$status_record" == '{}' ]] && ! printf '%s' "$process_json" | is_pi_process; then
-        continue
-      fi
-
-      state="$(printf '%s' "$status_record" | "$JQ_BIN" -r '.state // "unknown"')"
-      status_message="$(printf '%s' "$status_record" | "$JQ_BIN" -r '.msg // ""')"
-      title="$(printf '%s' "$status_record" | "$JQ_BIN" -r '.title // ""')"
-      cwd="$(printf '%s' "$process_json" | "$JQ_BIN" -r '.foreground.cwd // ""')"
-      project="${cwd%/}"
-      project="${project##*/}"
-      [[ -n "$title" ]] || title="$project"
-      [[ -n "$title" ]] || title="Pi"
-      [[ -n "$session_label" ]] || session_label="Session"
-      [[ -n "$window_label" ]] || window_label="Window"
-
-      local marker display rank
-      marker="$(status_style "$state")"
-      rank="$(status_rank "$state")"
-      display="$marker $state  $(clean_field "$title")  $(clean_field "$session_label") / $(clean_field "$window_label")"
-      printf '%s\037%s\037%s\037%s\037%s\037%s\037%s\n' \
-        "$rank" "$display" "$session_id" "$block_id" \
-        "$(clean_field "$status_message")" "$(clean_field "$title")" "$window_id"
-    done < <("$JQ_BIN" -r '
-      .windows[]? as $window
-      | $window.layers[]?.blocks[]?
-      | select(.creator_name == "com.superlogical.terminal")
-      | [$window.window_id // "", $window.label // "", .block_id // ""]
-      | @tsv
-    ' <<< "$view_json")
-  done < <("$JQ_BIN" -r '.sessions[]? | [.session_id, .label // ""] | @tsv' <<< "$sessions_json") \
-    | sort -t $'\037' -k1,1n -k2,2
+  {
+    while IFS=$'\t' read -r session_id session_label; do
+      [[ -n "$session_id" ]] || continue
+      list_session_rows "$session_id" "$session_label" &
+    done < <("$JQ_BIN" -r '.sessions[]? | [.session_id, .label // ""] | @tsv' <<< "$sessions_json")
+    wait
+  } | sort -t $'\037' -k1,1n -k2,2
 }
 
 preview_pane() {

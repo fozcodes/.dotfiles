@@ -99,7 +99,9 @@ rex.bind("resize/j", "pane.resize", { amount = 5, direction = "down" })
 rex.bind("resize/k", "pane.resize", { amount = 5, direction = "up" })
 rex.bind("resize/l", "pane.resize", { amount = 5, direction = "right" })
 
-local agent_picker_script = "/Users/foz/.dotfiles/config/rex/agent_picker.sh"
+local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local agent_picker_script = config_home .. "/rex/agent_picker.sh"
+local agent_picker_cwd = os.getenv("HOME") or "/"
 
 rex.action({
 	name = "pi_agent_picker",
@@ -136,7 +138,7 @@ rex.action({
 				options = {
 					command = { "/bin/bash", agent_picker_script, "pick", app_client_id },
 					shell = "none",
-					cwd = "/Users/foz/.dotfiles",
+					cwd = agent_picker_cwd,
 					exit = { on_completion = false },
 				},
 			}),
