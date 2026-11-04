@@ -6,4 +6,4 @@ auto = true
 # focus changes (milliseconds).
 debounce_ms = 20
 # Skip a resize when the split is already this close to the target.
-# min_delta = 0.02
+min_delta = 0.02
