@@ -103,6 +103,16 @@ local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.con
 local agent_picker_script = config_home .. "/rex/agent_picker.sh"
 local agent_picker_cwd = os.getenv("HOME") or "/"
 
+-- Copy-mode: scrollback overlay with vim keys. Own code, see copy_mode*.lua.
+-- Based on the concept of https://github.com/CJNE/rex-copy-mode (MIT),
+-- rewritten from scratch: starts in normal mode, y closes after yanking.
+dofile(config_home .. "/rex/copy_mode.lua").setup({
+  key = "ctrl+s>[",
+  nvim = "/opt/homebrew/bin/nvim",
+  rex = os.getenv("HOME")
+    .. "/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex",
+})
+
 rex.action({
 	name = "pi_agent_picker",
 	title = "Pick Pi Agent",
