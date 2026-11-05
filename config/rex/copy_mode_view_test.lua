@@ -20,6 +20,8 @@ local root = debug.getinfo(1, "S").source:gsub("^@", ""):match("^(.*/)")
 local directory = vim.system({ "mktemp", "-d", "/tmp/rex-copy-mode-XXXXXXXXXX" }):wait().stdout:gsub("%s+$", "")
 assert(directory:match("/rex%-copy%-mode%-%w+$"), "smoke test made an unexpected temp directory")
 
+local long_line = "COPYMODE_SENTINEL_" .. string.rep("x", 140)
+
 local file = assert(io.open(directory .. "/meta.json", "wb"))
 file:write(vim.json.encode({
   title = "(copy-mode) smoke",
@@ -34,8 +36,8 @@ file:write(vim.json.encode({
 }))
 file:close()
 
-file = assert(io.open(directory .. "/capture.vt", "wb"))
-file:write("\27[31mRED\27[0m plain \27]0;title\7\27[6nrest\r\ntail")
+file = assert(io.open(directory .. "/capture.txt", "wb"))
+file:write(long_line .. "\ntail\n")
 file:close()
 
 -- The real viewer runs, errors fail closed via cquit, so any error here means
@@ -59,11 +61,15 @@ vim.g.clipboard = {
 
 dofile(root .. "copy_mode_view.lua")
 
-test("viewer created a terminal buffer with the capture rendered", function()
+test("viewer keeps a long captured line as one yanked buffer line", function()
   local buffer = vim.api.nvim_get_current_buf()
   assert(buffer ~= 0, "no buffer")
   assert(vim.bo[buffer].filetype == "copy-mode", "wrong buffer")
-  -- (Mode is untestable mid-script headlessly; runtime behavior is manual.)
+  assert(vim.wo.wrap == false, "viewer wraps visual lines")
+  local lines = vim.api.nvim_buf_get_lines(buffer, 0, 1, false)
+  assert(lines[1] == long_line, "viewer split the long capture line")
+  vim.cmd('normal! ggV"ay')
+  assert(vim.fn.getreg("a") == long_line .. "\n", "linewise yank inserted a wrap")
 end)
 
 test("selection maps installed: x y/CR, n y; no p without paste_to_pane", function()

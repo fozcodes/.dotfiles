@@ -6,6 +6,10 @@ local M = {}
 local ESCAPE = string.char(27)
 local UTF8_RANDOM_LEFTOVER = "\194" -- first byte of UTF-8-encoded C1 controls
 
+function M.strip_terminal_nul(text)
+  return (text:gsub("%z", ""))
+end
+
 local C1_TO_CSI = {
   [0x10] = "P", -- DCS  (0x90)
   [0x18] = "X", -- SOS  (0x98)

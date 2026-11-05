@@ -50,6 +50,10 @@ local function is_valid_utf8(text)
   return true
 end
 
+test("terminal NUL cells are excluded from copied text", function()
+  assert_equal("copy text", common.strip_terminal_nul("copy\0 text"))
+end)
+
 test("sanitizer passes plain text through untouched", function()
   assert_equal("plain text\twith.tab and\nnewline", common.sanitize_vt("plain text\twith.tab and\rnewline"))
 end)

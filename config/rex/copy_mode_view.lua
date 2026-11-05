@@ -2,11 +2,15 @@
 -- copy_mode.lua (no user config, plugins, shada or swapfile). Owns cleanup:
 -- any exit deletes the capture directory and best-effort refocuses the pane
 -- the user was reading, without stealing focus from a pane they moved to.
-local root = assert(debug.getinfo(1, "S").source:gsub("^@", ""):match("^(.*/)"))
-local common = dofile(root .. "copy_mode_common.lua")
-
 local directory = vim.g.copy_mode_capture_dir
 local metadata = {}
+
+local function read_binary(path)
+  local file = assert(io.open(path, "rb"))
+  local data = file:read("*a")
+  file:close()
+  return data or ""
+end
 
 -- Validate before touching anything: the path must be a copy-mode snapshot
 -- directory that this user owns, so a stale or hostile glyph/path never loads.
@@ -16,13 +20,6 @@ assert(
     and stat.uid == vim.uv.getuid(),
   "not an owned rex copy-mode temporary directory"
 )
-
-local function read_binary(path)
-  local file = assert(io.open(path, "rb"))
-  local data = file:read("*a")
-  file:close()
-  return data or ""
-end
 
 local function run_cli(argv)
   local result = vim.system(argv, { text = true, timeout = 2000 }):wait()
@@ -166,16 +163,22 @@ local function start_viewer()
   vim.opt.relativenumber = false
   vim.opt.signcolumn = "no"
   vim.opt.foldcolumn = "0"
-  vim.opt.scrollback = 100000
   vim.opt.modeline = false
   vim.opt.swapfile = false
   vim.opt.shadafile = "NONE"
 
+  -- A terminal buffer represents soft-wrapped screen rows as separate buffer
+  -- lines. Copying a visual selection from it therefore inserts line breaks
+  -- that the source program never wrote. Load Rex's already-unwrapped text in
+  -- a normal no-wrap buffer so each buffer line stays a logical output line.
+  vim.cmd("edit " .. vim.fn.fnameescape(directory .. "/capture.txt"))
   local buffer = vim.api.nvim_get_current_buf()
-  local channel = vim.api.nvim_open_term(buffer, { force_crlf = true, on_input = function() end })
-  assert(channel ~= 0, "could not open the internal terminal")
   vim.bo[buffer].bufhidden = "wipe"
   vim.bo[buffer].filetype = "copy-mode"
+  vim.bo[buffer].modifiable = false
+  vim.bo[buffer].readonly = true
+  vim.wo.wrap = false
+  vim.wo.linebreak = false
 
   -- Visual mode: selection actions. y and <CR> copy to the system clipboard
   -- and close; p (when enabled) also types the selection into the source pane.
@@ -199,33 +202,12 @@ local function start_viewer()
     desc = "Yank line and close copy-mode",
   })
 
-  -- Terminal-mode input goes to the invisible channel and is swallowed, so
-  -- common movement keys leave terminal mode instead of being ignored.
-  for _, key in ipairs({ "h", "j", "k", "l", "w", "b", "e", "<C-d>", "<C-u>", "<C-f>", "<C-b>" }) do
-    vim.keymap.set("t", key, "<C-\\><C-n>" .. key, { buffer = buffer, silent = true, nowait = true })
-  end
-  vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { buffer = buffer, silent = true })
-  vim.keymap.set("t", "i", "<C-\\><C-n>", { buffer = buffer, silent = true })
-
-  -- q exits from anywhere (n/v/t). Esc also closes in normal mode.
+  -- q exits from normal or visual mode. Esc also closes in normal mode.
   vim.keymap.set({ "n", "v" }, "q", "<Cmd>qa!<CR>", { buffer = buffer, silent = true })
   vim.keymap.set({ "n", "v" }, "<Esc>", "<Cmd>qa!<CR>", { buffer = buffer, silent = true })
-  vim.keymap.set("t", "q", "<C-\\><C-n><Cmd>qa!<CR>", { buffer = buffer, silent = true })
 
-  -- Replay the sanitized capture, then land in normal mode at the bottom.
-  local snapshot = common.sanitize_vt(read_binary(directory .. "/capture.vt"))
-  for offset = 1, #snapshot, 65536 do
-    vim.api.nvim_chan_send(channel, snapshot:sub(offset, offset + 65535))
-  end
-  vim.defer_fn(function()
-    if not vim.api.nvim_buf_is_valid(buffer) then
-      return
-    end
-    vim.cmd.stopinsert()
-    vim.api.nvim_win_set_cursor(0, { math.max(1, vim.fn.prevnonblank("$")), 0 })
-    vim.cmd("normal! zb")
-  end, 50)
-  vim.cmd.stopinsert()
+  vim.api.nvim_win_set_cursor(0, { math.max(1, vim.fn.prevnonblank("$")), 0 })
+  vim.cmd("normal! zb")
 end
 
 local ok, err = pcall(start_viewer)

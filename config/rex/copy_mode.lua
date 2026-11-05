@@ -1,6 +1,6 @@
 -- Hand-written Rex copy-mode, replacing the vendored CJNE/rex-copy-mode
 -- (https://github.com/CJNE/rex-copy-mode, MIT). Same concept: open the focused
--- pane's scrollback as a styled snapshot in a disposable Neovim overlay.
+-- pane's scrollback as an unwrapped text snapshot in a disposable Neovim overlay.
 -- The Neovim entry point lives beside this file as copy_mode_view.lua; shared
 -- pure helpers are in copy_mode_common.lua.
 local root = assert(debug.getinfo(1, "S").source:gsub("^@", ""):match("^(.*/)"), "copy_mode.lua must load from a file")
@@ -52,14 +52,16 @@ local function write_capture(ctx, path)
   local ok, err = pcall(function()
     local bytes = 0
     local part = terminal_call(ctx, "format", {
-      format = "vt",
+      format = "text",
       trim = true,
       unwrap = true,
       max_bytes = CHUNK_BYTES,
     })
     while true do
       local chunk = part.content or part.data or ""
-      file:write(chunk)
+      -- The terminal format API can include NUL cells at a line's end. They
+      -- are display padding, not source text, and corrupt pasted text.
+      file:write(common.strip_terminal_nul(chunk))
       bytes = bytes + #chunk
       if bytes > MAX_CAPTURE_BYTES then
         error("pane capture exceeds 128 MiB", 0)
@@ -94,7 +96,7 @@ local function write_capture(ctx, path)
 end
 
 local function delete_snapshot(directory)
-  os.remove(directory .. "/capture.vt")
+  os.remove(directory .. "/capture.txt")
   os.remove(directory .. "/meta.json")
   pcall(rex.exec, { "rmdir", directory }, { timeout = 2 })
 end
@@ -155,7 +157,7 @@ function M.setup(user)
       local directory = exec({ "mktemp", "-d", temporary_root .. "/rex-copy-mode-XXXXXXXXXX" }).stdout:gsub("%s+$", "")
       local opened = false
       local ok, result = pcall(function()
-        write_capture(ctx, directory .. "/capture.vt")
+        write_capture(ctx, directory .. "/capture.txt")
         local metadata = {
           title = common.title(terminal_call(ctx, "title").title or "", source.block.label),
           session = ctx.session_id,
@@ -171,7 +173,7 @@ function M.setup(user)
         assert(file:write(checked(rex.json.encode(metadata))))
         file:close()
         -- Parent is already 0700; tighten both files to 0600 before launch.
-        exec({ "chmod", "600", directory .. "/capture.vt", directory .. "/meta.json" })
+        exec({ "chmod", "600", directory .. "/capture.txt", directory .. "/meta.json" })
         local layer = checked(rex.session.new_layer({
           session_id = ctx.session_id,
           window_id = window_id,
