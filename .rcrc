@@ -1,3 +1,3 @@
 SYMLINK_DIRS="vim.snippets fonts font-patcher config/nvim/utils/linter-config"
 UNDOTTED="Library"
-EXCLUDES="pi/agent/npm pi/agent/sessions pi/agent/skills pi/agent/auth.json pi/agent/models-store.json pi/agent/trust.json pi/agent/run-history.jsonl pi/agent/usage-extension-cache.json pi/agent/*.log ignore"
+EXCLUDES="pi/agent/npm pi/agent/sessions pi/agent/skills pi/agent/auth.json pi/agent/models-store.json pi/agent/trust.json pi/agent/run-history.jsonl pi/agent/usage-extension-cache.json pi/agent/*.log AGENTS.md CONTEXT.md ignore"
