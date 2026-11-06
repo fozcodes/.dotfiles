@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.ian.fosbery.rex-golden-ratio</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/sh</string>
+    <string>-c</string>
+    <string>exec /bin/sh "${XDG_CONFIG_HOME:-$HOME/.config}/rex/golden_ratio_listener.sh"</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>/tmp/rex-golden-ratio.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/rex-golden-ratio.log</string>
+</dict>
+</plist>

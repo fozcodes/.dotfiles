@@ -1,48 +1,4 @@
 rex.bind("ctrl+s>ctrl+s", "pane.send_key", { key = "ctrl+s" })
-
--- Golden ratio lives in its own module (idempotent logic + tests) and is
--- reinstalled by the server at every start, which replaces the old external
--- watcher loop.
-local function golden_ratio_module_path()
-  local candidate_sources = {}
-  local file_source = debug.getinfo(1, "S").source
-  if type(file_source) == "string" then
-    local init_directory = file_source:gsub("^@", ""):match("(.*/)[^/]+$")
-    if init_directory then
-      candidate_sources[#candidate_sources + 1] = init_directory .. "lib/golden_ratio.lua"
-    end
-  end
-  local ok_xdg, xdg_config_home = pcall(os.getenv, "XDG_CONFIG_HOME")
-  if ok_xdg and type(xdg_config_home) == "string" and xdg_config_home ~= "" then
-    candidate_sources[#candidate_sources + 1] = xdg_config_home .. "/rex/lib/golden_ratio.lua"
-  else
-    local ok_home, home = pcall(os.getenv, "HOME")
-    if ok_home and type(home) == "string" and home ~= "" then
-      candidate_sources[#candidate_sources + 1] = home .. "/.config/rex/lib/golden_ratio.lua"
-    end
-  end
-  return candidate_sources
-end
-
-local function install_golden_ratio()
-  for _, module_path in ipairs(golden_ratio_module_path()) do
-    local loaded, golden_ratio = pcall(dofile, module_path)
-    if loaded then
-      local activated, activate_error = pcall(golden_ratio.activate)
-      if not activated then
-        rex.log("warn", "golden ratio: activate failed: " .. tostring(activate_error))
-      else
-        rex.log("info", "golden ratio: installed from " .. module_path)
-        return
-      end
-      return
-    end
-  end
-  rex.log("warn", "golden ratio: module not found at any known path")
-end
-
-install_golden_ratio()
-
 local nvim_process_names = {
   nvim = true,
   nvimdiff = true,
