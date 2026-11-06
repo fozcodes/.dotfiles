@@ -1,6 +1,23 @@
 -- Resize the focused pane to about 61.8% of its window after focus changes.
 -- Run with: rex do ~/.config/rex/golden_ratio.lua --all
 
+-- Toggle switch read from disk so the hotkey (in init.lua, a different
+-- Lua VM) and this watcher share one switch. No file, or unreadable file,
+-- means tracking is on.
+local GOLDEN_RATIO_STATE_PATH = (os.getenv("XDG_CACHE_HOME") or (os.getenv("HOME") or "") .. "/.cache") .. "/rex/golden_ratio_state.lua"
+
+local function golden_ratio_tracking_enabled()
+  local chunk = loadfile(GOLDEN_RATIO_STATE_PATH)
+  if not chunk then
+    return true
+  end
+  local loaded, state = pcall(chunk)
+  if loaded and type(state) == "table" and state.enabled == false then
+    return false
+  end
+  return true
+end
+
 local GOLDEN_RATIO = 0.6180339887498949
 local MINIMUM_RATIO = 0.05
 local MAXIMUM_RATIO = 0.95
@@ -259,6 +276,9 @@ rex.on("session_view_changed", function(ctx, event)
 
   local timer
   timer = rex.after(DEBOUNCE_SECONDS, function()
+      if not golden_ratio_tracking_enabled() then
+        return
+      end
     if pending_timers[session_id] ~= timer then
       return
     end
