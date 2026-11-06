@@ -1,5 +1,6 @@
 -- Golden ratio for Rex panes: resize the focused pane to ~61.8% of its
--- window after focus changes. Shared logic for two consumers:
+-- window after focus changes, and re-snap existing sessions when the Rex app
+-- reconnects (client_connected). Shared logic for two consumers:
 --   1. config/rex/init.lua        - loaded by the server at every start
 --   2. config/rex/golden_ratio.lua - CLI entry (`rex do`) for tests + manual run
 
@@ -175,16 +176,40 @@ end
 local last_revision = {}
 local last_focus = {}
 local pending_timers = {}
+local last_reapply = nil
+
+-- Control-client connections reconnect often (websocket blips re-fire the
+-- connect event); only re-snap when the previous reapply is this old.
+local REAPPLY_QUIET_SECONDS = 10
 
 local function attach_and_remember(session_id)
   local attached, attach_error = rex.session.attach{ session_id = session_id }
   if not attached or not attached.view then
     rex.log("warn", "golden ratio: cannot attach to session: " .. tostring(attach_error))
-    return
+    return nil
   end
 
   last_revision[session_id] = attached.view.revision
   last_focus[session_id] = focused_signature(attached.view)
+  return attached.view
+end
+
+-- Re-snap every existing session at its current focus. Used when the app
+-- reconnects, so panes that drifted (manual drags, ratio lost before a
+-- restart) come back to the ratio without waiting for a focus change.
+local function reapply_all()
+  local sessions, sessions_error = rex.call("session.list")
+  if not sessions then
+    rex.log("warn", "golden ratio: cannot list sessions: " .. tostring(sessions_error))
+    return
+  end
+  for _, session in ipairs(sessions.sessions or {}) do
+    local session_id = session.session_id
+    local view = attach_and_remember(session_id)
+    if view then
+      apply_to_view(session_id, view)
+    end
+  end
 end
 
 local function sweep()
@@ -248,6 +273,19 @@ local function register()
     if event.session_id then
       attach_and_remember(event.session_id)
     end
+  end)
+
+  rex.on("client_connected", function(_, _)
+    local now, time_ok = pcall(os.time)
+    local quiet = not time_ok and true or not last_reapply and true or now - last_reapply >= REAPPLY_QUIET_SECONDS
+    if not quiet then
+      return
+    end
+    if time_ok then
+      last_reapply = now
+    end
+    -- Let the app finish restoring its sessions before re-snapping.
+    rex.after(0.5, reapply_all)
   end)
 
   rex.on("session_destroyed", function(_, event)
