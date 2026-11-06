@@ -213,13 +213,25 @@ local function reapply_all()
 end
 
 local function sweep()
-  local sessions, sessions_error = rex.call("session.list")
-  if sessions then
-    for _, session in ipairs(sessions.sessions or {}) do
+  -- Both the server's reload path and the event handlers run this. A reload
+  -- evaluates the config without client scope, where session.list throws
+  -- ("no client in scope") instead of returning an error; treat that as an
+  -- expected no-op so the reload still reaches register().
+  local ok, result, call_error = pcall(rex.call, "session.list")
+  if not ok then
+    result, call_error = nil, result
+  end
+  if result then
+    for _, session in ipairs(result.sessions or {}) do
       attach_and_remember(session.session_id)
     end
   else
-    rex.log("warn", "golden ratio: cannot list sessions: " .. tostring(sessions_error))
+    local message = tostring(call_error or "unknown failure")
+    if message:find("no client in scope", 1, true) then
+      rex.log("info", "golden ratio: no session sweep without client scope; handlers installed and reconnects still re-snap")
+    else
+      rex.log("warn", "golden ratio: cannot list sessions: " .. message)
+    end
   end
 end
 
