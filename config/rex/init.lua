@@ -283,37 +283,3 @@ rex.action({
 	end,
 })
 rex.bind("ctrl+s>a", "pi_agent_picker")
-
--- Toggle the golden ratio focus tracking. The ratio logic runs in the
--- watcher CLI process (rex do golden_ratio.lua --all, kept alive by the
--- LaunchAgent), so the hotkey and the logic are different Lua VMs and
--- this handler passes the switch through the state file both read.
-local golden_ratio_state_path = function()
-	local home = os.getenv("HOME") or ""
-	local xdg_cache_home = os.getenv("XDG_CACHE_HOME") or home .. "/.cache"
-	return xdg_cache_home .. "/rex/golden_ratio_state.lua"
-end
-
-local golden_ratio_state_enabled = function()
-	local chunk = loadfile(golden_ratio_state_path())
-	if not chunk then
-		return true -- no state file means tracking is on
-	end
-	local loaded, state = pcall(chunk)
-	if loaded and type(state) == "table" and state.enabled == false then
-		return false
-	end
-	return true
-end
-
-local golden_ratio_write_state = function(enabled)
-	local directory = golden_ratio_state_path():match("(.*/)[^/]+$") or ""
-	os.execute(string.format("mkdir -p %q && printf '%%b' 'return { enabled = %s }\\n' > %q", directory, tostring(enabled), golden_ratio_state_path()))
-end
-
-rex.bind("ctrl+s>g", function()
-	local enabled = golden_ratio_state_enabled() == false
-	golden_ratio_write_state(enabled)
-	rex.log("info", "golden ratio: " .. (enabled and "tracking on" or "tracking off"))
-	return true
-end)
