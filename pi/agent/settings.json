@@ -37,7 +37,8 @@
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"project\"}": "0.84.0",
     "{\"source\":\"npm:@raquezha/noleaks@0.0.5\",\"scope\":\"user\"}": "0.0.5",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0",
+    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.3"
   },
   "terminal": {
     "clearOnShrink": true
