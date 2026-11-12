@@ -16,6 +16,13 @@ local function is_nvim_foreground(process)
   return nvim_process_names[name] == true
 end
 
+local function is_pi_foreground(process)
+  if not process or type(process.argv0) ~= "string" then
+    return false
+  end
+  return (process.argv0:match("([^/]+)$") or process.argv0) == "pi"
+end
+
 local layout_epsilon = 0.000001
 
 local function active_window(view)
@@ -166,7 +173,8 @@ local function bind_pane_navigation(key, direction)
       block_id = ctx.block_id,
       method = "title",
     })
-    if title and type(title.title) == "string" and title.title:lower() == "nvim" then
+    if not (process and is_pi_foreground(process.foreground))
+      and title and type(title.title) == "string" and title.title:lower() == "nvim" then
       return false
     end
 
