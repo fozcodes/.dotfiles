@@ -1,10 +1,14 @@
 # Apply the Ghostty palettes to running Rex terminals
 
-This is the exact runtime import procedure used here. It applies one Ghostty
-palette to every terminal block that exists when the script runs.
+The palettes originally imported on this Mac are named Rex custom themes,
+selected as its dark and light themes. Rex stores them in app preferences, not
+in dotfiles. The exact original import steps have not been recovered; do not
+use the script below as a substitute for a persistent import.
 
-It does **not** write Rex configuration, add a named Rex theme, or affect
-terminal blocks created later. Run it again after Rex creates new terminals.
+The script below is a separate, temporary alternative: it requests a palette
+for each terminal block that exists when it runs. It does **not** add a named
+Rex theme or configure new blocks, and an owning client may override the
+request. Run it again after Rex creates new terminals if needed.
 
 ## Source palettes
 
@@ -84,13 +88,13 @@ apply_to_current_terminal_blocks "$nightfox"
 bash /tmp/apply-rex-ghostty-theme.sh
 ```
 
-5. Check one terminal's normal and bright ANSI colors visually. `set_theme` is
-   a write-only Rex method, so the CLI has no theme-read command for a later
-   machine check.
+5. Check one terminal's normal and bright ANSI colors visually. A successful
+   request does not prove that an owning client applied or retained the colors.
+   `set_theme` is a write-only Rex method.
 
 ## Prompt for another agent
 
-> Read `config/rex/ghostty-theme-import.md`. Apply the Nightfox palette to all
-> current Rex terminal blocks with the documented script. Do not modify Rex
-> configuration or install packages. Report each block that accepted or
-> rejected the palette.
+> Read `config/rex/ghostty-theme-import.md`. I want the persistent named Rex
+> themes Nightfox and Warm Burnout Light, not just a temporary terminal palette.
+> Find and verify Rex's current theme import procedure before making changes.
+> Do not install packages or change app settings without my approval.
