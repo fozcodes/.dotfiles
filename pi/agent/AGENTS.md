@@ -114,6 +114,23 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
   performance.
 - **Testing**: Write tests for all new functionality. Use mocks and fixtures to
   isolate external dependencies.
+  - Favour tests that integrate and touch more modules rather than just unit
+    tests.
+  - Use unit tests for functions that calculate things or have no side-effects.
+  - Favour property-based tests whenever possible.
+  - Test observable behavior, not incidental representation. Assert a string
+    only when it is a declared external contract, such as SQL, YAML, an API
+    argument, or CLI output. Otherwise assert an enum, model state, error type,
+    or error code.
+  - Keep assertions independent of unrelated data and presentation details. When
+    output lists resources or strings do not hard-code the expected values -
+    derive them from the environment under test. E.g., from the filesystem,
+    derive the expected names from the relevant directories and compare the
+    complete collection. Normalize formatting that is not part of the contract,
+    such as line wrapping.
+  - Use fixed expected values when the values themselves are part of the
+    contract. Do not derive expectations through the same code path as the
+    behavior under test.
 - **Functional Programming**: Favor pure functions and immutability where
   possible. Avoid Object-Oriented Programming unless absolutely necessary.
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer
