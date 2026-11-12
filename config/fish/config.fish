@@ -86,9 +86,10 @@ function pi
   end
 end
 
-function nvim
-    env SHELL=/bin/bash command nvim $argv
-end
+# This was for Tmux Navigator. Let's see if we can live with out 
+# function nvim
+#     env SHELL=/bin/bash command nvim $argv
+# end
 
 function mkdircd
   mkdir -p $argv; and cd $argv
