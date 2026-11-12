@@ -5,7 +5,6 @@
   "defaultModel": "gpt-6.1-terra",
   "defaultThinkingLevel": "medium",
   "packages": [
-    "npm:@juicesharp/rpiv-btw",
     {
       "source": "npm:pi-subagents",
       "extensions": [
@@ -33,7 +32,8 @@
   "extensions": [
     "+extensions/usage-dashboard/index.ts",
     "+extensions/jira/index.ts",
-    "+extensions/shaded-input.ts"
+    "+extensions/shaded-input.ts",
+    "+extensions/btw.ts"
   ],
   "hideThinkingBlock": true,
   "markdown": {
