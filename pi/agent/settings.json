@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.5.0",
+  "lastChangelogVersion": "1.5.2",
   "theme": "opencode-shade",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6.1-terra",
@@ -14,7 +14,12 @@
       "skills": [],
       "prompts": []
     },
-    "npm:@raquezha/noleaks@0.0.5",
+    {
+      "source": "npm:@raquezha/noleaks@0.0.5",
+      "extensions": [
+        "+extensions/noleaks/index.ts"
+      ]
+    },
     "git:github.com/dmmulroy/pi-web-tools",
     "npm:pi-context-view",
     {
@@ -35,10 +40,10 @@
     "mermaid": "final"
   },
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"project\"}": "0.84.0",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"project\"}": "0.88.0",
     "{\"source\":\"npm:@raquezha/noleaks@0.0.5\",\"scope\":\"user\"}": "0.0.5",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0",
-    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.3"
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0",
+    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.4"
   },
   "terminal": {
     "clearOnShrink": true

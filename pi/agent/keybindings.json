@@ -5,6 +5,8 @@
   "tui.select.down": ["down", "ctrl+n"],
   "app.model.cycleForward": [],
   "app.model.cycleBackward": [],
+  "app.model.select": [],
+  "app.tree.filter.labeledOnly": [],
   "tui.altScreen.halfPageUp": ["ctrl+u"],
   "tui.altScreen.halfPageDown": ["ctrl+d"]
 }
