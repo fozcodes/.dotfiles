@@ -70,15 +70,36 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
 - **Observability**: Make important state transitions and failures diagnosable
   through explicit checks, useful logs or traces, and clear recovery steps.
 
-- **Prefix all commands with `source ../.envrc && source .envrc &&` to load
-  environment variables from `.envrc` files. If you see an env variable that
-  says `prod`, stop.**
+- **Before running commands, source `../.envrc` and then `.envrc` if each file
+  exists. If you see an env variable that says `prod`, stop.**
 
 ### Docker-related things
 
 - Use `docker` compatible designs as if everything is done with Docker.
 - This machine uses `podman`, which should have full compatibility with Docker.
   If you find a command that doesn't work, report it and we'll fix it.
+
+## Code and System Design Principles
+
+- **Single Level of Abstraction Principle**: each line of a function or method
+  should be at the same level of abstraction. Avoid mixing high-level logic with
+  low-level details in the same function. If a function is doing multiple things
+  at different levels of abstraction, consider breaking it into smaller
+  functions.
+
+- **Complexity**
+  - Keep each unit small enough to understand, test, and change locally.
+  - Split code when a boundary gives a clear responsibility, hides detail, or
+    prevents unrelated changes from affecting each other.
+  - Do not split code merely to reduce line count or create an abstraction
+    before the pattern is stable.
+  - When multiple designs meet these rules, add complexity at the lowest layer
+    that solves the problem: local code, then a function, module, dependency,
+    service, and deployment.
+  - Each boundary adds concepts, interfaces, failure modes, ownership, and
+    maintenance cost.
+- **DO NOT** abstract early. Duplication is far less costly than the wrong
+  abstraction. Do not abstract until the pattern is obvious and stable.
 
 ## General principles for all languages
 
@@ -89,7 +110,8 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
   over large, monolithic classes or configurations.
 - **Simplicity**: Strive for the simplest solution that works. Avoid
   over-engineering. Make every change as simple as possible. Impact minimal
-  code.
+  code. **BUT** never at the cost of correctness, maintainability, or
+  performance.
 - **Testing**: Write tests for all new functionality. Use mocks and fixtures to
   isolate external dependencies.
 - **Functional Programming**: Favor pure functions and immutability where
@@ -120,8 +142,9 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
 - Prefer to use Pydantic models and a functional programming approach to all
   designs.
 - Do not use Pandas. Use it only when no other library can do the job.
-- **NEVER** solve circular imports by using local imports; refactor and
+
   re-organize modules/folders instead.
+
 - **NEVER** solve circular type imports using `if TYPE_CHECKING` imports;
   refactor and re-organize modules/folders instead.
 - Avoid Object Oriented Programming; prefer functional programming with pure
