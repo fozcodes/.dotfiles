@@ -1156,6 +1156,13 @@ require("lazy").setup({
               PRETTIERD_DEFAULT_CONFIG = vim.fn.expand "~/.config/nvim/utils/linter-config/.prettierrc.json",
             },
           },
+          markdown_unwrap = {
+            inherit = "prettierd",
+            append_args = { "--prose-wrap=never" },
+            env = {
+              PRETTIERD_DEFAULT_CONFIG = vim.fn.expand "~/.config/nvim/utils/linter-config/.prettierrc.json",
+            },
+          },
           sqlfluff = {
             command = "poetry",
             args = { "run", "sqlfluff", "fix", "-" },
@@ -1563,6 +1570,48 @@ vim.api.nvim_create_user_command("ToggleConform", function()
   vim.b.disable_autoformat = not vim.b.disable_autoformat
   vim.notify(("Conform autoformat: %s"):format(vim.b.disable_autoformat and "off" or "on"))
 end, { desc = "Toggle Conform autoformat for the current buffer" })
+
+vim.api.nvim_create_user_command("ToggleMarkdownView", function()
+  if vim.bo.filetype ~= "markdown" then
+    vim.notify("Markdown view is only available for Markdown buffers", vim.log.levels.ERROR)
+    return
+  end
+
+  local previous = vim.b.markdown_view_previous
+  if previous then
+    vim.bo.textwidth = previous.textwidth
+    vim.bo.wrapmargin = previous.wrapmargin
+    vim.b.disable_autoformat = previous.disable_autoformat
+    if vim.api.nvim_win_is_valid(previous.window) and vim.api.nvim_win_get_buf(previous.window) == vim.api.nvim_get_current_buf() then
+      vim.wo[previous.window].wrap = previous.wrap
+      vim.wo[previous.window].linebreak = previous.linebreak
+    end
+    vim.b.markdown_view_previous = nil
+    vim.notify "Markdown readable mode disabled"
+    return
+  end
+
+  require("conform").format({ formatters = { "markdown_unwrap" }, timeout_ms = 5000 }, function(err)
+    if err then
+      vim.notify("Could not unwrap Markdown: " .. err, vim.log.levels.ERROR)
+      return
+    end
+    vim.b.markdown_view_previous = {
+      textwidth = vim.bo.textwidth,
+      wrapmargin = vim.bo.wrapmargin,
+      disable_autoformat = vim.b.disable_autoformat,
+      window = vim.api.nvim_get_current_win(),
+      wrap = vim.wo.wrap,
+      linebreak = vim.wo.linebreak,
+    }
+    vim.b.disable_autoformat = true
+    vim.bo.textwidth = 0
+    vim.bo.wrapmargin = 0
+    vim.wo.wrap = true
+    vim.wo.linebreak = true
+    vim.notify "Markdown readable mode enabled"
+  end)
+end, { desc = "Toggle Markdown readable view" })
 
 -- Autocommand that sets foldmethod and foldlevel for init.lua only
 vim.api.nvim_create_autocmd("BufReadPost", {
