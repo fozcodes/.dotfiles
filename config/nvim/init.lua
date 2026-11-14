@@ -1612,6 +1612,7 @@ vim.api.nvim_create_user_command("ToggleMarkdownView", function()
     vim.notify "Markdown readable mode enabled"
   end)
 end, { desc = "Toggle Markdown readable view" })
+vim.keymap.set("n", "<leader>tm", "<cmd>ToggleMarkdownView<cr>", { desc = "Toggle Markdown readable view" })
 
 -- Autocommand that sets foldmethod and foldlevel for init.lua only
 vim.api.nvim_create_autocmd("BufReadPost", {

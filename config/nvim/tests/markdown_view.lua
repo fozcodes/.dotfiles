@@ -13,6 +13,8 @@ conform.setup {
 local source = table.concat(vim.fn.readfile "config/nvim/init.lua", "\n")
 local command = assert(source:match '(vim%.api%.nvim_create_user_command%(%"ToggleMarkdownView%".-\nend, { desc = %"Toggle Markdown readable view%" }%))')
 assert(loadstring(command))()
+local mapping = assert(source:match '(vim%.keymap%.set%(%"n%", %"<leader>tm%"[^\n]+)')
+assert(loadstring(mapping))()
 
 vim.cmd "enew"
 vim.api.nvim_buf_set_name(0, vim.fn.tempname() .. ".md")
@@ -24,7 +26,7 @@ vim.wo.linebreak = false
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "First line", "second line.", "", "- item", "  continuation" })
 local columns = vim.o.columns
 
-vim.cmd "ToggleMarkdownView"
+vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<leader>tm", true, false, true), "xt", false)
 assert(vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] == "First line second line.")
 assert(vim.bo.textwidth == 0 and vim.bo.wrapmargin == 0 and vim.wo.wrap and vim.wo.linebreak)
 assert(vim.b.disable_autoformat == true and vim.o.columns == columns)
