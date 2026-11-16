@@ -3,6 +3,8 @@
 ## Documentation
 
 - **NEVER** write tests for Markdown or documentation files.
+- When changing an architectural decision or domain terminology, update the
+  relevant architecture records and domain documentation to match the code.
 
 ## BE CONCISE (always on)
 
@@ -38,6 +40,10 @@ Use analogies only to teach or clarify how something works. Introduce the
 analogy before using it, explain what it represents, and return to the direct
 explanation. Do not use an unexplained analogy as decoration or shorthand.
 
+**Session startup:**:Read [AGENTS-PRIVATE.md](~/.pi/agent/AGENTS-PRIVATE.md) if
+it exists for additional rules and before running commands or applying
+environment instructions.
+
 ## General version control guidelines
 
 - **Commit Often**: Commit small, incremental changes frequently. Avoid large,
@@ -61,7 +67,8 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
   ownership boundaries as requirements. Preserve unrelated work and state.
 - **Context**: Validate changes in their real execution environment: the
   deployed or rebuilt artifact, documented test environment, active shell, and
-  exact data root.
+  exact data root. Respect user restrictions on verification; report which
+  checks ran and which could not run.
 - **Safety**: Report repository state and obtain approval before changing
   working-tree history or performing an operation with external or production
   impact. Prefer isolated, reversible validation.
@@ -100,12 +107,28 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
     maintenance cost.
 - **DO NOT** abstract early. Duplication is far less costly than the wrong
   abstraction. Do not abstract until the pattern is obvious and stable.
+- **Entrypoints**: Keep entrypoints focused on composing workflows and adapting
+  inputs and outputs. Group related workflow logic and types by responsibility,
+  keeping them separate from entrypoint-specific code. Load configuration once
+  at an entrypoint and pass it to the functions that need it.
+- **Existing state**: Before adding a new state store, determine whether existing
+  state can provide the required behavior, including its consistency and
+  recovery requirements.
+- **Expected outcomes**: Represent expected operational success, failure, and
+  blocked states as explicit typed values. Reserve exceptions for unexpected
+  infrastructure and programming failures and for usage errors where the
+  framework requires them. When translating errors, preserve the details
+  users need to diagnose and resolve the problem.
+- **Type predicates**: Prefer a reusable predicate for a shared outcome over
+  separate predicates for each success type. Where callers need narrowing in
+  both branches, use a type-narrowing construct that supports both branches.
 
 ## General principles for all languages
 
 - **Readability**: Prioritize clear, understandable code over clever or complex
-  solutions. This includes using descriptive variable and function names - DO
-  NOT ABBREVIATE.
+  solutions. Use descriptive names from the domain rather than architecture
+  jargon; do not abbreviate. Avoid deeply nested control flow: use early
+  returns and separate functions for distinct responsibilities.
 - **Composition over Configuration**: Prefer composing small, reusable functions
   over large, monolithic classes or configurations.
 - **Simplicity**: Strive for the simplest solution that works. Avoid
@@ -131,6 +154,13 @@ explanation. Do not use an unexplained analogy as decoration or shorthand.
   - Use fixed expected values when the values themselves are part of the
     contract. Do not derive expectations through the same code path as the
     behavior under test.
+  - **Migrations**: Test migration tooling and shared behavior with isolated
+    fixtures. Test a specific migration only with an integration or end-to-end
+    test that creates an isolated schema, runs the migration, checks the
+    resulting database state, and tears down the schema. Otherwise, do not add a
+    test for that migration. Do not test specific migrations by reading their
+    SQL files or asserting statements, object names, ordering, or absence of
+    text.
 - **Functional Programming**: Favor pure functions and immutability where
   possible. Avoid Object-Oriented Programming unless absolutely necessary.
 - **No Laziness**: Find root causes. No temporary fixes. Senior developer
@@ -231,8 +261,3 @@ Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
 4. _Explain Changes_: High-level summary at each step
 5. _Document Results_: Add review section to '.scratch/todo.md'
 6. _Capture Lessons_: Update '.scratch/lessons.md' after corrections
-
-## Additional Rules
-
-Read [AGENTS-PRIVATE.md](AGENTS-PRIVATE.md) if it exists for additional rules
-and guidelines that apply to all agents.
