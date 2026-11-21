@@ -1,3 +1,11 @@
+# Agent Guidelines for General Code and Practices
+
+## Documentation
+
+- **NEVER** write tests for Markdown or documentation files.
+- When changing an architectural decision or domain terminology, update the
+  relevant architecture records and domain documentation to match the code.
+
 ## WRITING STYLE
 
 The `simple-english` skill governs prose style: word choice, sentence length,
