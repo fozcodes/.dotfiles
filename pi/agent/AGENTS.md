@@ -1,26 +1,13 @@
-# Agent Guidelines for General Code and Practices
+## WRITING STYLE
 
-## Documentation
+The `simple-english` skill governs prose style: word choice, sentence length,
+formatting, no slop. It is always on: use it for every reply and for every
+document you write or rewrite. This section keeps only the rules it does not
+cover.
 
-- **NEVER** write tests for Markdown or documentation files.
-- When changing an architectural decision or domain terminology, update the
-  relevant architecture records and domain documentation to match the code.
-
-## BE CONCISE (always on)
-
-Be brief. Plain English. No pleasantries. Facts only.
-
-Write so the sentence is understood the first time. Use the ordinary word for
-the thing. If that word is not already in the code or the conversation, define
-it in the same sentence. Name the subject, say what it is, and say what happens
-to it.
-
-Keep the grammar that makes the sentence mean one thing. Cut filler, not
-meaning.
-
-State problems directly. Use ordinary words such as “problem” instead of
-metaphors such as “leak”. Name the problem and its effect; omit commentary on
-how completely the user diagnosed it. Say: “Your old approach had two problems.”
+State problems directly. Use ordinary words such as "problem" instead of
+metaphors such as "leak". Name the problem and its effect; omit commentary on
+how completely the user diagnosed it. Say: "Your old approach had two problems."
 
 **Dictionary-verb check, before every sentence you send:**
 
