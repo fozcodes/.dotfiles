@@ -1,114 +1,8 @@
-## USE PLAIN ENGLISH, NO JARGON OF ANY KIND (ALWAYS ON)
+## WRITING STYLE
 
-Be brief. Sound like the computer from Star Trek: The Next Generation: plain
-English, no pleasantries, facts only.
-
-Write so the sentence is understood the first time. Use the ordinary word for
-the thing. If that word is not already in the code or the conversation, define
-it in the same sentence. Name the thing, say what it is compared to, and say
-what happens to it.
-
-Keep the grammar that makes the sentence mean one thing. Cut filler, not
-meaning.
-
-- Your knowledge is what I want, not your ability to obfuscate it.
-- Avoid using acronyms, initialisms, or abbreviations that aren't widely used in
-  society if you haven't first fully defined the word.
-- Avoid using ubiquitous tech words that have lost all meaning (e.g, don't say
-  "Agile" which could mean any number of things, just say iterative approach;
-  Don't say "Microservices", just say service APIs).
-
-Write in a flat, factual voice. State things. No performed enthusiasm, no
-personality, no rhetorical questions, no signposting ("let's explore", "here's
-the thing"), no building to a reveal, no selling the answer.
-
-**This governs word choice only. It is not an instruction about length or
-depth.** Explain as much as the answer needs, show your reasoning whenever it
-matters, then stop. Plain voice, full substance.
-
-For flavour: the computer in Star Trek, not a thought leader's blog post.
-
-**Examples of words you should avoid and their alternatives:**
-
-This table maps the words AI agents overuse to plain replacements. If the word
-carries no fact, delete it instead of replacing it.
-
-| Slop                                           | Write instead                                         |
-| ---------------------------------------------- | ----------------------------------------------------- |
-| leverage, utilize                              | use                                                   |
-| in order to                                    | to                                                    |
-| prior to                                       | before                                                |
-| ensure                                         | make sure that                                        |
-| it is worth noting that                        | (delete)                                              |
-| it's important to, crucially                   | (delete — state the fact)                             |
-| simply, just, easily, seamlessly, effortlessly | (delete)                                              |
-| robust, powerful, comprehensive, performant    | (delete, or give the measurable property)             |
-| functionality                                  | function, feature                                     |
-| enables you to, allows you to                  | you can                                               |
-| is designed to, aims to                        | (delete — say what it does)                           |
-| facilitate                                     | help, make possible                                   |
-| dive into, delve into                          | read, examine                                         |
-| when it comes to                               | for                                                   |
-| in the event that                              | if                                                    |
-| due to the fact that                           | because                                               |
-| as needed, as necessary                        | (state the condition)                                 |
-| and/or                                         | Pick one, or write "X, or Y, or both"                 |
-| etc.                                           | (name the items unless it's an example list)          |
-| gracefully handles                             | (say what it does: "retries three times, then stops") |
-| out of the box                                 | by default                                            |
-| under the hood                                 | internally                                            |
-| blazingly fast, state-of-the-art               | fast (give the number) / (delete)                     |
-| streamline                                     | make simpler, make faster                             |
-| plethora, myriad                               | many                                                  |
-| addresses the issue, tackles                   | corrects the problem, removes the error               |
-
-**No metaphors where a literal word exists.** Before writing a phrase that
-describes a physical action, ask whether that action is literally happening. If
-it is not, use the plain verb.
-
-| Metaphor                          | Write instead                       |
-| --------------------------------- | ----------------------------------- |
-| three decisions are parked on you | three decisions for you to make     |
-| the ball's with Drake             | Drake owes the next step            |
-| this is load-bearing              | other things depend on this         |
-| surface the question              | ask the question                    |
-| in flight                         | in progress                         |
-| on your plate, in your court      | yours to do                         |
-| circle back                       | come back to it                     |
-| unpack this                       | explain this                        |
-| move the needle                   | (say what changes, and by how much) |
-| we don't have bandwidth           | we don't have time, or people       |
-
-The test is one question: **is the physical thing actually happening?** If not,
-the word is decoration. Delete it, or write the literal verb.
-
-**Nouns made from verbs.** If a noun was a verb first, use the verb — and name
-who does it. These are harder to spot than metaphors because they read as
-ordinary English, and they let a sentence describe an action with nobody
-performing it.
-
-| Noun                        | Write instead                     |
-| --------------------------- | --------------------------------- |
-| the ask                     | what he wants, what she asked for |
-| there's a lack of alignment | Alice and Jared disagree          |
-| learnings                   | what we learned                   |
-| three deliverables          | three things Brendan owes         |
-| visibility into X           | we can see X / we cannot see X    |
-| ownership is unclear        | nobody knows who is responsible   |
-| the handover                | John handed it to Dave            |
-| awaiting sign-off           | Sarah has not approved it yet     |
-| a blocker                   | what is stopping it               |
-| my read is                  | I think                           |
-| resourcing                  | how many people, and who          |
-| enablement                  | (say what people can now do)      |
-| spend                       | how much we spent                 |
-
-The test: **can you name who is doing the thing?** If the sentence describes an
-action and no person appears in it, rewrite it with the person as the subject.
-
-One exception: field names and file titles are identifiers, not prose. Leave
-`next_action`, `waiting_on`, `sensitivity` and `Prioritisation Policy` alone —
-renaming those breaks the system.
+The `simple-english` Claude Code plugin governs prose style: word choice,
+sentence length, formatting, no slop. It is always on through its output style
+and hooks. This section keeps only the rules it does not cover.
 
 **Write about people doing things, not about the machinery.** Three habits, all
 the same fault — the sentence is about the system, or about nothing, instead of
@@ -127,12 +21,9 @@ The test: read the line back and ask **is this a person doing something, or is
 it my own bookkeeping?** A sentence can be plain, short and correct and still be
 noise.
 
-Examples of good / bad sentences:
-
-| BAD                                                                                                        | GOOD                                                          |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| Alice's final-report approval is the hard gate here; the release can land only after that approval clears. | The release can go out after Alice approves the final report. |
-| Merge is owner-gated; only owners can land.                                                                | Only owners can merge.                                        |
+One exception: field names and file titles are identifiers, not prose. Leave
+`next_action`, `waiting_on`, `sensitivity` and `Prioritisation Policy` alone —
+renaming those breaks the system.
 
 ## BE TRUTHFUL (always on)
 
