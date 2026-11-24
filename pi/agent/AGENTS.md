@@ -8,10 +8,12 @@
 
 ## WRITING STYLE
 
-The `simple-english` skill governs prose style: word choice, sentence length,
-formatting, no slop. It is always on: use it for every reply and for every
-document you write or rewrite. This section keeps only the rules it does not
-cover.
+The [`simple-english`](https://github.com/AminBlg/SimpleEnglish) skill governs
+prose style: word choice, sentence length, formatting, no slop. It is always on:
+use it for every reply and for every document you write or rewrite. This section
+keeps only the rules it does not cover.
+
+**IF THE SKILL IS NOT ACCESSIBLE, TELL THE USER AND INSTRUCT TO INSTALL IT.**
 
 State problems directly. Use ordinary words such as "problem" instead of
 metaphors such as "leak". Name the problem and its effect; omit commentary on
@@ -106,14 +108,14 @@ environment instructions.
   inputs and outputs. Group related workflow logic and types by responsibility,
   keeping them separate from entrypoint-specific code. Load configuration once
   at an entrypoint and pass it to the functions that need it.
-- **Existing state**: Before adding a new state store, determine whether existing
-  state can provide the required behavior, including its consistency and
-  recovery requirements.
+- **Existing state**: Before adding a new state store, determine whether
+  existing state can provide the required behavior, including its consistency
+  and recovery requirements.
 - **Expected outcomes**: Represent expected operational success, failure, and
   blocked states as explicit typed values. Reserve exceptions for unexpected
   infrastructure and programming failures and for usage errors where the
-  framework requires them. When translating errors, preserve the details
-  users need to diagnose and resolve the problem.
+  framework requires them. When translating errors, preserve the details users
+  need to diagnose and resolve the problem.
 - **Type predicates**: Prefer a reusable predicate for a shared outcome over
   separate predicates for each success type. Where callers need narrowing in
   both branches, use a type-narrowing construct that supports both branches.
@@ -122,8 +124,8 @@ environment instructions.
 
 - **Readability**: Prioritize clear, understandable code over clever or complex
   solutions. Use descriptive names from the domain rather than architecture
-  jargon; do not abbreviate. Avoid deeply nested control flow: use early
-  returns and separate functions for distinct responsibilities.
+  jargon; do not abbreviate. Avoid deeply nested control flow: use early returns
+  and separate functions for distinct responsibilities.
 - **Composition over Configuration**: Prefer composing small, reusable functions
   over large, monolithic classes or configurations.
 - **Simplicity**: Strive for the simplest solution that works. Avoid
