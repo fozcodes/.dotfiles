@@ -304,7 +304,9 @@ require("lazy").setup({
 
       local rex_navigation = vim.fn.expand "~/.dotfiles/config/nvim/lua/custom/rex_navigation.lua"
       local herdr_navigation = vim.fn.expand "~/.dotfiles/config/herdr/vendor/vim-herdr-navigation/editor/nvim.lua"
-      if vim.env.REX_SESSION and vim.env.REX_SESSION ~= "" and vim.fn.filereadable(rex_navigation) == 1 then
+      local rex_session_set = vim.env.REX_SESSION ~= nil and vim.env.REX_SESSION ~= ""
+      local rex_block_set = vim.env.REX_BLOCK ~= nil and vim.env.REX_BLOCK ~= ""
+      if (rex_session_set or rex_block_set) and vim.fn.filereadable(rex_navigation) == 1 then
         dofile(rex_navigation)
       elseif vim.fn.filereadable(herdr_navigation) == 1 then
         -- Keep the existing Herdr integration when Neovim runs in Herdr.

@@ -1,7 +1,13 @@
 local function run_rex_focus(direction)
+  -- Current Rex builds expose the block environment through REX_BLOCK and
+  -- scope CLI calls to that block's session automatically; older builds
+  -- exposed REX_SESSION and needed --session. Accept either.
   local session_id = vim.env.REX_SESSION
-  if not session_id or session_id == "" then
-    vim.notify("Rex session ID is unavailable", vim.log.levels.ERROR)
+  local block_id = vim.env.REX_BLOCK
+  local has_session = session_id ~= nil and session_id ~= ""
+  local has_block = block_id ~= nil and block_id ~= ""
+  if not has_session and not has_block then
+    vim.notify("Rex session or block ID is unavailable", vim.log.levels.ERROR)
     return
   end
 
@@ -18,8 +24,10 @@ local function run_rex_focus(direction)
   end
   command[#command + 1] = "focus"
   command[#command + 1] = direction
-  command[#command + 1] = "--session"
-  command[#command + 1] = session_id
+  if has_session then
+    command[#command + 1] = "--session"
+    command[#command + 1] = session_id
+  end
 
   local output = vim.fn.system(command)
   if vim.v.shell_error ~= 0 then
