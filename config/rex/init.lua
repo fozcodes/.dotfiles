@@ -1,28 +1,4 @@
 rex.bind("ctrl+s>ctrl+s", "pane.send_key", { key = "ctrl+s" })
-local nvim_process_names = {
-  nvim = true,
-  nvimdiff = true,
-}
-
-local function is_nvim_foreground(process)
-  if not process then
-    return false
-  end
-  local executable = process.name or process.argv0 or process.path
-  if type(executable) ~= "string" then
-    return false
-  end
-  local name = (executable:match("([^/]+)$") or executable):lower():gsub("^%-", "")
-  return nvim_process_names[name] == true
-end
-
-local function is_pi_foreground(process)
-  if not process or type(process.argv0) ~= "string" then
-    return false
-  end
-  return (process.argv0:match("([^/]+)$") or process.argv0) == "pi"
-end
-
 local layout_epsilon = 0.000001
 
 local function active_window(view)
@@ -150,61 +126,10 @@ local function focus_adjacent_pane(session_id, block_id, direction)
   })
 end
 
--- preview.23 regression: key events whose payload lacks an explicit text
--- field are dropped, and the app no longer re-delivers keys that a key
--- handler declines with false, so nvim panes never see their ctrl+h/j/k/l.
--- Forward the control byte straight into the block; block.event bypasses
--- Lua bindings, so this cannot recurse.
-local function forward_nvim_key(session_id, block_id, key)
-	local letter = key:match("^ctrl%+([a-z])$")
-	if not letter then
-		return false
-	end
-	local delivered, delivered_error = rex.call("block.event", {
-		session_id = session_id,
-		block_id = block_id,
-		event = {
-			type = "key",
-			payload = {
-				key = "key_" .. letter,
-				mods = "ctrl",
-				action = "press",
-				text = "",
-			},
-		},
-	})
-	if not delivered then
-		rex.log("warn", "pane navigation: nvim key forward failed: " .. tostring(delivered_error))
-	end
-	return delivered ~= nil
-end
-
 local function bind_pane_navigation(key, direction)
   rex.bind(key, function(ctx)
     if not ctx.session_id or not ctx.block_id then
       return false
-    end
-
-    local process, process_error = rex.call("block.method", {
-      session_id = ctx.session_id,
-      block_id = ctx.block_id,
-      method = "process",
-    })
-    if process and is_nvim_foreground(process.foreground) then
-      return forward_nvim_key(ctx.session_id, ctx.block_id, key) or false
-    end
-    if not process and process_error then
-      rex.log("warn", "pane navigation: process lookup failed: " .. tostring(process_error))
-    end
-
-    local title = rex.call("block.method", {
-      session_id = ctx.session_id,
-      block_id = ctx.block_id,
-      method = "title",
-    })
-    if not (process and is_pi_foreground(process.foreground))
-      and title and type(title.title) == "string" and title.title:lower() == "nvim" then
-      return forward_nvim_key(ctx.session_id, ctx.block_id, key) or false
     end
 
     local result, focus_error = focus_adjacent_pane(ctx.session_id, ctx.block_id, direction)
@@ -215,10 +140,15 @@ local function bind_pane_navigation(key, direction)
   end)
 end
 
-bind_pane_navigation("ctrl+h", "left")
-bind_pane_navigation("ctrl+j", "down")
-bind_pane_navigation("ctrl+k", "up")
-bind_pane_navigation("ctrl+l", "right")
+-- Navigation lives on alt so the ctrl+ keys stay unbound: preview.23 drops
+-- server-injected key events into nvim blocks and the preview app no longer
+-- re-delivers keys a handler declines, so any binding on ctrl+h/j/k/l makes
+-- those keys unusable inside nvim. Inside nvim, rex_navigation.lua maps
+-- ctrl+h/j/k/l to internal splits with a rex focus handoff at the edge.
+bind_pane_navigation("alt+h", "left")
+bind_pane_navigation("alt+j", "down")
+bind_pane_navigation("alt+k", "up")
+bind_pane_navigation("alt+l", "right")
 rex.bind("ctrl+shift+u", "client.scroll.page_up")
 rex.bind("ctrl+shift+d", "client.scroll.page_down")
 rex.bind("ctrl+s>s", "session.switch")
