@@ -297,6 +297,14 @@ rex.bind("ctrl+s>a", "pi_agent_picker")
 -- >>> leaf >>>
 -- Managed by `leaf rex install`; `leaf rex uninstall` removes it.
 -- plugin: dbd96079ad70c4c6
-dofile("/Users/ian.fosbery/.config/rex/plugins/leaf/init.lua").setup({ bin = { "/opt/homebrew/bin/leaf" } })
+local leaf_ok, leaf_plugin = pcall(function()
+	local init_directory = debug.getinfo(1, "S").source:gsub("^@", ""):match("(.*/)[^/]+$")
+	return dofile(init_directory .. "plugins/leaf/init.lua")
+end)
+if leaf_ok and leaf_plugin then
+	leaf_plugin.setup({ bin = { "/opt/homebrew/bin/leaf" } })
+else
+	rex.log("warn", "leaf plugin: " .. tostring(leaf_plugin))
+end
 -- open: idle classic
 -- <<< leaf <<<
