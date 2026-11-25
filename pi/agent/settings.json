@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.5.2",
+  "lastChangelogVersion": "1.6.1",
   "theme": "opencode-shade",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6.1-terra",
@@ -42,7 +42,7 @@
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-subagents\",\"scope\":\"project\"}": "0.89.2",
     "{\"source\":\"npm:@raquezha/noleaks@0.0.5\",\"scope\":\"user\"}": "0.0.5",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.89.2",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.90.0",
     "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.4"
   },
   "terminal": {
