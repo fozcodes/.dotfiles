@@ -150,6 +150,35 @@ local function focus_adjacent_pane(session_id, block_id, direction)
   })
 end
 
+-- preview.23 regression: key events whose payload lacks an explicit text
+-- field are dropped, and the app no longer re-delivers keys that a key
+-- handler declines with false, so nvim panes never see their ctrl+h/j/k/l.
+-- Forward the control byte straight into the block; block.event bypasses
+-- Lua bindings, so this cannot recurse.
+local function forward_nvim_key(session_id, block_id, key)
+	local letter = key:match("^ctrl%+([a-z])$")
+	if not letter then
+		return false
+	end
+	local delivered, delivered_error = rex.call("block.event", {
+		session_id = session_id,
+		block_id = block_id,
+		event = {
+			type = "key",
+			payload = {
+				key = "key_" .. letter,
+				mods = "ctrl",
+				action = "press",
+				text = "",
+			},
+		},
+	})
+	if not delivered then
+		rex.log("warn", "pane navigation: nvim key forward failed: " .. tostring(delivered_error))
+	end
+	return delivered ~= nil
+end
+
 local function bind_pane_navigation(key, direction)
   rex.bind(key, function(ctx)
     if not ctx.session_id or not ctx.block_id then
@@ -162,7 +191,7 @@ local function bind_pane_navigation(key, direction)
       method = "process",
     })
     if process and is_nvim_foreground(process.foreground) then
-      return false
+      return forward_nvim_key(ctx.session_id, ctx.block_id, key) or false
     end
     if not process and process_error then
       rex.log("warn", "pane navigation: process lookup failed: " .. tostring(process_error))
@@ -175,7 +204,7 @@ local function bind_pane_navigation(key, direction)
     })
     if not (process and is_pi_foreground(process.foreground))
       and title and type(title.title) == "string" and title.title:lower() == "nvim" then
-      return false
+      return forward_nvim_key(ctx.session_id, ctx.block_id, key) or false
     end
 
     local result, focus_error = focus_adjacent_pane(ctx.session_id, ctx.block_id, direction)
